@@ -69,6 +69,7 @@ export function genRoutes(routes: RouteRecordRaw[], parent?: MenuDataItem) {
 export function generateTreeRoutes(menus: MenuData) {
   const routeDataMap = new Map<string | number, RouteRecordRaw>()
   const menuDataMap = new Map<string | number, MenuDataItem>()
+  // 遍历菜单树，建立字典
   for (const menuItem of menus) {
     if (!menuItem.id)
       continue
@@ -97,6 +98,45 @@ export function generateTreeRoutes(menus: MenuData) {
     routeDataMap.set(menuItem.id, route)
     menuDataMap.set(menuItem.id, menu)
   }
+
+  // const extendTree = (menuItem: any) => {
+  //   if (menuItem.id) {
+  //     const route = {
+  //       path: menuItem.path,
+  //       name: menuItem.name || getCacheKey(),
+  //       component: getRouterModule(menuItem.component!),
+  //       redirect: menuItem.redirect || undefined,
+  //       meta: {
+  //         title: menuItem?.title as string,
+  //         icon: menuItem?.icon as string,
+  //         keepAlive: menuItem?.keepAlive,
+  //         id: menuItem?.id,
+  //         parentId: menuItem?.parentId,
+  //         affix: menuItem?.affix,
+  //         parentKeys: menuItem?.parentKeys,
+  //         url: menuItem?.url,
+  //         hideInMenu: menuItem?.hideInMenu,
+  //         hideChildrenInMenu: menuItem?.hideChildrenInMenu,
+  //         hideInBreadcrumb: menuItem?.hideInBreadcrumb,
+  //         target: menuItem?.target,
+  //         locale: menuItem?.locale,
+  //       },
+  //     } as RouteRecordRaw
+  //     const menu = formatMenu(route)
+  //     routeDataMap.set(menuItem.id, route)
+  //     menuDataMap.set(menuItem.id, menu)
+  //     if (menuItem.children && menuItem.children.length > 0) {
+  //       menuItem.children.forEach((child: any) => {
+  //         extendTree(child)
+  //       })
+  //     }
+  //   }
+  // }
+  // menus.forEach((menuItem) => {
+  //   extendTree(menuItem)
+  // })
+
+  // 路由数据、菜单数据
   const routeData: RouteRecordRaw[] = []
   const menuData: MenuData = []
 
@@ -126,6 +166,42 @@ export function generateTreeRoutes(menus: MenuData) {
       }
     }
   }
+
+  // const setData = (menuItem: any) => {
+  //   if (menuItem.id) {
+  //     const currentRoute = routeDataMap.get(menuItem.id)
+  //     const currentItem = menuDataMap.get(menuItem.id)
+  //     if (!menuItem.parentId) {
+  //       if (currentRoute && currentItem) {
+  //         routeData.push(currentRoute)
+  //         menuData.push(currentItem)
+  //       }
+  //     }
+  //     else {
+  //       const pRoute = routeDataMap.get(menuItem.parentId)
+  //       const pItem = menuDataMap.get(menuItem.parentId)
+  //       if (currentItem && currentRoute && pRoute && pItem) {
+  //         if (pRoute.children && pItem.children) {
+  //           pRoute.children.push(currentRoute)
+  //           pItem.children.push(currentItem)
+  //         }
+  //         else {
+  //           pItem.children = [currentItem]
+  //           pRoute.children = [currentRoute]
+  //         }
+  //       }
+  //     }
+  //     if (menuItem.children && menuItem.children.length > 0) {
+  //       menuItem.children.forEach((child: any) => {
+  //         setData(child)
+  //       })
+  //     }
+  //   }
+  // }
+  // menus.forEach((menu: any) => {
+  //   setData(menu)
+  // })
+
   return {
     menuData,
     routeData,

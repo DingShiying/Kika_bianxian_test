@@ -38,8 +38,8 @@ export default eventHandler(async (_event) => {
       content: '希望是件美丽的东西，也许是最好的东西',
     },
     {
-      title: 'Antdv Pro',
-      link: '/logo.svg',
+      title: 'KiKa',
+      link: '/kika-logo.png',
       percent: 80,
       status: 'active',
       content: '人并非生来就伟大，而是越活越伟大',

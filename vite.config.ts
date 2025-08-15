@@ -11,7 +11,13 @@ const baseSrc = fileURLToPath(new URL('./src', import.meta.url))
 // https://vitejs.dev/config/
 export default ({ mode }: ConfigEnv): UserConfig => {
   const env = loadEnv(mode, process.cwd())
-  const proxyObj = {}
+  const proxyObj = {
+    '/proxy': {
+      target: 'http://localhost:5000', // 后端服务器地址
+      changeOrigin: true, // 必须设置为 true，否则会出现跨域问题
+      rewrite: path => path.replace(/^\/proxy/, ''), // 将 /api 重写为空字符串
+    },
+  }
   if (mode === 'development' && env.VITE_APP_BASE_API_DEV && env.VITE_APP_BASE_URL_DEV) {
     proxyObj[env.VITE_APP_BASE_API_DEV] = {
       target: env.VITE_APP_BASE_URL_DEV,

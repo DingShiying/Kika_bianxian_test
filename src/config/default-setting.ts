@@ -1,9 +1,9 @@
 import type { LayoutSetting } from '~@/stores/app'
 
 export default {
-  title: 'Antdv Pro',
+  title: 'KiKa',
   theme: 'light',
-  logo: '/logo.svg',
+  logo: '/kika-logo.png',
   collapsed: false,
   drawerVisible: false,
   colorPrimary: '#1677FF',
@@ -26,7 +26,7 @@ export default {
   leftCollapsed: true,
   compactAlgorithm: false,
   headerHeight: 48,
-  copyright: 'Antdv Pro Team 2023',
+  copyright: 'KiKa Team 2023',
   animationName: 'slide-fadein-right',
 } as LayoutSetting
 

@@ -5,7 +5,6 @@ import { getUserInfoApi } from '~@/api/common/user'
 import type { MenuData } from '~@/layouts/basic-layout/typing'
 import { rootRoute } from '~@/router/constant'
 import { generateFlatRoutes, generateRoutes, generateTreeRoutes } from '~@/router/generate-route'
-import { DYNAMIC_LOAD_WAY, DynamicLoadEnum } from '~@/utils/constant'
 
 export const useUserStore = defineStore('user', () => {
   const routerData = shallowRef()
@@ -16,14 +15,64 @@ export const useUserStore = defineStore('user', () => {
   const nickname = computed(() => userInfo.value?.nickname ?? userInfo.value?.username)
   const roles = computed(() => userInfo.value?.roles)
 
+  // interface MenuDataItem {
+  //   id: string | number
+  //   parentId: string | number | null
+  //   title: string
+  //   path: string
+  //   component: string
+  //   name: string
+  //   icon?: string
+  //   keepAlive?: boolean
+  //   locale?: string
+  //   children?: MenuDataItem[]
+  // }
+  // type MenuData = MenuDataItem[]
+
+  // function treeToFlat(menus: MenuData): MenuData {
+  //   const flatList: MenuData = []
+
+  //   const traverse = (node: MenuDataItem) => {
+  //     // 创建一个新对象，不包含 children 字段
+  //     const flatNode = {
+  //       id: node.id,
+  //       parentId: node.parentId,
+  //       title: node.title,
+  //       path: node.path,
+  //       component: node.component,
+  //       name: node.name,
+  //       icon: node.icon,
+  //       keepAlive: node.keepAlive,
+  //       locale: node.locale,
+  //     }
+
+  //     // 将新对象添加到扁平列表中
+  //     flatList.push(flatNode)
+
+  //     // 递归处理子节点
+  //     if (node.children && node.children.length > 0) {
+  //       node.children.forEach(child => traverse(child))
+  //     }
+  //   }
+
+  //   // 从根节点开始递归
+  //   menus.forEach(node => traverse(node))
+
+  //   return flatList
+  // }
+
   const getMenuRoutes = async () => {
     const { data } = await getRouteMenusApi()
     return generateTreeRoutes(data ?? [])
+    // const { data } = await getRouteMenusApi()
+    // return generateTreeRoutes(data.menuList ?? [])
   }
 
   const generateDynamicRoutes = async () => {
-    const dynamicLoadWay = DYNAMIC_LOAD_WAY === DynamicLoadEnum.BACKEND ? getMenuRoutes : generateRoutes
+    // const dynamicLoadWay = DYNAMIC_LOAD_WAY === DynamicLoadEnum.BACKEND ? getMenuRoutes : generateRoutes
+    const dynamicLoadWay = generateRoutes
     const { menuData: treeMenuData, routeData } = await dynamicLoadWay()
+    // const { menuData: treeMenuData, routeData } = await getMenuRoutes()
 
     menuData.value = treeMenuData
 

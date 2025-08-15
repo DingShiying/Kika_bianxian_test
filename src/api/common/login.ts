@@ -14,8 +14,9 @@ export interface LoginResultModel {
   token: string
 }
 
+// 登陆
 export function loginApi(params: LoginParams | LoginMobileParams) {
-  return usePost<LoginResultModel, LoginParams | LoginMobileParams>('/login', params, {
+  return usePost<LoginResultModel, LoginParams | LoginMobileParams>('/proxy/login', params, {
     // 设置为false的时候不会携带token
     token: false,
     // 开发模式下使用自定义的接口
@@ -25,6 +26,7 @@ export function loginApi(params: LoginParams | LoginMobileParams) {
   })
 }
 
+// 退出登陆
 export function logoutApi() {
   return useGet('/logout')
 }

@@ -16,15 +16,15 @@ const data = ref([
   },
   {
     title: 'Vite',
-    link: 'https://cn.vitejs.dev/logo.svg',
+    link: 'https://cn.vitejs.dev/kika-logo.png',
   },
   {
     title: 'React',
     link: 'https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png',
   },
   {
-    title: 'Antdv Pro',
-    link: '/logo.svg',
+    title: 'KiKa',
+    link: '/kika-logo.png',
   },
   {
     title: 'Webpack',

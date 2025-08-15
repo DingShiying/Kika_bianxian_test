@@ -120,12 +120,12 @@ onBeforeUnmount(() => {
             <span class="ant-pro-form-login-logo">
               <img w-full h-full object-cover src="/logo.svg">
             </span>
-            <span class="ant-pro-form-login-title">
-              Antdv Pro
-            </span>
-            <span class="ant-pro-form-login-desc">
+            <!-- <span class="ant-pro-form-login-title">
+              kika
+            </span> -->
+            <!-- <span class="ant-pro-form-login-desc">
               {{ t("pages.layouts.userLayout.title") }}
-            </span>
+            </span> -->
           </div>
           <div class="login-lang flex-center relative z-11">
             <span
@@ -312,8 +312,9 @@ onBeforeUnmount(() => {
 }
 
 .ant-pro-form-login-logo {
-  width: 44px;
-  height: 44px;
+  // width: 44px;
+  // height: 44px;
+  height:100%;
   margin-right: 16px;
   vertical-align: top
 }
