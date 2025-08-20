@@ -1,14 +1,80 @@
 <script setup lang="ts" name="Channel">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { PlusSquareOutlined } from '@ant-design/icons-vue'
 import { Modal, message } from 'ant-design-vue'
+import { getChannelData } from '~@/api/channel'
+
+interface FormState {
+  channelName: string
+  icon: string
+}// 表单数据类型
+
+interface ChannelData {
+  data: Array<{
+    id: string
+    channel: string
+    icon: string
+    creator: string
+    createTime: string
+    currentEditor: string
+    currentEditTime: string
+  }>
+
+}// 响应数据类型
+
+// const response = {
+//   data: [
+//     {
+//       id: '1',
+//       channel: '今日头条',
+//       icon: '/src/assets/images/toutiao.svg',
+//       creator: '张三',
+//       createTime: '2025-07-08',
+//       currentEditor: '李四',
+//       currentEditTime: '2025-08-08',
+//     },
+//     {
+//       id: '2',
+//       channel: '抖音',
+//       icon: '/src/assets/images/douyin.svg',
+//       creator: '张三',
+//       createTime: '2025-07-08',
+//       currentEditor: '李四',
+//       currentEditTime: '2025-08-08',
+//     },
+//     {
+//       id: '3',
+//       channel: '推特',
+//       icon: '/src/assets/images/X.svg',
+//       creator: '张三',
+//       createTime: '2025-07-08',
+//       currentEditor: '李四',
+//       currentEditTime: '2025-08-08',
+//     },
+//     {
+//       id: '4',
+//       channel: '快手',
+//       icon: '/src/assets/images/kuaishou.svg',
+//       creator: '张三',
+//       createTime: '2025-07-08',
+//       currentEditor: '李四',
+//       currentEditTime: '2025-08-08',
+//     },
+//   ],
+// }
+const response = ref<ChannelData>({
+  data: [],
+})
+
+const searchParams = ref({
+  channel: '',
+})
 
 const columns = [
   {
     title: '渠道名称',
     dataIndex: 'channel',
     key: 'channel',
-    slots: { customRender: 'channel' },
   },
   {
     title: '创建人',
@@ -34,112 +100,54 @@ const columns = [
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
-    slots: { customRender: 'operation' },
   },
-]
-const data = [
-  {
-    id: '1',
-    channel: '今日头条',
-    icon: '/src/assets/images/toutiao.svg',
-    creator: '张三',
-    createTime: '2025-07-08',
-    currentEditor: '李四',
-    currentEditTime: '2025-08-08',
-  },
-  {
-    id: '2',
-    channel: '抖音',
-    icon: '/src/assets/images/douyin.svg',
-    creator: '张三',
-    createTime: '2025-07-08',
-    currentEditor: '李四',
-    currentEditTime: '2025-08-08',
-  },
-  {
-    id: '3',
-    channel: '推特',
-    icon: '/src/assets/images/X.svg',
-    creator: '张三',
-    createTime: '2025-07-08',
-    currentEditor: '李四',
-    currentEditTime: '2025-08-08',
-  },
-  {
-    id: '4',
-    channel: '快手',
-    icon: '/src/assets/images/kuaishou.svg',
-    creator: '张三',
-    createTime: '2025-07-08',
-    currentEditor: '李四',
-    currentEditTime: '2025-08-08',
-  },
-]
+]// 表格列头
 
-const loading = ref(false)
+// const data = ref(response.data)// 表格数据
+const loading = ref(false)// 表格加载状态
 const pagination = ref({
   current: 1,
   pageSize: 10,
-  total: data.length,
-})
+  total: response.value.data.length,
+})// 表格分页
+
+const open = ref(false)// 弹窗状态
+
+const formRef = ref()// 表单引用
+const formState: FormState = reactive({
+  channelName: '',
+  icon: '',
+})// 表单数据
+const rules: any = {
+  channelName: [
+    { required: true, message: '渠道名称不能为空', trigger: 'blur', type: 'string' },
+  ],
+  department: [{ required: true, message: '渠道图标不能为空', trigger: 'change', type: 'string' }],
+}// 表单验证规则
+
+async function getData(searchParams: any) {
+  try {
+    const res = await getChannelData(searchParams)
+    if (res.code === 200) {
+      // @ts-expect-error:忽略
+      response.value = res.data
+      pagination.value.total = response.value.data.length
+    }
+    else {
+      message.error(res.msg)
+    }
+  }
+  catch (error: any) {
+    message.error(error.msg)
+  }
+  finally {
+    loading.value = false
+  }
+}
 
 function handleTableChange(event: any) {
   pagination.value = event
-}
-
-const open = ref(false)
-
-interface FormState {
-  businessName: string
-  department: string
-}
-const formRef = ref()
-const formState: FormState = reactive({
-  businessName: '',
-  department: '',
-})
-const departmentList = ref([
-  {
-    value: '安卓矩阵',
-    label: '安卓矩阵',
-  },
-  {
-    value: 'iOS矩阵',
-    label: 'iOS矩阵',
-  },
-  {
-    value: 'Web矩阵',
-    label: 'Web矩阵',
-  },
-  {
-    value: '后端矩阵',
-    label: '后端矩阵',
-  },
-  {
-    value: '前端矩阵',
-    label: '前端矩阵',
-  },
-  {
-    value: '测试矩阵',
-    label: '测试矩阵',
-  },
-  {
-    value: '产品矩阵',
-    label: '产品矩阵',
-  },
-  {
-    value: '设计矩阵',
-    label: '设计矩阵',
-  },
-  {
-    value: '运营矩阵',
-    label: '运营矩阵',
-  },
-  {
-    value: '市场矩阵',
-    label: '市场矩阵',
-  },
-])
+}// 表格分页改变
 
 function handleOk() {
   formRef.value.validate().then(() => {
@@ -151,19 +159,24 @@ function handleOk() {
   }).catch((error: FormState) => {
     console.log('error', error)
   })
-}
-
+}// 表单提交
 function handleCancel() {
   open.value = false
   Modal.destroyAll()
   formRef.value.resetFields()
-}
-const rules = {
-  businessName: [
-    { required: true, message: '业务组名称不能为空', trigger: 'blur', type: 'string' },
-  ],
-  department: [{ required: true, message: '请选择一个部门', trigger: 'change', type: 'string' }],
-}
+  formState.channelName = ''
+  formState.icon = ''
+}// 表单取消
+
+function editChannel(record: any) {
+  formState.channelName = record.channel
+  formState.icon = record.icon
+  open.value = true
+}// 编辑渠道
+
+onMounted(() => {
+  getData(searchParams.value)
+})
 </script>
 
 <template>
@@ -178,22 +191,27 @@ const rules = {
     </template>
 
     <a-card>
-      <a-input-search placeholder="请输入渠道名称" enter-button="搜索" style="width: 350px;margin-bottom: 15px;" />
+      <a-input-search
+        v-model:value="searchParams.channel" placeholder="请输入渠道名称" enter-button="搜索"
+        style="width: 350px;margin-bottom: 15px;" @search="getData(searchParams)"
+      />
       <a-table
-        :columns="columns" :data-source="data" :loading="loading" :pagination="pagination" class="table-part"
-        @change="handleTableChange($event)"
+        :columns="columns" :data-source="response.data" :loading="loading" :pagination="pagination"
+        class="table-part" @change="handleTableChange($event)"
       >
-        <template #channel="{ record }">
-          <div class="channel">
-            <img :src="record.icon">
-            <span>{{ record.channel }}</span>
-          </div>
-        </template>
-        <template #operation>
-          <div class="option">
-            <span>编辑</span>
-            <span>删除</span>
-          </div>
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'channel'">
+            <div class="channel">
+              <img :src="record.icon">
+              <span>{{ record.channel }}</span>
+            </div>
+          </template>
+          <template v-else-if="column.dataIndex === 'operation'">
+            <div class="option">
+              <span @click="editChannel(record)">编辑</span>
+              <span>删除</span>
+            </div>
+          </template>
         </template>
         <template #footer>
           显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
@@ -209,15 +227,16 @@ const rules = {
     >
       <a-form ref="formRef" :model="formState" :rules="rules" :label-col="{ style: { width: '100px' } }">
         <a-form-item label="渠道名称" name="businessName">
-          <a-input v-model:value="formState.businessName" placeholder="请输入业务组名称" />
+          <a-input v-model:value="formState.channelName" placeholder="请输入渠道名称" />
         </a-form-item>
-        <a-form-item label="应用图标" name="businessName">
+        <a-form-item label="应用图标" name="icon">
           <div class="upload-img">
-            <div class="upload">
+            <div v-if="!formState.icon" class="upload">
               <img src="@/assets/images/upload.svg">
               <span>上传icon</span>
             </div>
-            <div class="alert-text">
+            <a-image v-else :src="formState.icon" :width="100" :height="100" />
+            <div v-if="!formState.icon" class="alert-text">
               <span>支持jpg、png格式</span>
               <span>建议尺寸&nbsp;512&nbsp;&times;&nbsp;512&nbsp;</span>
               <span>大小不超过2M</span>

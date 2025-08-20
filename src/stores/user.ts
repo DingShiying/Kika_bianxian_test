@@ -1,10 +1,11 @@
 import { logoutApi } from '~@/api/common/login'
-import { getRouteMenusApi } from '~@/api/common/menu'
+// import { getRouteMenusApi } from '~@/api/common/menu'
 import type { UserInfo } from '~@/api/common/user'
 import { getUserInfoApi } from '~@/api/common/user'
 import type { MenuData } from '~@/layouts/basic-layout/typing'
 import { rootRoute } from '~@/router/constant'
-import { generateFlatRoutes, generateRoutes, generateTreeRoutes } from '~@/router/generate-route'
+import { generateFlatRoutes, generateRoutes } from '~@/router/generate-route'
+// generateTreeRoutes
 
 export const useUserStore = defineStore('user', () => {
   const routerData = shallowRef()
@@ -61,12 +62,12 @@ export const useUserStore = defineStore('user', () => {
   //   return flatList
   // }
 
-  const getMenuRoutes = async () => {
-    const { data } = await getRouteMenusApi()
-    return generateTreeRoutes(data ?? [])
-    // const { data } = await getRouteMenusApi()
-    // return generateTreeRoutes(data.menuList ?? [])
-  }
+  // const getMenuRoutes = async () => {
+  //   const { data } = await getRouteMenusApi()
+  //   return generateTreeRoutes(data ?? [])
+  //   // const { data } = await getRouteMenusApi()
+  //   // return generateTreeRoutes(data.menuList ?? [])
+  // }
 
   const generateDynamicRoutes = async () => {
     // const dynamicLoadWay = DYNAMIC_LOAD_WAY === DynamicLoadEnum.BACKEND ? getMenuRoutes : generateRoutes

@@ -1,7 +1,8 @@
 <script setup lang="ts" name="Department">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { PlusSquareOutlined } from '@ant-design/icons-vue'
 import { Modal, message } from 'ant-design-vue'
+import { getAppData } from '~@/api/app'
 
 // const data = [
 //   {
@@ -110,31 +111,283 @@ import { Modal, message } from 'ant-design-vue'
 //   },
 // ]
 
-const channel = [
-  {
-    name: '今日头条',
-    icon: '/src/assets/images/toutiao.svg',
-  },
-  {
-    name: '快手',
-    icon: '/src/assets/images/kuaishou.svg',
-  },
-  {
-    name: '抖音',
-    icon: '/src/assets/images/douyin.svg',
-  },
-  {
-    name: '推特',
-    icon: '/src/assets/images/X.svg',
-  },
-]
+interface FormState {
+  appName: string
+  package: string
+  business: string | undefined
+  system: string
+  icon: string
+}// 表单数据类型
+
+interface AppData {
+  channel: Array<{
+    name: string
+    icon: string
+  }>
+  data: Array<{
+    id: string
+    appName: string
+    icon: string
+    system: string
+    package: string
+    business: string
+    creator: string
+    createTime: string
+    currentEditor: string
+    currentEditTime: string
+  }>
+  businessList: Array<{
+    value: string
+    label: string
+  }>
+}
+
+// const response = {
+//   channel: [
+//     {
+//       name: '今日头条',
+//       icon: '/src/assets/images/toutiao.svg',
+//     },
+//     {
+//       name: '快手',
+//       icon: '/src/assets/images/kuaishou.svg',
+//     },
+//     {
+//       name: '抖音',
+//       icon: '/src/assets/images/douyin.svg',
+//     },
+//     {
+//       name: '推特',
+//       icon: '/src/assets/images/X.svg',
+//     },
+//   ],
+//   data: [
+//     {
+//       id: '1',
+//       appName: '智慧生活助手',
+//       icon: '/src/assets/images/icon1.png',
+//       system: 'iOS',
+//       package: 'com.zhihuishenghuo',
+//       business: '电商生活组',
+//       creator: '张三',
+//       createTime: '2025-07-08',
+//       currentEditor: '李四',
+//       currentEditTime: '2025-08-08',
+//     },
+//     {
+//       id: '2',
+//       appName: '智能办公助手',
+//       icon: '/src/assets/images/icon2.png',
+//       system: 'Android',
+//       package: 'com.zhinengbanjing',
+//       business: '电商办公组',
+//       creator: '李四',
+//       createTime: '2025-07-09',
+//       currentEditor: '王五',
+//       currentEditTime: '2025-08-09',
+//     },
+//     {
+//       id: '3',
+//       appName: '健康管理应用',
+//       icon: '/src/assets/images/icon3.png',
+//       system: 'iOS',
+//       package: 'com.jiankangguanli',
+//       business: '电商健康组',
+//       creator: '王五',
+//       createTime: '2025-07-10',
+//       currentEditor: '赵六',
+//       currentEditTime: '2025-08-10',
+//     },
+//     {
+//       id: '4',
+//       appName: '旅行规划助手',
+//       icon: '/src/assets/images/icon4.png',
+//       system: 'Android',
+//       package: 'com.lvxingguihua',
+//       business: '电商旅行组',
+//       creator: '赵六',
+//       createTime: '2025-07-11',
+//       currentEditor: '张三',
+//       currentEditTime: '2025-08-11',
+//     },
+//     {
+//       id: '5',
+//       appName: '学习提升应用',
+//       icon: '/src/assets/images/icon1.png',
+//       system: 'iOS',
+//       package: 'com.xuexishenghua',
+//       business: '电商学习组',
+//       creator: '张三',
+//       createTime: '2025-07-12',
+//       currentEditor: '李四',
+//       currentEditTime: '2025-08-12',
+//     },
+//     {
+//       id: '6',
+//       appName: '美食推荐助手',
+//       icon: '/src/assets/images/icon2.png',
+//       system: 'Android',
+//       package: 'com.meishituojian',
+//       business: '电商美食组',
+//       creator: '李四',
+//       createTime: '2025-07-13',
+//       currentEditor: '王五',
+//       currentEditTime: '2025-08-13',
+//     },
+//     {
+//       id: '7',
+//       appName: '运动健身助手',
+//       icon: '/src/assets/images/icon3.png',
+//       system: 'iOS',
+//       package: 'com.yundongjiankang',
+//       business: '电商运动组',
+//       creator: '王五',
+//       createTime: '2025-07-14',
+//       currentEditor: '赵六',
+//       currentEditTime: '2025-08-14',
+//     },
+//     {
+//       id: '8',
+//       appName: '金融理财助手',
+//       icon: '/src/assets/images/icon4.png',
+//       system: 'Android',
+//       package: 'com.jinronglicai',
+//       business: '电商金融组',
+//       creator: '赵六',
+//       createTime: '2025-07-15',
+//       currentEditor: '张三',
+//       currentEditTime: '2025-08-15',
+//     },
+//     {
+//       id: '9',
+//       appName: '社交互动平台',
+//       icon: '/src/assets/images/icon1.png',
+//       system: 'iOS',
+//       package: 'com.shejiaohudong',
+//       business: '电商社交组',
+//       creator: '张三',
+//       createTime: '2025-07-16',
+//       currentEditor: '李四',
+//       currentEditTime: '2025-08-16',
+//     },
+//     {
+//       id: '10',
+//       appName: '阅读学习助手',
+//       icon: '/src/assets/images/icon2.png',
+//       system: 'Android',
+//       package: 'com.yueduxuexi',
+//       business: '电商阅读组',
+//       creator: '李四',
+//       createTime: '2025-07-17',
+//       currentEditor: '王五',
+//       currentEditTime: '2025-08-17',
+//     },
+//     {
+//       id: '11',
+//       appName: '智慧生活助手11',
+//       icon: '/src/assets/images/icon3.png',
+//       system: 'iOS',
+//       package: 'com.zhihuishenghuo11',
+//       business: '电商生活组',
+//       creator: '王五',
+//       createTime: '2025-07-18',
+//       currentEditor: '赵六',
+//       currentEditTime: '2025-08-18',
+//     },
+//     {
+//       id: '12',
+//       appName: '智能办公助手12',
+//       icon: '/src/assets/images/icon4.png',
+//       system: 'Android',
+//       package: 'com.zhinengbanjing12',
+//       business: '电商办公组',
+//       creator: '赵六',
+//       createTime: '2025-07-19',
+//       currentEditor: '张三',
+//       currentEditTime: '2025-08-19',
+//     },
+//     {
+//       id: '13',
+//       appName: '健康管理应用13',
+//       icon: '/src/assets/images/icon1.png',
+//       system: 'iOS',
+//       package: 'com.jiankangguanli13',
+//       business: '电商健康组',
+//       creator: '张三',
+//       createTime: '2025-07-20',
+//       currentEditor: '李四',
+//       currentEditTime: '2025-08-20',
+//     },
+//     {
+//       id: '14',
+//       appName: '旅行规划助手14',
+//       icon: '/src/assets/images/icon2.png',
+//       system: 'Android',
+//       package: 'com.lvxingguihua14',
+//       business: '电商旅行组',
+//       creator: '李四',
+//       createTime: '2025-07-21',
+//       currentEditor: '王五',
+//       currentEditTime: '2025-08-21',
+//     },
+//   ],
+//   businessList: [
+//     {
+//       value: '安卓矩阵',
+//       label: '安卓矩阵',
+//     },
+//     {
+//       value: 'iOS矩阵',
+//       label: 'iOS矩阵',
+//     },
+//     {
+//       value: 'Web矩阵',
+//       label: 'Web矩阵',
+//     },
+//     {
+//       value: '后端矩阵',
+//       label: '后端矩阵',
+//     },
+//     {
+//       value: '前端矩阵',
+//       label: '前端矩阵',
+//     },
+//     {
+//       value: '测试矩阵',
+//       label: '测试矩阵',
+//     },
+//     {
+//       value: '产品矩阵',
+//       label: '产品矩阵',
+//     },
+//     {
+//       value: '设计矩阵',
+//       label: '设计矩阵',
+//     },
+//     {
+//       value: '运营矩阵',
+//       label: '运营矩阵',
+//     },
+//     {
+//       value: '市场矩阵',
+//       label: '市场矩阵',
+//     },
+//   ],
+// }
+
+const response = ref<AppData>({
+  channel: [],
+  data: [],
+  businessList: [],
+})
+
+// const channel = ref(response.channel)// 渠道列表
 
 const columns = [
   {
     title: ' APP',
     dataIndex: 'app',
     key: 'app',
-    slots: { customRender: 'app' },
   },
   // {
   //   title: '发行端',
@@ -175,242 +428,60 @@ const columns = [
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
-    slots: { customRender: 'operation' },
   },
-]
-const data = [
-  {
-    id: '1',
-    appName: '智慧生活助手',
-    icon: '/src/assets/images/icon1.png',
-    system: 'iOS',
-    package: 'com.zhihuishenghuo',
-    business: '电商生活组',
-    creator: '张三',
-    createTime: '2025-07-08',
-    currentEditor: '李四',
-    currentEditTime: '2025-08-08',
-  },
-  {
-    id: '2',
-    appName: '智能办公助手',
-    icon: '/src/assets/images/icon2.png',
-    system: 'Android',
-    package: 'com.zhinengbanjing',
-    business: '电商办公组',
-    creator: '李四',
-    createTime: '2025-07-09',
-    currentEditor: '王五',
-    currentEditTime: '2025-08-09',
-  },
-  {
-    id: '3',
-    appName: '健康管理应用',
-    icon: '/src/assets/images/icon3.png',
-    system: 'iOS',
-    package: 'com.jiankangguanli',
-    business: '电商健康组',
-    creator: '王五',
-    createTime: '2025-07-10',
-    currentEditor: '赵六',
-    currentEditTime: '2025-08-10',
-  },
-  {
-    id: '4',
-    appName: '旅行规划助手',
-    icon: '/src/assets/images/icon4.png',
-    system: 'Android',
-    package: 'com.lvxingguihua',
-    business: '电商旅行组',
-    creator: '赵六',
-    createTime: '2025-07-11',
-    currentEditor: '张三',
-    currentEditTime: '2025-08-11',
-  },
-  {
-    id: '5',
-    appName: '学习提升应用',
-    icon: '/src/assets/images/icon1.png',
-    system: 'iOS',
-    package: 'com.xuexishenghua',
-    business: '电商学习组',
-    creator: '张三',
-    createTime: '2025-07-12',
-    currentEditor: '李四',
-    currentEditTime: '2025-08-12',
-  },
-  {
-    id: '6',
-    appName: '美食推荐助手',
-    icon: '/src/assets/images/icon2.png',
-    system: 'Android',
-    package: 'com.meishituojian',
-    business: '电商美食组',
-    creator: '李四',
-    createTime: '2025-07-13',
-    currentEditor: '王五',
-    currentEditTime: '2025-08-13',
-  },
-  {
-    id: '7',
-    appName: '运动健身助手',
-    icon: '/src/assets/images/icon3.png',
-    system: 'iOS',
-    package: 'com.yundongjiankang',
-    business: '电商运动组',
-    creator: '王五',
-    createTime: '2025-07-14',
-    currentEditor: '赵六',
-    currentEditTime: '2025-08-14',
-  },
-  {
-    id: '8',
-    appName: '金融理财助手',
-    icon: '/src/assets/images/icon4.png',
-    system: 'Android',
-    package: 'com.jinronglicai',
-    business: '电商金融组',
-    creator: '赵六',
-    createTime: '2025-07-15',
-    currentEditor: '张三',
-    currentEditTime: '2025-08-15',
-  },
-  {
-    id: '9',
-    appName: '社交互动平台',
-    icon: '/src/assets/images/icon1.png',
-    system: 'iOS',
-    package: 'com.shejiaohudong',
-    business: '电商社交组',
-    creator: '张三',
-    createTime: '2025-07-16',
-    currentEditor: '李四',
-    currentEditTime: '2025-08-16',
-  },
-  {
-    id: '10',
-    appName: '阅读学习助手',
-    icon: '/src/assets/images/icon2.png',
-    system: 'Android',
-    package: 'com.yueduxuexi',
-    business: '电商阅读组',
-    creator: '李四',
-    createTime: '2025-07-17',
-    currentEditor: '王五',
-    currentEditTime: '2025-08-17',
-  },
-  {
-    id: '11',
-    appName: '智慧生活助手11',
-    icon: '/src/assets/images/icon3.png',
-    system: 'iOS',
-    package: 'com.zhihuishenghuo11',
-    business: '电商生活组',
-    creator: '王五',
-    createTime: '2025-07-18',
-    currentEditor: '赵六',
-    currentEditTime: '2025-08-18',
-  },
-  {
-    id: '12',
-    appName: '智能办公助手12',
-    icon: '/src/assets/images/icon4.png',
-    system: 'Android',
-    package: 'com.zhinengbanjing12',
-    business: '电商办公组',
-    creator: '赵六',
-    createTime: '2025-07-19',
-    currentEditor: '张三',
-    currentEditTime: '2025-08-19',
-  },
-  {
-    id: '13',
-    appName: '健康管理应用13',
-    icon: '/src/assets/images/icon1.png',
-    system: 'iOS',
-    package: 'com.jiankangguanli13',
-    business: '电商健康组',
-    creator: '张三',
-    createTime: '2025-07-20',
-    currentEditor: '李四',
-    currentEditTime: '2025-08-20',
-  },
-  {
-    id: '14',
-    appName: '旅行规划助手14',
-    icon: '/src/assets/images/icon2.png',
-    system: 'Android',
-    package: 'com.lvxingguihua14',
-    business: '电商旅行组',
-    creator: '李四',
-    createTime: '2025-07-21',
-    currentEditor: '王五',
-    currentEditTime: '2025-08-21',
-  },
-]
+]// 表格列头
 
-const loading = ref(false)
+// const data = ref(response.data)// 表格数据
+
+const loading = ref(false)// 表格加载状态
 const pagination = ref({
   current: 1,
   pageSize: 10,
-  total: data.length,
-})
+  total: response.value.data.length,
+})// 表格分页
+
+const open = ref(false)// 弹窗状态
+// const businessList = ref(response.businessList)// 部门列表
+const formRef = ref()// 表单引用
+const formState: FormState = reactive({
+  appName: '',
+  package: '',
+  business: undefined,
+  system: 'iOS',
+  icon: '',
+})// 表单数据
+const rules: any = {
+  appName: [{ required: true, message: '应用名称不能为空', trigger: 'blur', type: 'string' }],
+  packageName: [{ required: true, message: '包名不能为空', trigger: 'blur', type: 'string' }],
+  business: [
+    { required: true, message: '业务组名称不能为空', trigger: 'blur', type: 'string' },
+  ],
+  icon: [{ required: true, message: '应用图标不能为空', trigger: 'blur', type: 'string' }],
+}// 表单验证规则
+
+async function getData() {
+  try {
+    const res = await getAppData()
+    if (res.code === 200) {
+      // @ts-expect-error:忽略
+      response.value = res.data
+      pagination.value.total = response.value.data.length
+    }
+    else {
+      message.error(res.msg)
+    }
+  }
+  catch (error: any) {
+    message.error(error.msg)
+  }
+  finally {
+    loading.value = false
+  }
+}
 
 function handleTableChange(event: any) {
   pagination.value = event
-}
-
-const open = ref(false)
-
-interface FormState {
-  department: string
-}
-const formRef = ref()
-const formState: FormState = reactive({
-  department: '',
-})
-const departmentList = ref([
-  {
-    value: '安卓矩阵',
-    label: '安卓矩阵',
-  },
-  {
-    value: 'iOS矩阵',
-    label: 'iOS矩阵',
-  },
-  {
-    value: 'Web矩阵',
-    label: 'Web矩阵',
-  },
-  {
-    value: '后端矩阵',
-    label: '后端矩阵',
-  },
-  {
-    value: '前端矩阵',
-    label: '前端矩阵',
-  },
-  {
-    value: '测试矩阵',
-    label: '测试矩阵',
-  },
-  {
-    value: '产品矩阵',
-    label: '产品矩阵',
-  },
-  {
-    value: '设计矩阵',
-    label: '设计矩阵',
-  },
-  {
-    value: '运营矩阵',
-    label: '运营矩阵',
-  },
-  {
-    value: '市场矩阵',
-    label: '市场矩阵',
-  },
-])
+}// 表格分页
 
 function handleOk() {
   formRef.value.validate().then(() => {
@@ -422,18 +493,39 @@ function handleOk() {
   }).catch((error: FormState) => {
     console.log('error', error)
   })
-}
+}// 表单提交
 
 function handleCancel() {
   open.value = false
   Modal.destroyAll()
   formRef.value.resetFields()
+  Object.keys(formState).forEach((key: any) => {
+    if (key === 'system') {
+      // @ts-expect-error:忽略
+      formState[key] = 'iOS'
+    }
+    else if (key === 'business') {
+      // @ts-expect-error:忽略
+      formState[key] = undefined
+    }
+    else {
+      // @ts-expect-error:忽略
+      formState[key] = ''
+    }
+  })
+}// 表单取消
+
+function editApp(record: any) {
+  Object.keys(formState).forEach((key: any) => {
+    // @ts-expect-error:忽略
+    formState[key] = record[key]
+  })
+  open.value = true
 }
-const rules = {
-  department: [
-    { required: true, message: '业务组名称不能为空', trigger: 'blur', type: 'string' },
-  ],
-}
+
+onMounted(() => {
+  getData()
+})
 </script>
 
 <template>
@@ -480,33 +572,35 @@ const rules = {
         </template>
       </a-list> -->
       <a-table
-        :columns="columns" :data-source="data" :loading="loading" :pagination="pagination" class="table-part"
-        @change="handleTableChange($event)"
+        :columns="columns" :data-source="response.data" :loading="loading" :pagination="pagination"
+        class="table-part" @change="handleTableChange($event)"
       >
-        <template #app="{ record }">
-          <div class="app">
-            <img :src="record.icon">
-            <div class="app-text">
-              <div class="top">
-                {{ record.appName }}
-                <div class="tag">
-                  {{ record.system }}
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'app'">
+            <div class="app">
+              <img :src="record.icon">
+              <div class="app-text">
+                <div class="top">
+                  {{ record.appName }}
+                  <div class="tag">
+                    {{ record.system }}
+                  </div>
+                  <div class="tag">
+                    {{ record.business }}
+                  </div>
                 </div>
-                <div class="tag">
-                  {{ record.business }}
+                <div class="bottom">
+                  {{ record.package }}
                 </div>
-              </div>
-              <div class="bottom">
-                {{ record.package }}
               </div>
             </div>
-          </div>
-        </template>
-        <template #operation>
-          <div class="option">
-            <span>编辑</span>
-            <span>删除</span>
-          </div>
+          </template>
+          <template v-else-if="column.dataIndex === 'operation'">
+            <div class="option">
+              <span @click="editApp(record)">编辑</span>
+              <span>删除</span>
+            </div>
+          </template>
         </template>
         <template #footer>
           显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
@@ -521,20 +615,20 @@ const rules = {
       :body-style="{ minHeight: '10vh' }" @ok="handleOk" @cancel="handleCancel"
     >
       <a-form ref="formRef" :model="formState" :rules="rules" :label-col="{ style: { width: '100px' } }">
-        <a-form-item label="应用名称" name="department" style="width: 30vw;">
-          <a-input v-model:value="formState.department" placeholder="请输入应用名称" />
+        <a-form-item label="应用名称" name="appName" style="width: 30vw;">
+          <a-input v-model:value="formState.appName" placeholder="请输入应用名称" />
         </a-form-item>
 
-        <a-form-item label="包名" name="department" style="width: 30vw;">
-          <a-input v-model:value="formState.department" placeholder="请输入应用包名" />
+        <a-form-item label="应用包名" name="packageName" style="width: 30vw;">
+          <a-input v-model:value="formState.package" placeholder="请输入应用包名" />
         </a-form-item>
 
-        <a-form-item label="归属业务组" name="department" style="width: 20vw;">
-          <a-select v-model:value="formState.department" placeholder="请选择业务组" :options="departmentList" />
+        <a-form-item label="归属业务组" name="business" style="width: 20vw;">
+          <a-select v-model:value="formState.business" placeholder="请选择业务组" :options="response.businessList" />
         </a-form-item>
 
         <a-form-item label="发行端" style="width: 20vw;">
-          <a-radio-group v-model:value="formState.department">
+          <a-radio-group v-model:value="formState.system">
             <a-radio value="iOS">
               iOS
             </a-radio>
@@ -546,11 +640,12 @@ const rules = {
 
         <a-form-item label="应用图标" name="department">
           <div class="upload-img">
-            <div class="upload">
+            <div v-if="!formState.icon" class="upload">
               <img src="@/assets/images/upload.svg">
               <span>上传icon</span>
             </div>
-            <div class="alert-text">
+            <a-image v-else :src="formState.icon" :width="100" :height="100" />
+            <div v-if="!formState.icon" class="alert-text">
               <span>支持jpg、png格式</span>
               <span>建议尺寸&nbsp;512&nbsp;&times;&nbsp;512&nbsp;</span>
               <span>大小不超过2M</span>
@@ -562,7 +657,7 @@ const rules = {
           <div class="title">
             渠道投放信息&nbsp;<span>(若渠道有投放，需要填写该渠道的产品名，否则无法获取数据)</span>
           </div>
-          <a-list item-layout="horizontal" :data-source="channel">
+          <a-list item-layout="horizontal" :data-source="response.channel">
             <template #header>
               <div class="channel-header">
                 <span>渠道</span>
@@ -577,7 +672,7 @@ const rules = {
                   <span>{{ item.name }}</span>
                 </div>
                 <div class="product-name">
-                  <a-input v-model:value="formState.department" placeholder="请输入投放产品名称" />
+                  <a-input v-model:value="formState.business" placeholder="请输入投放产品名称" />
                 </div>
                 <div class="operation">
                   <a-button type="primary">

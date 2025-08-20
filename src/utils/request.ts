@@ -17,22 +17,24 @@ export interface RequestConfigExtra {
   loading?: boolean
 }
 const instance: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_APP_BASE_API ?? '/',
+  // baseURL: import.meta.env.VITE_APP_BASE_API ?? '/',
+  baseURL: '/',
   timeout: 60000,
   headers: { 'Content-Type': ContentTypeEnum.JSON },
 })
 const axiosLoading = new AxiosLoading()
 async function requestHandler(config: InternalAxiosRequestConfig & RequestConfigExtra): Promise<InternalAxiosRequestConfig> {
   // 处理请求前的url
-  if (
-    import.meta.env.DEV
-      && import.meta.env.VITE_APP_BASE_API_DEV
-      && import.meta.env.VITE_APP_BASE_URL_DEV
-      && config.customDev
-  ) {
-    //  替换url的请求前缀baseUrl
-    config.baseURL = import.meta.env.VITE_APP_BASE_API_DEV
-  }
+  // if (
+  //   import.meta.env.DEV
+  //     && import.meta.env.VITE_APP_BASE_API_DEV
+  //     && import.meta.env.VITE_APP_BASE_URL_DEV
+  //     && config.customDev
+  // ) {
+  //   //  替换url的请求前缀baseUrl
+  //   config.baseURL = import.meta.env.VITE_APP_BASE_API_DEV
+  //   console.log(config.baseURL, 'KKKK')
+  // }
   const token = useAuthorization()
 
   if (token.value && config.token !== false)
@@ -73,7 +75,7 @@ function errorHandler(error: AxiosError): Promise<any> {
             redirect: router.currentRoute.value.fullPath,
           },
         })
-        .then(() => {})
+        .then(() => { })
     }
     else if (status === 403) {
       notification?.error({
@@ -123,27 +125,27 @@ function instancePromise<R = any, T = any>(options: AxiosOptions<T> & RequestCon
       })
   })
 }
-export function useGet< R = any, T = any>(url: string, params?: T, config?: AxiosRequestConfig & RequestConfigExtra): Promise<ResponseBody<R>> {
+export function useGet<R = any, T = any>(url: string, params?: T, config?: AxiosRequestConfig & RequestConfigExtra): Promise<ResponseBody<R>> {
   const options = {
     url,
     params,
     method: RequestEnum.GET,
     ...config,
   }
-  return instancePromise< R, T >(options)
+  return instancePromise<R, T>(options)
 }
 
-export function usePost< R = any, T = any>(url: string, data?: T, config?: AxiosRequestConfig & RequestConfigExtra): Promise<ResponseBody<R>> {
+export function usePost<R = any, T = any>(url: string, data?: T, config?: AxiosRequestConfig & RequestConfigExtra): Promise<ResponseBody<R>> {
   const options = {
     url,
     data,
     method: RequestEnum.POST,
     ...config,
   }
-  return instancePromise< R, T >(options)
+  return instancePromise<R, T>(options)
 }
 
-export function usePut< R = any, T = any>(url: string, data?: T, config?: AxiosRequestConfig & RequestConfigExtra): Promise<ResponseBody<R>> {
+export function usePut<R = any, T = any>(url: string, data?: T, config?: AxiosRequestConfig & RequestConfigExtra): Promise<ResponseBody<R>> {
   const options = {
     url,
     data,
@@ -153,7 +155,7 @@ export function usePut< R = any, T = any>(url: string, data?: T, config?: AxiosR
   return instancePromise<R, T>(options)
 }
 
-export function useDelete< R = any, T = any>(url: string, data?: T, config?: AxiosRequestConfig & RequestConfigExtra): Promise<ResponseBody<R>> {
+export function useDelete<R = any, T = any>(url: string, data?: T, config?: AxiosRequestConfig & RequestConfigExtra): Promise<ResponseBody<R>> {
   const options = {
     url,
     data,
