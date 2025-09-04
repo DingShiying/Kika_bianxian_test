@@ -1,6 +1,6 @@
 <script setup lang="ts" name="jsonSet">
 import { onMounted, reactive, ref } from 'vue'
-import { CloseCircleOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { CaretDownOutlined, CloseCircleOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import compareConfig from './components/compareConfig.vue'
 import AddOID from './components/AddOID.vue'
 

@@ -171,6 +171,8 @@ const columns: any = [
 const loading = ref(false) // 表格加载状态
 const addPlanOpen = ref(false)// 新增样式弹窗状态
 
+const currentPlan = ref<any>()// 当前选中计划
+
 const pagination = ref({
   current: 1,
   pageSize: 10,
@@ -199,10 +201,34 @@ function resetSearch() {
   })
 }
 
-function closeAddStyle(value: boolean) {
+function closeAddPlan(value: boolean) {
   addPlanOpen.value = value
+  currentPlan.value = null
 }
 
+function handleCopy(record: any) {
+  currentPlan.value = JSON.parse(JSON.stringify(record))
+  if (currentPlan.value.chaping_ad) {
+    currentPlan.value = {
+      ...currentPlan.value,
+      ...currentPlan.value.chaping_ad,
+    }
+  }
+  delete currentPlan.value.chaping_ad
+  delete currentPlan.value.id
+  addPlanOpen.value = true
+}
+function handleEdit(record: any) {
+  currentPlan.value = JSON.parse(JSON.stringify(record))
+  if (currentPlan.value.chaping_ad) {
+    currentPlan.value = {
+      ...currentPlan.value,
+      ...currentPlan.value.chaping_ad,
+    }
+  }
+  delete currentPlan.value.chaping_ad
+  addPlanOpen.value = true
+}
 // onMounted(() => {
 //   getData(searchParams.value)
 // })
@@ -269,8 +295,8 @@ function closeAddStyle(value: boolean) {
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <div class="option">
-              <span>复用配置新建</span>
-              <span>编辑</span>
+              <span @click="handleCopy(record)">复用配置新建</span>
+              <span @click="handleEdit(record)">编辑</span>
               <span>删除</span>
             </div>
           </template>
@@ -283,7 +309,7 @@ function closeAddStyle(value: boolean) {
       </a-table>
     </a-card>
     <a-card v-else style="margin-bottom: 30px;">
-      <AddPlan @close="closeAddStyle" />
+      <AddPlan :current="currentPlan" @close="closeAddPlan" />
     </a-card>
   </page-container>
 </template>

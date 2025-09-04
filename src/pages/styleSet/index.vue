@@ -10,24 +10,24 @@ interface SearchFormState {
 }// 检索表单数据类型
 interface ConfigListData {
   data: Array<{
-    styleID: string
-    styleName: string
+    style_id: string
     styleType: string
+    base_id?: number
     difference: string
     preview: string
     creator: string
     createTime: string
     currentEditor: string
     editTime: string
+    [key: string]: string | number | undefined
   }>
 }// 请求接口数据类型
 
 const response = ref<ConfigListData>({
   data: [
     {
-      styleID: '1',
-      styleName: '样式1',
-      styleType: '文本样式',
+      style_id: '样式1',
+      styleType: '原生',
       difference: '样式1的描述',
       preview: '/src/assets/images/style_preview.png',
       creator: '张三',
@@ -36,20 +36,23 @@ const response = ref<ConfigListData>({
       editTime: '2023-01-02',
     },
     {
-      styleID: '2',
-      styleName: '样式2',
-      styleType: '图片样式',
+      style_id: '样式2',
+      base_id: 304,
+      styleType: '自定义',
       difference: '样式2的描述',
       preview: '/src/assets/images/style_preview.png',
       creator: '王五',
       createTime: '2023-01-03',
       currentEditor: '赵六',
       editTime: '2023-01-04',
+      bg_start_color: '#fffff',
+      bg_end_color: '#eeeeee',
+      info_bg_color: '#ffffff',
+      info_bg_radius: '10',
     },
     {
-      styleID: '3',
-      styleName: '样式3',
-      styleType: '视频样式',
+      style_id: '样式3',
+      styleType: '原生',
       difference: '样式3的描述',
       preview: '/src/assets/images/style_preview.png',
       creator: '钱七',
@@ -60,51 +63,60 @@ const response = ref<ConfigListData>({
   ],
 })// 请求接口数据
 
-const columns = [
+const columns: any = [
   {
     title: '样式名称',
-    dataIndex: 'styleName',
-    key: 'styleName',
+    dataIndex: 'style_id',
+    key: 'style_id',
+    align: 'center',
   },
   {
     title: '样式类型',
     dataIndex: 'styleType',
     key: 'styleType',
+    align: 'center',
   },
   {
     title: '与基准差异',
     dataIndex: 'difference',
     key: 'difference',
+    align: 'center',
   },
   {
     title: '预览图/基准图',
     dataIndex: 'preview',
     key: 'preview',
+    align: 'center',
   },
   {
     title: '创建人',
     dataIndex: 'creator',
     key: 'creator',
+    align: 'center',
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
     key: 'createTime',
+    align: 'center',
   },
   {
     title: '最新修改人',
     dataIndex: 'currentEditor',
     key: 'currentEditor',
+    align: 'center',
   },
   {
     title: '最新修改时间',
     dataIndex: 'editTime',
     key: 'editTime',
+    align: 'center',
   },
   {
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
+    align: 'center',
   },
 ]// 表格列头
 
@@ -140,6 +152,8 @@ const styleTypeOptions = [
   },
 ]
 
+const currentStyle = ref()// 当前选中样式
+
 function handleTableChange(event: any) {
   pagination.value = event
 }// 表格分页改变
@@ -158,6 +172,22 @@ function resetSearch() {
 
 function closeAddStyle(value: boolean) {
   addStyleOpen.value = value
+  currentStyle.value = null
+}
+
+function handleEdit(record: any) {
+  if (record.styleType === '自定义') {
+    currentStyle.value = record
+    addStyleOpen.value = true
+  }
+}
+
+function handleCopy(record: any) {
+  if (record.styleType === '自定义') {
+    currentStyle.value = JSON.parse(JSON.stringify(record))
+    currentStyle.value.style_id = ''
+    addStyleOpen.value = true
+  }
 }
 
 // onMounted(() => {
@@ -212,11 +242,11 @@ function closeAddStyle(value: boolean) {
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <div class="option">
-              <div class="link-app">
+              <div class="link-app" @click="handleCopy(record)">
                 <EyeOutlined />
                 <span>复用配置新建</span>
               </div>
-              <div class="link-app">
+              <div class="link-app" @click="handleEdit(record)">
                 <FormOutlined />
                 <span>编辑</span>
               </div>
@@ -232,7 +262,7 @@ function closeAddStyle(value: boolean) {
       </a-table>
     </a-card>
     <a-card v-else style="margin-bottom: 30px;">
-      <AddStyle @close="closeAddStyle" />
+      <AddStyle :current="currentStyle" @close="closeAddStyle" />
     </a-card>
   </page-container>
 </template>

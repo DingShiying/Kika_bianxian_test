@@ -1,6 +1,7 @@
 <script setup lang='ts' name='addPlan'>
 import { reactive, ref, watch } from 'vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
 
 interface FormState {
   id: string
@@ -17,12 +18,19 @@ interface FormState {
   load_prob?: number
   limit?: number
 }
+interface Business_apps_check {
+  checkAll: boolean
+  expanded: boolean
+  checkList: Array<boolean>
+}
 
+const { current } = defineProps(['current'])
 const emit = defineEmits(['close'])
+
 const openHighSet = ref(false)
 
 const formRef = ref()
-const formState = reactive<FormState>({
+const formState = reactive<FormState>(current || {
   id: '',
   desc: '',
   count: 1,
@@ -35,7 +43,13 @@ const formState = reactive<FormState>({
   prob: 100,
   limit: 0,
 })
-
+const business_apps_check = ref<Business_apps_check[]>([{
+  checkAll: false,
+  expanded: false,
+  checkList: [],
+}])// 表示业务组下属app是否全选
+const selectAPPs = reactive<any>([])
+const showModal = ref(false)
 const rules: any = {
   id: [{ required: true, message: '加载计划ID不能为空', trigger: 'blur' }],
   prob: [{
@@ -48,7 +62,6 @@ const rules: any = {
     trigger: 'blur',
   }],
 }
-
 const load_strategyOptions = [
   {
     label: '价格优先(priority)',
@@ -91,30 +104,263 @@ const load_strategyOptions = [
     value: 22,
   },
 ]
+const idDisabled = ref(false)
+if (current) {
+  if (current.id) {
+    idDisabled.value = true
+  }
+}
+
+const appList = [
+  {
+    'business': '电商业务组',
+    'apps': [
+      {
+        'appName': '哈哈哈',
+        'system': 'iOS',
+        'package': 'com.jiankangguanli.mall',
+        'icon': '/src/assets/images/icon1.png',
+      },
+      {
+        'appName': '哦哦哦',
+        'system': 'android',
+        'package': 'com.aabjhsba.mall',
+        'icon': '/src/assets/images/icon2.png',
+      },
+      {
+        'appName': '点点滴滴',
+        'system': 'iOS',
+        'package': 'com.sasasas.mall',
+        'icon': '/src/assets/images/icon3.png',
+      },
+      {
+        'appName': '呃呃呃呃',
+        'system': 'android',
+        'package': 'com.sasasasai.mall',
+        'icon': '/src/assets/images/icon4.png',
+      },
+    ],
+  },
+  {
+    'business': '电商健康组',
+    'apps': [
+      {
+        'appName': '哈哈哈1',
+        'system': 'iOS',
+        'package': 'com.jiankangguanli.mall',
+        'icon': '/src/assets/images/icon1.png',
+      },
+      {
+        'appName': '哦哦哦1',
+        'system': 'android',
+        'package': 'com.aabjhsba.mall',
+        'icon': '/src/assets/images/icon2.png',
+      },
+      {
+        'appName': '点点滴滴1',
+        'system': 'iOS',
+        'package': 'com.sasasas.mall',
+        'icon': '/src/assets/images/icon3.png',
+      },
+      {
+        'appName': '呃呃呃呃1',
+        'system': 'android',
+        'package': 'com.sasasasai.mall',
+        'icon': '/src/assets/images/icon4.png',
+      },
+    ],
+  },
+  {
+    'business': '电商哈哈组',
+    'apps': [
+      {
+        'appName': '哈哈哈2',
+        'system': 'iOS',
+        'package': 'com.jiankangguanli.mall',
+        'icon': '/src/assets/images/icon1.png',
+      },
+      {
+        'appName': '哦哦哦2',
+        'system': 'android',
+        'package': 'com.aabjhsba.mall',
+        'icon': '/src/assets/images/icon2.png',
+      },
+      {
+        'appName': '点点滴滴2',
+        'system': 'iOS',
+        'package': 'com.sasasas.mall',
+        'icon': '/src/assets/images/icon3.png',
+      },
+      {
+        'appName': '呃呃呃呃2',
+        'system': 'android',
+        'package': 'com.sasasasai.mall',
+        'icon': '/src/assets/images/icon4.png',
+      },
+    ],
+  },
+  {
+    'business': '电商呼呼组',
+    'apps': [
+      {
+        'appName': '哈哈哈3',
+        'system': 'iOS',
+        'package': 'com.jiankangguanli.mall',
+        'icon': '/src/assets/images/icon1.png',
+      },
+      {
+        'appName': '哦哦哦3',
+        'system': 'android',
+        'package': 'com.aabjhsba.mall',
+        'icon': '/src/assets/images/icon2.png',
+      },
+      {
+        'appName': '点点滴滴3',
+        'system': 'iOS',
+        'package': 'com.sasasas.mall',
+        'icon': '/src/assets/images/icon3.png',
+      },
+      {
+        'appName': '呃呃呃呃3',
+        'system': 'android',
+        'package': 'com.sasasasai.mall',
+        'icon': '/src/assets/images/icon4.png',
+      },
+    ],
+  },
+]
+reset()
 
 function handleOk() {
   formRef.value
     .validate()
     .then(() => {
-      console.log('values', formState)
+      const style: any = {}
+      for (const key in formState) {
+        // @ts-expect-error:忽略
+        if (/^\d+$/.test(formState[key]) && key !== 'id') {
+        // @ts-expect-error:忽略
+          style[key] = Number(formState[key])
+        }
+        // @ts-expect-error:忽略
+        else if (formState[key]) {
+        // @ts-expect-error:忽略
+          style[key] = formState[key]
+        }
+      }
+      console.log(style)
+      message.success('加载计划创建成功')
+      emit('close', false)
+      // console.log(formState)
     })
     .catch((error: any) => {
       console.error('表单填写错误:', error)
     })
 }
+function toModal() {
+  formRef.value
+    .validate()
+    .then(() => {
+      showModal.value = true
+    })
+    .catch((error: any) => {
+      console.log('error', error)
+    })
+}
+function reset() {
+  const checkState: any = []
+  appList.forEach((item: any) => {
+    const currentState = {
+      checkAll: false,
+      extend: false,
+      checkList: [],
+    }
+    item.apps.forEach(() => {
+      // @ts-expect-error:忽略
+      currentState.checkList.push(false)
+    })
+    checkState.push(currentState)
+  })
+  business_apps_check.value = checkState
+}
+function businessAppCheckAll(index: number) {
+  business_apps_check.value[index].checkAll = !business_apps_check.value[index].checkAll
+  if (business_apps_check.value[index].checkAll) {
+    business_apps_check.value[index].checkList = business_apps_check.value[index].checkList.map(() => true)
+    appList[index].apps.forEach((item: any) => {
+      if (!isSelect(item.appName)) {
+        selectAPPs.push({
+          business: appList[index].business,
+          ...item,
+        })
+      }
+    })
+  }
+  else {
+    business_apps_check.value[index].checkList = business_apps_check.value[index].checkList.map(() => false)
+    cancelAPP('business', appList[index].business)
+  }
+}// 全选/全不选业务组下属APP
+function cancelAPP(type: string, target: string) {
+  if (type === 'app') {
+    Object.assign(selectAPPs, selectAPPs.filter((app: any) => app.appName !== target))
+  }
+  else {
+    Object.assign(selectAPPs, selectAPPs.filter((app: any) => app.business !== target))
+  }
+}// 取消选择APP(以业务组为单位/以APP为单位)
 
-// watch(() => formState.scatter_loading, (newValue) => {
-//   if (newValue) {
-//     formState.offset = 0
-//     formState.prob = 100
-//     formState.limit = 0
-//   }
-//   else {
-//     delete formState.offset
-//     delete formState.prob
-//     delete formState.limit
-//   }
-// })
+function isSelect(appName: string): boolean {
+  return selectAPPs.some((app: any) =>
+    app.appName === appName,
+  )
+}// 判断APP是否被选择
+
+function selectThisApp(businessIndex: number, appIndex: number) {
+  if (business_apps_check.value[businessIndex].checkList[appIndex]) {
+    business_apps_check.value[businessIndex].checkList[appIndex] = false
+    business_apps_check.value[businessIndex].checkAll = false
+    cancelAPP('app', appList[businessIndex].apps[appIndex].appName)
+  }
+  else {
+    business_apps_check.value[businessIndex].checkList[appIndex] = true
+    if (!isSelect(appList[businessIndex].apps[appIndex].appName)) {
+      selectAPPs.push({
+        business: appList[businessIndex].business,
+        ...appList[businessIndex].apps[appIndex],
+      })
+      let businessState = true
+      business_apps_check.value[businessIndex].checkList.forEach((item: boolean) => {
+        if (!item) {
+          businessState = false
+        }
+      })
+      business_apps_check.value[businessIndex].checkAll = businessState
+    }
+  }
+}
+function handleToApp() {
+  if (selectAPPs.length > 0) {
+    console.log(selectAPPs)
+    message.success('成功创建样式并分发给APP')
+    showModal.value = false
+    while (selectAPPs.length) {
+      selectAPPs.pop()
+    }
+    reset()
+    emit('close', false)
+  }
+  else {
+    message.warning('请至少选择一个APP')
+  }
+}
+function handleToAppCancel() {
+  while (selectAPPs.length) {
+    selectAPPs.pop()
+  }
+  reset()
+  showModal.value = false
+}
 
 watch(() => formState.load_strategy, (newValue) => {
   if (newValue === 11) {
@@ -140,7 +386,7 @@ watch(() => formState.load_strategy, (newValue) => {
     <div class="containner">
       <a-form ref="formRef" :model="formState" :rules="rules" layout="vertical">
         <a-form-item label="加载计划ID" name="id">
-          <a-input v-model:value="formState.id" placeholder="请输入加载计划ID" />
+          <a-input v-model:value="formState.id" placeholder="请输入加载计划ID" :disabled="idDisabled" />
         </a-form-item>
 
         <a-form-item label="描述" name="desc">
@@ -224,7 +470,7 @@ watch(() => formState.load_strategy, (newValue) => {
         <a-button type="primary" @click="handleOk">
           确认创建
         </a-button>
-        <a-button type="primary">
+        <a-button type="primary" @click="toModal">
           创建并分发更多APP
         </a-button>
         <a-button @click="() => emit('close', false)">
@@ -233,6 +479,70 @@ watch(() => formState.load_strategy, (newValue) => {
       </div>
     </div>
   </div>
+  <a-modal
+    v-model:open="showModal" title="分配广告样式到APP" style="top:20vh;width:70vw;" :mask-closable="false"
+  >
+    <template #footer>
+      <a-button key="back" @click="handleToAppCancel">
+        取消
+      </a-button>
+      <a-button key="submit" type="primary" @click="handleToApp">
+        确定
+      </a-button>
+    </template>
+    <div class="select_app">
+      <div class="left">
+        <div v-for="(item, index) in appList" :key="index" class="business-apps">
+          <a-checkbox v-model:checked="business_apps_check[index].checkAll" @click="businessAppCheckAll(index)">
+            <div class="checkbox">
+              <img src="/src/assets/images/business2.svg">
+              <div class="text">
+                <div class="name">
+                  {{ item.business }}
+                </div>
+                <span>{{ item.apps.length }}个APP</span>
+              </div>
+            </div>
+          </a-checkbox>
+          <div class="extend" @click="business_apps_check[index].expanded = !business_apps_check[index].expanded">
+            {{ business_apps_check[index].expanded ? '收起' : '展开' }}
+          </div>
+          <div v-if="business_apps_check[index].expanded" class="inner-apps">
+            <a-checkbox
+              v-for="(app, index2) in item.apps" :key="index2"
+              v-model:checked="business_apps_check[index].checkList[index2]" @click="selectThisApp(index, index2)"
+            >
+              <div class="inner-app-details">
+                <img :src="app.icon">
+                <div class="text">
+                  <div class="name">
+                    {{ app.appName }}
+                    <img :src="`/src/assets/images/${app.system}.svg`">
+                  </div>
+                  <span>{{ app.package }}</span>
+                </div>
+              </div>
+            </a-checkbox>
+          </div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="title">
+          已选择
+        </div>
+        <div v-for="(app, index) in selectAPPs" :key="index" class="check-app">
+          <img :src="app.icon">
+          <div class="text">
+            <div class="name">
+              {{ app.appName }}
+              <img :src="`/src/assets/images/${app.system}.svg`">
+            </div>
+            <span>{{ app.package }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-modal>
 </template>
 
 <style scoped lang='scss'>
@@ -295,6 +605,222 @@ watch(() => formState.load_strategy, (newValue) => {
       .ant-btn {
         &:nth-of-type(2) {
           margin: 0 20px;
+        }
+      }
+    }
+  }
+}
+.select_app {
+  width: 100%;
+  margin-top :20px;
+  padding: 0 10px;
+  display: flex;
+
+  .left {
+    width: 50%;
+    max-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: auto;
+    overflow-x: hidden;
+
+    /* 设置滚动条的宽度 */
+    &::-webkit-scrollbar {
+      width: 3px;
+      /* 水平滚动条的宽度 */
+      height: 3px;
+      /* 垂直滚动条的高度 */
+    }
+
+    /* 设置滚动条轨道的样式 */
+    &::-webkit-scrollbar-track {
+      background: transparent;
+      /* 轨道背景颜色 */
+      border-radius: 10px;
+      /* 轨道的圆角 */
+    }
+
+    /* 设置滚动条滑块的样式 */
+    &::-webkit-scrollbar-thumb {
+      background: #888;
+      /* 滑块颜色 */
+      border-radius: 10px;
+      /* 滑块的圆角 */
+    }
+
+    /* 设置滚动条滑块在悬停时的样式 */
+    &::-webkit-scrollbar-thumb:hover {
+      background: #555;
+      /* 悬停时的滑块颜色 */
+    }
+
+    .business-apps {
+      width: 100%;
+      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+
+      .checkbox {
+        width: 20vw;
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+
+        img {
+          height: 40px;
+          width: 40px;
+          object-fit: contain;
+          margin-right: 15px;
+        }
+
+        .text {
+          display: flex;
+          flex-direction: column;
+
+          .name {
+            font-size: 18px;
+            font-weight: bold;
+          }
+
+          span {
+            font-size: 12px;
+            color: grey;
+          }
+        }
+      }
+
+      .extend {
+        margin-right: 20px;
+        padding-left: 10px;
+        border-left: 1px solid #ccc;
+        color: #4689d4;
+        cursor: pointer;
+      }
+
+      .inner-apps {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        padding-left: 30px;
+
+        .inner-app-details {
+          width: 20vw;
+          display: flex;
+          align-items: center;
+          margin-bottom: 10px;
+
+          img {
+            height: 30px;
+            width: 30px;
+            object-fit: contain;
+            margin-right: 10px;
+          }
+
+          .text {
+            display: flex;
+            flex-direction: column;
+
+            .name {
+              font-size: 14px;
+              font-weight: bold;
+
+              img {
+                width: 15px;
+                height: 15px;
+                margin-left: 5px;
+                vertical-align: top;
+              }
+            }
+
+            span {
+              font-size: 12px;
+              color: grey;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .right {
+    width: 50%;
+    max-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: auto;
+    overflow-x: hidden;
+
+    /* 设置滚动条的宽度 */
+    &::-webkit-scrollbar {
+      width: 3px;
+      /* 水平滚动条的宽度 */
+      height: 3px;
+      /* 垂直滚动条的高度 */
+    }
+
+    /* 设置滚动条轨道的样式 */
+    &::-webkit-scrollbar-track {
+      background: transparent;
+      /* 轨道背景颜色 */
+      border-radius: 10px;
+      /* 轨道的圆角 */
+    }
+
+    /* 设置滚动条滑块的样式 */
+    &::-webkit-scrollbar-thumb {
+      background: #888;
+      /* 滑块颜色 */
+      border-radius: 10px;
+      /* 滑块的圆角 */
+    }
+
+    /* 设置滚动条滑块在悬停时的样式 */
+    &::-webkit-scrollbar-thumb:hover {
+      background: #555;
+      /* 悬停时的滑块颜色 */
+    }
+
+    .title {
+      color: grey;
+      margin-bottom: 10px;
+    }
+
+    .check-app {
+      width: 20vw;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+
+      img {
+        height: 30px;
+        width: 30px;
+        object-fit: contain;
+        margin-right: 10px;
+      }
+
+      .text {
+        display: flex;
+        flex-direction: column;
+
+        .name {
+          font-size: 14px;
+          font-weight: bold;
+
+          img {
+            width: 15px;
+            height: 15px;
+            margin-left: 5px;
+            vertical-align: top;
+          }
+        }
+
+        span {
+          font-size: 12px;
+          color: grey;
         }
       }
     }

@@ -1,5 +1,5 @@
 <script setup lang="ts" name="adSourceSet">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, readonly, ref } from 'vue'
 import { EyeOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import addAds from './components/addAds.vue'
 
@@ -40,7 +40,7 @@ interface ADSData {
   }>
 }// 请求接口数据类型
 
-const response = ref<ADSData>({
+const data = ref<ADSData>({
   data: [
     {
       'id': 'tm_unlock_rw_id',
@@ -149,6 +149,8 @@ const response = ref<ADSData>({
   ],
 })// 请求接口数据
 
+const response = readonly(data)
+
 const adsList = computed(() => {
   const list = []
   for (const item of response.value.data) {
@@ -229,7 +231,7 @@ const columns: any = [
 ]// 表格列头
 
 const loading = ref(false) // 表格加载状态
-const addPlanOpen = ref(false)// 新增样式弹窗状态
+const addAdsOpen = ref(false)// 新增样式弹窗状态
 
 const pagination = ref({
   current: 1,
@@ -245,6 +247,8 @@ const searchFormState: SearchFormState = reactive({
   format: undefined,
   value: '',
 })// 表单数据
+
+const currentAds = ref()// 当前广告源
 
 const formatOptions = [
   {
@@ -335,7 +339,20 @@ function resetSearch() {
 }
 
 function closeAddStyle(value: boolean) {
-  addPlanOpen.value = value
+  addAdsOpen.value = value
+  currentAds.value = null
+}
+
+function handleEdit(record: any) {
+  currentAds.value = response.value.data.find((item: any) => item.id === record.id)
+  currentAds.value.id = record.id
+  addAdsOpen.value = true
+}
+
+function handleCopy(record: any) {
+  currentAds.value = JSON.parse(JSON.stringify(response.value.data.find((item: any) => item.id === record.id)))
+  currentAds.value.id = ''
+  addAdsOpen.value = true
 }
 
 // onMounted(() => {
@@ -346,7 +363,7 @@ function closeAddStyle(value: boolean) {
 <template>
   <page-container>
     <template #extra>
-      <a-button type="primary" :disabled="addPlanOpen" @click="() => addPlanOpen = true">
+      <a-button type="primary" :disabled="addAdsOpen" @click="() => addAdsOpen = true">
         <template #icon>
           <PlusOutlined />
         </template>
@@ -354,7 +371,7 @@ function closeAddStyle(value: boolean) {
       </a-button>
     </template>
 
-    <a-card v-if="!addPlanOpen">
+    <a-card v-if="!addAdsOpen">
       <div class="search-part">
         <a-form ref="searchFormRef" :model="searchFormState" layout="inline">
           <a-form-item label="广告源ID" name="id">
@@ -406,11 +423,11 @@ function closeAddStyle(value: boolean) {
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <div class="option">
-              <div class="option-item">
+              <div class="option-item" @click="handleCopy(record)">
                 <EyeOutlined />
                 <span>复用配置新建</span>
               </div>
-              <div class="option-item">
+              <div class="option-item" @click="handleEdit(record)">
                 <FormOutlined />
                 <span>编辑</span>
               </div>
@@ -426,7 +443,7 @@ function closeAddStyle(value: boolean) {
       </a-table>
     </a-card>
     <a-card v-else style="margin-bottom: 30px;">
-      <addAds @close="closeAddStyle" />
+      <addAds :current-ads="currentAds" @close="closeAddStyle" />
     </a-card>
   </page-container>
 </template>

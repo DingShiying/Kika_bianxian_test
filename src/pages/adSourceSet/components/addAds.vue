@@ -35,10 +35,36 @@ interface FormState {
   ads: Array<Array<AdsItem>>
 }
 
+const { currentAds } = defineProps(['currentAds'])
 const emit = defineEmits(['close'])
 
+const isDisabled = ref(false)
+if (currentAds) {
+  currentAds.ads.forEach((item: AdsItem[]) => {
+    item.forEach((element: AdsItem) => {
+      if (!element.banner_extra) {
+        element.banner_extra = {
+          banner_type: 0,
+        }
+      }
+      if (!element.range) {
+        element.range = {
+          first: undefined,
+          last: undefined,
+          retry: undefined,
+          type: undefined,
+          params: undefined,
+        }
+      }
+    })
+  })
+  if (currentAds.id) {
+    isDisabled.value = true
+  }
+}
+
 const formRef = ref()
-const formState = reactive<FormState>({
+const formState = reactive<FormState>(currentAds || {
   id: '',
   desc: '',
   ads: [
@@ -186,7 +212,29 @@ function addAdUnit(index: number) {
   })
 }
 function handleOk() {
-  console.log(formState)
+  formRef.value
+    .validate()
+    .then(() => {
+      const style: any = {}
+      for (const key in formState) {
+        // @ts-expect-error:忽略
+        if (/^\d+$/.test(formState[key]) && key !== 'id') {
+        // @ts-expect-error:忽略
+          style[key] = Number(formState[key])
+        }
+        // @ts-expect-error:忽略
+        else if (formState[key]) {
+        // @ts-expect-error:忽略
+          style[key] = formState[key]
+        }
+      }
+      console.log(style)
+      message.success('广告源ads创建成功')
+      emit('close', false)
+    })
+    .catch((error: any) => {
+      console.log('error', error)
+    })
 }
 </script>
 
@@ -206,7 +254,7 @@ function handleOk() {
         <div class="top">
           <div class="left">
             <a-form-item label="广告源ID" name="id">
-              <a-input v-model:value="formState.id" placeholder="请输入广告源ID" style="width:25vw" />
+              <a-input v-model:value="formState.id" placeholder="请输入广告源ID" style="width:25vw" :disabled="isDisabled" />
             </a-form-item>
 
             <a-form-item label="广告源描述" name="desc">
@@ -233,46 +281,42 @@ function handleOk() {
                     <div class="inner-form">
                       <a-form-item label="广告单元格式" name="format">
                         <a-select
-                          v-model:value="adItem.format" placeholder="请选择广告类型"
-                          style="width:30vw;" :options="formatOptions"
+                          v-model:value="adItem.format" placeholder="请选择广告类型" style="width:30vw;"
+                          :options="formatOptions"
                         />
                       </a-form-item>
 
                       <a-form-item label="优先级" name="priority">
                         <a-input
-                          v-model:value="adItem.priority"
-                          placeholder="请输入广告优先级（值越大优先级越高）默认为0" style="width:30vw;"
-                          type="number"
+                          v-model:value="adItem.priority" placeholder="请输入广告优先级（值越大优先级越高）默认为0"
+                          style="width:30vw;" type="number"
                         />
                       </a-form-item>
                     </div>
                     <div class="inner-form">
                       <a-form-item label="中介广告源" name="source">
                         <a-select
-                          v-model:value="adItem.source" placeholder="请选择广告源"
-                          style="width:30vw;" :options="sourceOptions"
+                          v-model:value="adItem.source" placeholder="请选择广告源" style="width:30vw;"
+                          :options="sourceOptions"
                         />
                       </a-form-item>
 
                       <a-form-item label="广告单元" name="value">
                         <a-select
-                          v-model:value="adItem.value" placeholder="请选择广告单元"
-                          style="width:30vw;" :options="valueOptions"
+                          v-model:value="adItem.value" placeholder="请选择广告单元" style="width:30vw;"
+                          :options="valueOptions"
                         />
                       </a-form-item>
                     </div>
                     <div class="inner-form">
                       <a-form-item label="场景ID" name="scenarios_id">
-                        <a-input
-                          v-model:value="adItem.scenarios_id" placeholder="请输入场景ID"
-                          style="width:30vw;"
-                        />
+                        <a-input v-model:value="adItem.scenarios_id" placeholder="请输入场景ID" style="width:30vw;" />
                       </a-form-item>
 
                       <a-form-item label="banner类型" name="banner_type">
                         <a-select
-                          v-model:value="adItem.banner_extra.banner_type"
-                          placeholder="请选择banner类型" style="width:30vw;"
+                          v-model:value="adItem.banner_extra.banner_type" placeholder="请选择banner类型"
+                          style="width:30vw;"
                         >
                           <a-select-option :value="1">
                             折叠banner
@@ -294,16 +338,14 @@ function handleOk() {
                         <div class="inner-form">
                           <a-form-item label="价值范围开始值" name="first">
                             <a-input
-                              v-model:value="adItem.range.first"
-                              placeholder="请输入价值范围开始值" style="width:30vw;"
+                              v-model:value="adItem.range.first" placeholder="请输入价值范围开始值" style="width:30vw;"
                               type="number"
                             />
                           </a-form-item>
 
                           <a-form-item label="价值范围结束值" name="last">
                             <a-input
-                              v-model:value="adItem.range.last"
-                              placeholder="请输入价值范围结束值" style="width:30vw;"
+                              v-model:value="adItem.range.last" placeholder="请输入价值范围结束值" style="width:30vw;"
                               type="number"
                             />
                           </a-form-item>
@@ -311,17 +353,13 @@ function handleOk() {
                         <div class="inner-form">
                           <a-form-item label="加载失败重试总数" name="retry">
                             <a-input
-                              v-model:value="adItem.range.retry"
-                              placeholder="请输入加载失败重试总数" style="width:30vw;"
+                              v-model:value="adItem.range.retry" placeholder="请输入加载失败重试总数" style="width:30vw;"
                               type="number"
                             />
                           </a-form-item>
 
                           <a-form-item label="分层类型" name="type">
-                            <a-select
-                              v-model:value="adItem.range.type"
-                              placeholder="请选择分层类型" style="width:30vw;"
-                            >
+                            <a-select v-model:value="adItem.range.type" placeholder="请选择分层类型" style="width:30vw;">
                               <a-select-option :value="1">
                                 默认分层
                               </a-select-option>
@@ -339,8 +377,8 @@ function handleOk() {
                         <div class="inner-form">
                           <a-form-item label="展示上限" name="capping">
                             <a-input
-                              v-model:value="adItem.capping" placeholder="请输入展示上限"
-                              style="width:50vw;" type="number"
+                              v-model:value="adItem.capping" placeholder="请输入展示上限" style="width:50vw;"
+                              type="number"
                             />
                           </a-form-item>
                         </div>
@@ -352,8 +390,8 @@ function handleOk() {
                         <div class="inner-form">
                           <a-form-item label="默认价格" name="default_revenue">
                             <a-input
-                              v-model:value="adItem.default_revenue" placeholder="请输入默认价格"
-                              style="width:50vw;" type="number"
+                              v-model:value="adItem.default_revenue" placeholder="请输入默认价格" style="width:50vw;"
+                              type="number"
                             />
                           </a-form-item>
                         </div>
@@ -380,116 +418,116 @@ function handleOk() {
 
 <style scoped lang='scss'>
 .add-style {
+  width: 100%;
+
+  .header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+
+    span {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .ant-btn {
+      position: absolute;
+      left: 0px;
+    }
+  }
+
+  .containner {
     width: 100%;
 
-    .header {
+    .form-part {
+      width: 100%;
+
+      :deep(.ant-form-item-row) {
+        flex-direction: column;
+        margin-bottom: 10px;
+
+        .ant-form-item-label {
+          text-align: left;
+
+          label {
+            height: fit-content;
+          }
+        }
+      }
+
+      .top {
+        height: 88px;
         width: 100%;
         display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 20px;
-        position: relative;
+        justify-content: space-between;
 
-        span {
-            font-size: 18px;
-            font-weight: bold;
+        .left {
+          display: flex;
         }
 
         .ant-btn {
-            position: absolute;
-            left: 0px;
+          margin-top: 22px;
         }
+      }
     }
 
-    .containner {
-        width: 100%;
+    .footer {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-top: 20px;
 
-        .form-part {
-            width: 100%;
-
-            :deep(.ant-form-item-row) {
-                flex-direction: column;
-                margin-bottom: 10px;
-
-                .ant-form-item-label {
-                    text-align: left;
-
-                    label {
-                        height: fit-content;
-                    }
-                }
-            }
-
-            .top {
-                height: 88px;
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-
-                .left {
-                    display: flex;
-                }
-
-                .ant-btn {
-                    margin-top: 22px;
-                }
-            }
+      .ant-btn {
+        &:last-of-type {
+          margin-left: 10px;
         }
-
-        .footer {
-            width: 100%;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            margin-top: 20px;
-
-            .ant-btn {
-                &:last-of-type{
-                    margin-left: 10px;
-                }
-            }
-        }
+      }
     }
+  }
 }
 
 .form-collapse {
+  width: 100%;
+
+  :deep(.ant-collapse-header) {
+    align-items: center;
+  }
+
+  .inner-form {
     width: 100%;
+    // height: 88px;
+    display: flex;
+    justify-content: space-between;
+  }
 
-    :deep(.ant-collapse-header) {
-        align-items: center;
+  .high-set {
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #147eff;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .high {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    margin-bottom: 10px;
+
+    &:last-of-type {
+      margin-bottom: 0;
     }
 
-    .inner-form {
-        width: 100%;
-        // height: 88px;
-        display: flex;
-        justify-content: space-between;
+    .title {
+      font-size: 18px;
+      margin-bottom: 10px;
     }
-
-    .high-set {
-        font-size: 17px;
-        font-weight: bold;
-        margin-bottom: 10px;
-        color: #147eff;
-        cursor: pointer;
-        text-align: center;
-    }
-
-    .high {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #e8e8e8;
-        border-radius: 10px;
-        margin-bottom: 10px;
-
-        &:last-of-type {
-            margin-bottom: 0;
-        }
-
-        .title {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-    }
+  }
 }
 </style>

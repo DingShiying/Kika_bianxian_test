@@ -188,9 +188,6 @@ const rules: any = {
   ],
   roleScore: [{ required: true, message: '显示顺序不能为空', trigger: 'blur', type: 'string' }, {
     validator: (_: any, value: any) => {
-      if (value === null || value === undefined || value === '') {
-        return Promise.reject(new Error('显示顺序不能为空'))
-      }
       if (value <= 0) {
         return Promise.reject(new Error('显示顺序必须为正数'))
       }

@@ -425,46 +425,48 @@ function OIDChange(OIDName: string) {
 
     <div class="containner">
       <a-form
-        ref="formRef" :model="formState" :rules="rules" :label-col="{ style: { width: '80px' } }"
-        layout="inline" class="form-part"
+        ref="formRef" :model="formState" :rules="rules" :label-col="{ style: { width: '80px' } }" layout="inline"
+        class="form-part"
       >
-        <a-form-item label="配置名称" name="configName">
-          <a-input v-model:value="formState.configName" placeholder="请输入配置名称" />
-        </a-form-item>
+        <a-space class="top">
+          <a-form-item label="配置名称" name="configName">
+            <a-input v-model:value="formState.configName" placeholder="请输入配置名称" />
+          </a-form-item>
 
-        <a-form-item label="描述" name="describe">
-          <a-input v-model:value="formState.describe" placeholder="请输入配置描述" />
-        </a-form-item>
+          <a-form-item label="描述" name="describe">
+            <a-input v-model:value="formState.describe" placeholder="请输入配置描述" />
+          </a-form-item>
 
-        <a-form-item label="备注" name="user_describe">
-          <a-input v-model:value="formState.user_describe" placeholder="请输入配置备注" />
-        </a-form-item>
+          <a-form-item label="备注" name="user_describe">
+            <a-input v-model:value="formState.user_describe" placeholder="请输入配置备注" />
+          </a-form-item>
 
-        <a-form-item label="版本" name="version">
-          <a-input v-model:value="formState.version" placeholder="请输入配置版本" type="number" />
-        </a-form-item>
+          <a-form-item label="版本" name="version">
+            <a-input v-model:value="formState.version" placeholder="请输入配置版本" type="number" />
+          </a-form-item>
 
-        <a-form-item label="复用配置" name="copyConfig">
-          <a-select v-model:value="formState.copyConfig" placeholder="请选择复用配置">
-            <a-select-option value="noCopy">
-              不使用
-            </a-select-option>
-            <a-select-option value="jsonCopy">
-              适用JSON填写
-            </a-select-option>
-            <a-select-opt-group label="复用平台现存配置">
-              <a-select-option value="基础配置">
-                基础配置
+          <a-form-item label="复用配置" name="copyConfig">
+            <a-select v-model:value="formState.copyConfig" placeholder="请选择复用配置">
+              <a-select-option value="noCopy">
+                不使用
               </a-select-option>
-              <a-select-option value="分地区测试">
-                分地区测试
+              <a-select-option value="jsonCopy">
+                适用JSON填写
               </a-select-option>
-              <a-select-option value="	呵呵测试">
-                呵呵测试
-              </a-select-option>
-            </a-select-opt-group>
-          </a-select>
-        </a-form-item>
+              <a-select-opt-group label="复用平台现存配置">
+                <a-select-option value="基础配置">
+                  基础配置
+                </a-select-option>
+                <a-select-option value="分地区测试">
+                  分地区测试
+                </a-select-option>
+                <a-select-option value="	呵呵测试">
+                  呵呵测试
+                </a-select-option>
+              </a-select-opt-group>
+            </a-select>
+          </a-form-item>
+        </a-space>
 
         <a-space class="condition">
           <div class="label">
@@ -473,7 +475,9 @@ function OIDChange(OIDName: string) {
           <div v-for="(item, index) in formState.condition" :key="index" class="level-select">
             <CloseCircleOutlined class="condition-delete" @click="delCondition(index)" />
             <a-select
-              v-model:value="item.type" style="width:25%;text-align: center;" :options="typeOptions"
+              v-model:value="item.type"
+              style="width:25%; text-align: center;"
+              :options="typeOptions"
               :bordered="false" placeholder="请选择条件类型" @change="changeType(index)"
             >
               <template #suffixIcon>
@@ -482,9 +486,9 @@ function OIDChange(OIDName: string) {
             </a-select>
             <div v-show="item.type" class="sub-select">
               <a-select
-                v-show="item.type === 'BuildID' || item.type === 'area'"
-                v-model:value="item.symbol" :disabled="item.type === 'area'"
-                style="width:45%;border-left:1px solid #d9d9d9;border-right:1px solid #d9d9d9; text-align: center;"
+                v-show="item.type === 'BuildID' || item.type === 'area'" v-model:value="item.symbol"
+                :disabled="item.type === 'area'"
+                style="width:45%;border-left:1px solid #d9d9d9;border-right:1px solid #d9d9d9;text-align: center;"
                 :options="symbolOptions" :bordered="false" placeholder="请选择运算符"
               >
                 <template #suffixIcon>
@@ -493,16 +497,16 @@ function OIDChange(OIDName: string) {
               </a-select>
               <a-select
                 v-show="item.type === 'BuildID'" v-model:value="item.value"
-                style="width:45%;text-align: center;" :options="versionOptions" :bordered="false"
-                placeholder="请选择版本号" show-search
+                style="width:45%;text-align: center;" :options="versionOptions" :bordered="false" placeholder="请选择版本号"
+                show-search
               >
                 <template #suffixIcon>
                   <CaretDownOutlined />
                 </template>
               </a-select>
               <a-select
-                v-show="item.type === 'APP'" v-model:value="item.value"
-                style="width:90%;text-align: center;" :bordered="false" placeholder="请选择应用" show-search
+                v-show="item.type === 'APP'" v-model:value="item.value" style="width:90%;text-align: center;"
+                :bordered="false" placeholder="请选择应用" show-search
               >
                 <template #suffixIcon>
                   <CaretDownOutlined />
@@ -515,9 +519,8 @@ function OIDChange(OIDName: string) {
                 </a-select-option>
               </a-select>
               <a-select
-                v-show="item.type === 'area'" v-model:value="item.value"
-                style="width:45%;text-align: center;" :options="areaOptions" :bordered="false"
-                placeholder="请选择国家/地区" show-search mode="multiple"
+                v-show="item.type === 'area'" v-model:value="item.value" style="width:45%;text-align: center;"
+                :options="areaOptions" :bordered="false" placeholder="请选择国家/地区" show-search mode="multiple"
               >
                 <template #suffixIcon>
                   <CaretDownOutlined />
@@ -549,8 +552,8 @@ function OIDChange(OIDName: string) {
             <div class="OID-name">
               <a-input v-model:value="item.OIDName" placeholder="请输入名称" />
               <a-select
-                v-model:value="item.OIDType" :options="OIDTypeOptions" placeholder="请选择类型"
-                mode="multiple" show-search
+                v-model:value="item.OIDType" :options="OIDTypeOptions" placeholder="请选择类型" mode="multiple"
+                show-search
               />
             </div>
             <div class="copy-other">
@@ -575,25 +578,30 @@ function OIDChange(OIDName: string) {
               <div class="adstyle">
                 <div>广告样式</div>
                 <a-select
-                  v-model:value="item.adStyle" :options="adStyleOptions"
-                  style="text-align: center;" placeholder="请选择广告样式"
+                  v-model:value="item.adStyle" :options="adStyleOptions" style="text-align: center;"
+                  placeholder="请选择广告样式"
                 />
               </div>
               <div class="adplan">
                 <div>广告计划</div>
                 <a-select
-                  v-model:value="item.adPlan" :options="adPlanOptions"
-                  style="text-align: center;" placeholder="请选择广告计划"
+                  v-model:value="item.adPlan" :options="adPlanOptions" style="text-align: center;"
+                  placeholder="请选择广告计划"
                 />
               </div>
             </div>
             <div v-else class="withcopy">
               <div class="copy-header">
                 <div>目标OID</div>
-                <a-tag :color=" item.shareType === 'ad_shares' ? '#daeafe' : item.shareType === 'ad_strong_shares' ? '#84fcba' : '#cbec36'">
-                  {{ item.shareType === 'ad_shares' ? '基础共享模式' : item.shareType === 'ad_strong_shares' ? '速度优先模式' : '价值优先模式' }}
+                <a-tag
+                  :color="item.shareType === 'ad_shares' ? '#daeafe' : item.shareType === 'ad_strong_shares' ? '#84fcba' : '#cbec36'"
+                >
+                  {{ item.shareType === 'ad_shares' ? '基础共享模式' : item.shareType === 'ad_strong_shares' ? '速度优先模式'
+                    : '价值优先模式'
+                  }}
                 </a-tag>
-                <span>已选择&nbsp;&nbsp;{{ item.shareType === 'ad_shares' ? 1 : item.shareType === 'ad_strong_shares' ? item.shareList.ad_strong_shares.length : item.shareList.ad_chains_v2.length }}&nbsp;&nbsp;个OID</span>
+                <span>已选择&nbsp;&nbsp;{{ item.shareType === 'ad_shares' ? 1 : item.shareType === 'ad_strong_shares'
+                  ? item.shareList.ad_strong_shares.length : item.shareList.ad_chains_v2.length }}&nbsp;&nbsp;个OID</span>
               </div>
               <div class="copyOID">
                 <template v-if="item.shareType === 'ad_shares'">
@@ -747,413 +755,422 @@ function OIDChange(OIDName: string) {
 
 <style scoped lang='scss'>
 .add-OID {
-    width: 100vw;
-    min-height: 100vh;
+  width: 100vw;
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: white;
+  z-index: 1000;
+  max-height: 40vh;
+  overflow-y: auto;
+  background-color: #f3f4f6;
+
+  /* 设置滚动条的宽度 */
+  &::-webkit-scrollbar {
+    width: 3px;
+    /* 水平滚动条的宽度 */
+    height: 3px;
+    /* 垂直滚动条的高度 */
+  }
+
+  /* 设置滚动条轨道的样式 */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    /* 轨道背景颜色 */
+    border-radius: 10px;
+    /* 轨道的圆角 */
+  }
+
+  /* 设置滚动条滑块的样式 */
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    /* 滑块颜色 */
+    border-radius: 10px;
+    /* 滑块的圆角 */
+  }
+
+  /* 设置滚动条滑块在悬停时的样式 */
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    /* 悬停时的滑块颜色 */
+  }
+
+  .header {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    // border-bottom: 1px solid #ccc;
+    background-color: #fff;
+
+    span {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .back-but {
+      position: absolute;
+      left: 20px;
+    }
+  }
+
+  .footer {
+    width: 100%;
+    height: 50px;
+    padding: 0 50px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
     position: fixed;
-    top: 0;
-    left: 0;
-    background-color: white;
+    bottom: 0;
     z-index: 1000;
-    max-height: 40vh;
-    overflow-y: auto;
-    background-color: #f3f4f6;
+    background-color: white;
+    // border-top: 1px solid #ccc;
 
-    /* 设置滚动条的宽度 */
-    &::-webkit-scrollbar {
-        width: 3px;
-        /* 水平滚动条的宽度 */
-        height: 3px;
-        /* 垂直滚动条的高度 */
+    .ant-btn {
+      &:last-of-type {
+        margin-left: 20px;
+      }
     }
-
-    /* 设置滚动条轨道的样式 */
-    &::-webkit-scrollbar-track {
-        background: transparent;
-        /* 轨道背景颜色 */
-        border-radius: 10px;
-        /* 轨道的圆角 */
-    }
-
-    /* 设置滚动条滑块的样式 */
-    &::-webkit-scrollbar-thumb {
-        background: #888;
-        /* 滑块颜色 */
-        border-radius: 10px;
-        /* 滑块的圆角 */
-    }
-
-    /* 设置滚动条滑块在悬停时的样式 */
-    &::-webkit-scrollbar-thumb:hover {
-        background: #555;
-        /* 悬停时的滑块颜色 */
-    }
-
-    .header {
-        width: 100%;
-        height: 50px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        // border-bottom: 1px solid #ccc;
-        background-color: #fff;
-
-        span {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .back-but {
-            position: absolute;
-            left: 20px;
-        }
-    }
-
-    .footer {
-        width: 100%;
-        height: 50px;
-        padding: 0 50px;
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        position: fixed;
-        bottom: 0;
-        z-index: 1000;
-        background-color: white;
-        // border-top: 1px solid #ccc;
-
-        .ant-btn {
-            &:last-of-type {
-                margin-left: 20px;
-            }
-        }
-    }
+  }
 }
 
 .containner {
-    margin-top: 10px;
-    width: 100%;
-    height: calc(100% - 60px);
+  margin-top: 10px;
+  width: 100%;
+  height: calc(100% - 60px);
 }
 
 .form-part {
-    width: 85%;
-    margin: 0 auto;
-    padding: 20px;
-    padding-bottom: 10px;
-    border-radius: 10px;
+  width: 85%;
+  margin: 0 auto;
+  padding: 20px;
+  padding-bottom: 10px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  background-color: #fff;
+
+  .ant-form-item {
+    margin: 0;
+  }
+
+  :deep(.ant-form-item-row) {
+    flex-direction: column;
+    width: 15vw;
+
+    .ant-form-item-label {
+      text-align: left;
+    }
+  }
+
+  .top {
+    width:100%;
+    height: 86px;
     display: flex;
     justify-content: space-between;
-    background-color: #fff;
+    align-items: flex-start;
+  }
 
-    .ant-form-item {
-        margin: 0;
-    }
-
-    :deep(.ant-form-item-row) {
-        flex-direction: column;
-        width: 15vw;
-
-        .ant-form-item-label {
-            text-align: left;
-        }
-    }
-
-    .condition {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        margin-top: 10px;
-        gap: 0 !important;
-
-        .label {
-            height: 32px;
-            text-align: left;
-            line-height: 32px;
-        }
-
-        .level-select {
-            width: 50vw;
-            border: 1px solid #d9d9d9;
-            border-radius: 8px;
-            padding: 5px;
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            position: relative;
-
-            .condition-delete {
-                font-size: 20px;
-                position: absolute;
-                right: 3px;
-                top: 50%;
-                transform: translateY(-50%);
-                cursor: pointer;
-            }
-
-            .sub-select {
-                width: 75%;
-                display: flex;
-                align-items: center;
-                padding: 0 5px;
-
-                .rate {
-                    width: 90%;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-
-                    .ant-btn {
-                        width: 10%;
-                    }
-
-                    .ant-slider {
-                        width: 75%;
-                    }
-                }
-
-                .add-condition {
-                    text-align: center;
-                    color: #409eff;
-                    margin-left: 10px;
-                    font-weight: bold;
-                    cursor: pointer;
-                }
-            }
-        }
-    }
-}
-
-.select-item {
-    width: 100%;
-    display: flex;
-    align-items: center;
-
-    img {
-        width: 20px;
-        height: 20px;
-        margin-right: 10px;
-    }
-}
-
-.OID-add {
-    width: 85%;
-    margin: 0 auto;
+  .condition {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    margin-top: 10px;
     gap: 0 !important;
 
-    :deep(.ant-space-item) {
-        &:last-of-type {
-            width: 100%;
-        }
+    .label {
+      height: 32px;
+      text-align: left;
+      line-height: 32px;
     }
 
-    .OID-content {
-        background-color: #fff;
-        margin-top: 10px;
-        margin-bottom: 60px;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, 360px);
-        justify-content: space-around;
+    .level-select {
+      width: 50vw;
+      border: 1px solid #d9d9d9;
+      border-radius: 8px;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      position: relative;
+
+      .condition-delete {
+        font-size: 20px;
+        position: absolute;
+        right: 3px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+      }
+
+      .sub-select {
+        width: 75%;
+        display: flex;
+        align-items: center;
+        padding: 0 5px;
+
+        .rate {
+          width: 90%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .ant-btn {
+            width: 10%;
+          }
+
+          .ant-slider {
+            width: 75%;
+          }
+        }
+
+        .add-condition {
+          text-align: center;
+          color: #409eff;
+          margin-left: 10px;
+          font-weight: bold;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
+.select-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+  }
+}
+
+.OID-add {
+  width: 85%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 10px;
+  gap: 0 !important;
+
+  :deep(.ant-space-item) {
+    &:last-of-type {
+      width: 100%;
+    }
+  }
+
+  .OID-content {
+    background-color: #fff;
+    margin-top: 10px;
+    margin-bottom: 60px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 360px);
+    justify-content: space-around;
+    width: 100%;
+    padding: 20px;
+    border-radius: 10px;
+    gap: 10px;
+
+    .OID {
+      width: 360px;
+      min-height: 210px;
+      background-color: #f5f7fa;
+      border-radius: 15px;
+      padding: 10px;
+      margin-bottom: 20px;
+      position: relative;
+
+      .OID-name {
         width: 100%;
-        padding: 20px;
-        border-radius: 10px;
-        gap: 10px;
+        display: flex;
+        justify-content: space-between;
 
-        .OID {
-            width: 360px;
-            min-height: 210px;
-            background-color: #f5f7fa;
-            border-radius: 15px;
-            padding: 10px;
-            margin-bottom: 20px;
-            position: relative;
-
-            .OID-name {
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-
-                .ant-input {
-                    color: #409eff;
-                    width: 48%;
-                    height: 32px;
-                }
-
-                .ant-select {
-                    width: 48%;
-                }
-            }
-
-            .copy-other {
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-top: 10px;
-
-                span {
-                    font-size: 14px;
-                }
-            }
-
-            .nocopy {
-                width: 100%;
-
-                .ads,
-                .adstyle,
-                .adplan {
-                    width: 100%;
-                    margin-top: 10px;
-                    display: flex;
-                    align-items: center;
-
-                    div {
-                        width: 100px;
-                    }
-
-                    .ant-select {
-                        width: calc(100% - 110px);
-                    }
-                }
-            }
-
-            .withcopy {
-                width: 100%;
-                display: flex;
-                flex-direction: column;
-                // align-items: center;
-                .copy-header{
-                    width:100%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    background-color: #f5f7fa;
-
-                    .ant-tag{
-                       color:black;
-                       margin:0 10px;
-                    }
-                }
-                .ant-tag{
-                    font-size: 14px;
-                    margin-top: 10px;
-                }
-            }
-
-            .OID-delete {
-                width: 15px;
-                height: 15px;
-                position: absolute;
-                top: 0;
-                right: -10px;
-                cursor: pointer;
-            }
+        .ant-input {
+          color: #409eff;
+          width: 48%;
+          height: 32px;
         }
+
+        .ant-select {
+          width: 48%;
+        }
+      }
+
+      .copy-other {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+
+        span {
+          font-size: 14px;
+        }
+      }
+
+      .nocopy {
+        width: 100%;
+
+        .ads,
+        .adstyle,
+        .adplan {
+          width: 100%;
+          margin-top: 10px;
+          display: flex;
+          align-items: center;
+
+          div {
+            width: 100px;
+          }
+
+          .ant-select {
+            width: calc(100% - 110px);
+          }
+        }
+      }
+
+      .withcopy {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+
+        // align-items: center;
+        .copy-header {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background-color: #f5f7fa;
+
+          .ant-tag {
+            color: black;
+            margin: 0 10px;
+          }
+        }
+
+        .ant-tag {
+          font-size: 14px;
+          margin-top: 10px;
+        }
+      }
+
+      .OID-delete {
+        width: 15px;
+        height: 15px;
+        position: absolute;
+        top: 0;
+        right: -10px;
+        cursor: pointer;
+      }
     }
+  }
 }
 
 .share-type {
-    margin-top: 20px;
+  margin-top: 20px;
 
-    :deep(.ant-form-item-row) {
-        align-items: center;
+  :deep(.ant-form-item-row) {
+    align-items: center;
 
-        .ant-radio-wrapper {
-            padding: 3px;
-            gap: 5px;
-            margin-right: 20px;
-            width: 170px;
+    .ant-radio-wrapper {
+      padding: 3px;
+      gap: 5px;
+      margin-right: 20px;
+      width: 170px;
 
-            &:first-of-type {
-                background-color: #daeafe;
-            }
+      &:first-of-type {
+        background-color: #daeafe;
+      }
 
-            &:nth-of-type(2) {
-                background-color: #84fcba;
-            }
+      &:nth-of-type(2) {
+        background-color: #84fcba;
+      }
 
-            &:last-of-type {
-                background-color: #cbec36;
-            }
-        }
+      &:last-of-type {
+        background-color: #cbec36;
+      }
     }
+  }
 
-    .radio-content {
-        display: flex;
-        flex-direction: column;
-    }
+  .radio-content {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 .OID-part1 {
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 312px);
-    justify-content: space-around;
-    width: 100%;
-    gap: 10px;
-    max-height: 50vh;
-    overflow-y: auto;
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 312px);
+  justify-content: space-around;
+  width: 100%;
+  gap: 10px;
+  max-height: 50vh;
+  overflow-y: auto;
 
-    .OID {
-        width: 280px;
-        min-height: 210px;
-        background-color: #f5f7fa;
-        border-radius: 15px;
-        padding: 10px;
-        margin-bottom: 20px;
+  .OID {
+    width: 280px;
+    min-height: 210px;
+    background-color: #f5f7fa;
+    border-radius: 15px;
+    padding: 10px;
+    margin-bottom: 20px;
 
-        .OID-name {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
+    .OID-name {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
 
-            .name {
-                font-size: 18px;
-                font-weight: bolder;
-                color: #409eff;
-                width: 100%;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                margin-bottom: 10px;
-            }
+      .name {
+        font-size: 18px;
+        font-weight: bolder;
+        color: #409eff;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-bottom: 10px;
+      }
 
-            .type {
-                display: flex;
-                align-items: center;
-                flex-wrap: wrap;
+      .type {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
 
-                p {
-                    margin: 0;
-                    margin-right: 20px;
-                }
-            }
+        p {
+          margin: 0;
+          margin-right: 20px;
         }
-
-        .nocopy {
-            width: 100%;
-
-            .ads,
-            .adstyle,
-            .adplan {
-                width: 100%;
-                margin-top: 10px;
-                display: flex;
-                align-items: center;
-
-                div {
-                    width: 80px;
-                }
-
-                .ant-btn {
-                    width: calc(100% - 110px);
-                }
-            }
-        }
+      }
     }
+
+    .nocopy {
+      width: 100%;
+
+      .ads,
+      .adstyle,
+      .adplan {
+        width: 100%;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+
+        div {
+          width: 80px;
+        }
+
+        .ant-btn {
+          width: calc(100% - 110px);
+        }
+      }
+    }
+  }
 }
 </style>
