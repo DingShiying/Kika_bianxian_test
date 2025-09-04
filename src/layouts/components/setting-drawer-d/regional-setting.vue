@@ -13,7 +13,7 @@ const props = defineProps<{
   multiTabFixed?: boolean
   animationName?: string
   animationNameList?: any[]
-  t?: (key: string, ...args: any[]) => string
+  // t?: (key: string, ...args: any[]) => string
 }>()
 
 const emit = defineEmits(['changeSetting'])
@@ -80,21 +80,16 @@ function handleChangeSetting(key: string, value: any) {
         <a-list-item>
           <template #actions>
             <a-switch
-              v-if="item.key !== 'animationName'"
-              size="small"
-              :checked="(props as any)[item.key]"
-              :disabled="item.disabled"
-              @update:checked="(e:CheckedType) => handleChangeSetting(item.key, e)"
+              v-if="item.key !== 'animationName'" size="small" :checked="(props as any)[item.key]"
+              :disabled="item.disabled" @update:checked="(e: CheckedType) => handleChangeSetting(item.key, e)"
             />
             <a-select
-              v-else style="width: 120px;"
-              :value="animationName"
-              :options="animationNameList" size="small"
-              @update:value="(e:SelectValue) => handleChangeSetting(item.key, e)"
+              v-else style="width: 120px;" :value="animationName" :options="animationNameList" size="small"
+              @update:value="(e: SelectValue) => handleChangeSetting(item.key, e)"
             />
           </template>
           <span :style="{ opacity: item.disabled ? '0.5' : '1' }">
-            {{ t?.(`app.setting.content-area.${item.key}`, item.title) ?? item.title }}
+            {{ item.title }}
           </span>
         </a-list-item>
       </a-tooltip>

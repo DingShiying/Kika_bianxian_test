@@ -13,18 +13,18 @@ export default ({ mode }: ConfigEnv): UserConfig => {
   const env = loadEnv(mode, process.cwd())
   const proxyObj = {
     '/proxy': {
-      target: 'http://localhost:5000', // 后端服务器地址
-      changeOrigin: true, // 必须设置为 true，否则会出现跨域问题
-      rewrite: path => path.replace(/^\/proxy/, ''), // 将 /proxy 重写为空字符串
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+      rewrite: path => path.replace(/^\/proxy/, ''),
     },
   }
-  if (mode === 'development' && env.VITE_APP_BASE_API_DEV && env.VITE_APP_BASE_URL_DEV) {
-    proxyObj[env.VITE_APP_BASE_API_DEV] = {
-      target: env.VITE_APP_BASE_URL_DEV,
-      changeOrigin: true,
-      rewrite: path => path.replace(new RegExp(`^${env.VITE_APP_BASE_API_DEV}`), ''),
-    }
-  }
+  // if (mode === 'development' && env.VITE_APP_BASE_API_DEV && env.VITE_APP_BASE_URL_DEV) {
+  //   proxyObj[env.VITE_APP_BASE_API_DEV] = {
+  //     target: env.VITE_APP_BASE_URL_DEV,
+  //     changeOrigin: true,
+  //     rewrite: path => path.replace(new RegExp(`^${env.VITE_APP_BASE_API_DEV}`), ''),
+  //   }
+  // }
   return {
     plugins: createVitePlugins(env),
     resolve: {

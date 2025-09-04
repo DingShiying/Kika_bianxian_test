@@ -2,11 +2,11 @@
 import { AlipayCircleFilled, LockOutlined, MobileOutlined, TaobaoCircleFilled, UserOutlined, WeiboCircleFilled } from '@ant-design/icons-vue'
 import { delayTimer } from '@v-c/utils'
 import { AxiosError } from 'axios'
-import GlobalLayoutFooter from '~/layouts/components/global-footer/index.vue'
+// import GlobalLayoutFooter from '~/layouts/components/global-footer/index.vue'
 import { loginApi } from '~/api/common/login'
-import { getQueryParam } from '~/utils/tools'
+import { getQueryParam } from '~/utils/tools.ts'
 import type { LoginMobileParams, LoginParams } from '~@/api/common/login'
-import pageBubble from '@/utils/page-bubble'
+import pageBubble from '@/utils/page-bubble.ts'
 
 const message = useMessage()
 const notification = useNotification()
@@ -22,7 +22,7 @@ const loginModel = reactive({
   type: 'account',
   remember: true,
 })
-const { t } = useI18nLocale()
+// const { t } = useI18nLocale()
 const formRef = shallowRef()
 const codeLoading = shallowRef(false)
 const resetCounter = 60
@@ -140,7 +140,7 @@ onBeforeUnmount(() => {
                 <carbon-sun />
               </template>
             </span>
-            <SelectLang />
+            <!-- <SelectLang /> -->
           </div>
         </div>
         <a-divider m-0 />
@@ -154,38 +154,38 @@ onBeforeUnmount(() => {
           <!-- 登录框右侧 -->
           <div class="ant-pro-form-login-main-right px-5 w-[335px] flex-center flex-col relative z-11">
             <div class="text-center py-6 text-2xl">
-              {{ t('pages.login.tips') }}
+              哈哈哈哈
             </div>
             <a-form ref="formRef" :model="loginModel">
               <a-tabs v-model:active-key="loginModel.type" centered>
-                <a-tab-pane key="account" :tab="t('pages.login.accountLogin.tab')" />
-                <a-tab-pane key="mobile" :tab="t('pages.login.phoneLogin.tab')" />
+                <a-tab-pane key="account" tab="哈哈哈" />
+                <a-tab-pane key="mobile" tab="哦哦哦" />
               </a-tabs>
               <!-- 判断是否存在error -->
               <a-alert
                 v-if="errorAlert && loginModel.type === 'account'" mb-24px
-                :message="t('pages.login.accountLogin.errorMessage')" type="error" show-icon
+                message="对对对" type="error" show-icon
               />
               <a-alert
                 v-if="errorAlert && loginModel.type === 'mobile'" mb-24px
-                :message="t('pages.login.phoneLogin.errorMessage')" type="error" show-icon
+                message="啦啦啦" type="error" show-icon
               />
               <template v-if="loginModel.type === 'account'">
-                <a-form-item name="username" :rules="[{ required: true, message: t('pages.login.username.required') }]">
+                <a-form-item name="username" :rules="[{ required: true, message: '用户名不能为空' }]">
                   <a-input
                     v-model:value="loginModel.username" allow-clear
                     autocomplete="off"
-                    :placeholder="t('pages.login.username.placeholder')" size="large" @press-enter="submit"
+                    placeholder="admin" size="large" @press-enter="submit"
                   >
                     <template #prefix>
                       <UserOutlined />
                     </template>
                   </a-input>
                 </a-form-item>
-                <a-form-item name="password" :rules="[{ required: true, message: t('pages.login.password.required') }]">
+                <a-form-item name="password" :rules="[{ required: true, message: '用户名不能为空' }]">
                   <a-input-password
                     v-model:value="loginModel.password" allow-clear
-                    :placeholder="t('pages.login.password.placeholder')" size="large" @press-enter="submit"
+                    placeholder="admin" size="large" @press-enter="submit"
                   >
                     <template #prefix>
                       <LockOutlined />
@@ -196,28 +196,28 @@ onBeforeUnmount(() => {
               <template v-if="loginModel.type === 'mobile'">
                 <a-form-item
                   name="mobile" :rules="[
-                    { required: true, message: t('pages.login.phoneNumber.required') },
+                    { required: true, message: '手机号不能为空' },
                     {
                       pattern: /^(86)?1([38][0-9]|4[579]|5[0-35-9]|6[6]|7[0135678]|9[89])[0-9]{8}$/,
-                      message: t('pages.login.phoneNumber.invalid'),
+                      message: '手机号格式不正确',
                     },
                   ]"
                 >
                   <a-input
                     v-model:value="loginModel.mobile" allow-clear
-                    :placeholder="t('pages.login.phoneNumber.placeholder')" size="large" @press-enter="submit"
+                    placeholder="请输入手机号" size="large" @press-enter="submit"
                   >
                     <template #prefix>
                       <MobileOutlined />
                     </template>
                   </a-input>
                 </a-form-item>
-                <a-form-item name="code" :rules="[{ required: true, message: t('pages.login.captcha.required') }]">
+                <a-form-item name="code" :rules="[{ required: true, message: '验证码不能为空' }]">
                   <div flex items-center>
                     <a-input
                       v-model:value="loginModel.code"
                       style="flex: 1 1 0%; transition: width 0.3s ease 0s; margin-right: 8px;" allow-clear
-                      :placeholder="t('pages.login.captcha.placeholder')" size="large" @press-enter="submit"
+                      placeholder="请输入验证码" size="large" @press-enter="submit"
                     >
                       <template #prefix>
                         <LockOutlined />
@@ -225,10 +225,10 @@ onBeforeUnmount(() => {
                     </a-input>
                     <a-button :loading="codeLoading" :disabled="isActive" size="large" @click="getCode">
                       <template v-if="!isActive">
-                        {{ t('pages.login.phoneLogin.getVerificationCode') }}
+                        红红火火
                       </template>
                       <template v-else>
-                        {{ resetCounter - counter }} {{ t('pages.getCaptchaSecondText') }}
+                        {{ resetCounter - counter }} 空空旷旷
                       </template>
                     </a-button>
                   </div>
@@ -236,16 +236,16 @@ onBeforeUnmount(() => {
               </template>
               <div class="mb-24px flex-between">
                 <a-checkbox v-model:checked="loginModel.remember">
-                  {{ t('pages.login.rememberMe') }}
+                  记住我
                 </a-checkbox>
-                <a>{{ t('pages.login.forgotPassword') }}</a>
+                <a>都好好的好好</a>
               </div>
               <a-button type="primary" block :loading="submitLoading" size="large" @click="submit">
-                {{ t('pages.login.submit') }}
+                就斤斤计较
               </a-button>
             </a-form>
             <a-divider>
-              <span class="text-slate-500">{{ t('pages.login.loginWith') }}</span>
+              <span class="text-slate-500">密密麻麻吗</span>
             </a-divider>
             <div class="ant-pro-form-login-other">
               <AlipayCircleFilled class="icon" />
@@ -256,7 +256,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </div>
-    <div py-24px px-50px fixed bottom-0 z-11 w-screen :data-theme="layoutSetting.theme" text-14px>
+    <!-- <div py-24px px-50px fixed bottom-0 z-11 w-screen :data-theme="layoutSetting.theme" text-14px>
       <GlobalLayoutFooter
         :copyright="layoutSetting.copyright" icp="鲁ICP备2023021414号-2"
       >
@@ -265,6 +265,7 @@ onBeforeUnmount(() => {
         </template>
       </GlobalLayoutFooter>
     </div>
+  </div> -->
   </div>
 </template>
 

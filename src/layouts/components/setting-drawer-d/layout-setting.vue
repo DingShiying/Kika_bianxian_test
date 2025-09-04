@@ -12,7 +12,7 @@ const props = defineProps<{
   accordionMode?: boolean
   leftCollapsed?: boolean
   compactAlgorithm?: boolean
-  t?: (key: string, ...args: any[]) => string
+  // t?: (key: string, ...args: any[]) => string
 }>()
 
 const emit = defineEmits(['changeSetting'])
@@ -79,78 +79,62 @@ function handleChangeSetting(key: string, value: any) {
           <template #actions>
             <template v-if="item.key === 'contentWidth'">
               <a-select
-                size="small"
-                :disabled="item.disabled"
-                :value="contentWidth || 'Fluid'"
-                @update:value="(e:SelectValue) => handleChangeSetting('contentWidth', e)"
+                size="small" :disabled="item.disabled" :value="contentWidth || 'Fluid'"
+                @update:value="(e: SelectValue) => handleChangeSetting('contentWidth', e)"
               >
                 <a-select-option v-if="layout === 'top'" value="Fixed">
-                  {{ t?.('app.setting.content-width.fixed') ?? 'Fixed' }}
+                  Fixed
                 </a-select-option>
                 <a-select-option value="Fluid">
-                  {{ t?.('app.setting.content-width.fluid') ?? 'Fluid' }}
+                  Fluid
                 </a-select-option>
               </a-select>
             </template>
             <template v-if="item.key === 'fixedHeader'">
               <a-switch
-                size="small"
-                :checked="fixedHeader"
-                :disabled="item.disabled"
-                @update:checked="(e:CheckedType) => handleChangeSetting('fixedHeader', e)"
+                size="small" :checked="fixedHeader" :disabled="item.disabled"
+                @update:checked="(e: CheckedType) => handleChangeSetting('fixedHeader', e)"
               />
             </template>
             <template v-if="item.key === 'fixSiderbar'">
               <a-switch
-                size="small"
-                :checked="fixedSider"
-                :disabled="item.disabled"
-                @update:checked="(e:CheckedType) => handleChangeSetting('fixedSider', e)"
+                size="small" :checked="fixedSider" :disabled="item.disabled"
+                @update:checked="(e: CheckedType) => handleChangeSetting('fixedSider', e)"
               />
             </template>
             <template v-if="item.key === 'splitMenus'">
               <a-switch
-                size="small"
-                :checked="splitMenus"
-                :disabled="item.disabled"
-                @update:checked="(e:CheckedType) => handleChangeSetting('splitMenus', e)"
+                size="small" :checked="splitMenus" :disabled="item.disabled"
+                @update:checked="(e: CheckedType) => handleChangeSetting('splitMenus', e)"
               />
             </template>
             <template v-if="item.key === 'keepAlive'">
               <a-switch
-                size="small"
-                :checked="keepAlive"
-                :disabled="item.disabled"
-                @update:checked="(e:CheckedType) => handleChangeSetting('keepAlive', e)"
+                size="small" :checked="keepAlive" :disabled="item.disabled"
+                @update:checked="(e: CheckedType) => handleChangeSetting('keepAlive', e)"
               />
             </template>
             <template v-if="item.key === 'accordionMode'">
               <a-switch
-                size="small"
-                :checked="accordionMode"
-                :disabled="item.disabled"
-                @update:checked="(e:CheckedType) => handleChangeSetting('accordionMode', e)"
+                size="small" :checked="accordionMode" :disabled="item.disabled"
+                @update:checked="(e: CheckedType) => handleChangeSetting('accordionMode', e)"
               />
             </template>
             <template v-if="item.key === 'leftCollapsed'">
               <a-switch
-                size="small"
-                :checked="leftCollapsed"
-                :disabled="item.disabled"
-                @update:checked="(e:CheckedType) => handleChangeSetting('leftCollapsed', e)"
+                size="small" :checked="leftCollapsed" :disabled="item.disabled"
+                @update:checked="(e: CheckedType) => handleChangeSetting('leftCollapsed', e)"
               />
             </template>
             <template v-if="item.key === 'compactAlgorithm'">
               <a-switch
-                size="small"
-                :checked="compactAlgorithm"
-                :disabled="item.disabled"
-                @update:checked="(e:CheckedType) => handleChangeSetting('compactAlgorithm', e)"
+                size="small" :checked="compactAlgorithm" :disabled="item.disabled"
+                @update:checked="(e: CheckedType) => handleChangeSetting('compactAlgorithm', e)"
               />
             </template>
           </template>
           <span :style="{ opacity: item.disabled ? '0.5' : '1' }">
-            {{ t?.(`app.setting.content-width.${item.key}`, item.title) ?? item.title }}
+            {{ item.title }}
           </span>
         </a-list-item>
       </a-tooltip>

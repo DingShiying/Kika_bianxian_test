@@ -1,7 +1,7 @@
 import { isUrl } from '@v-c/utils'
 import type { MenuData, MenuDataItem } from '~@/layouts/basic-layout/typing'
 import router from '~@/router'
-import { deepFind } from '~@/utils/tree'
+import { deepFind } from '~@/utils/tree.ts'
 
 function toMapMenuData(menuData: MenuData, menuDataMap: Map<string, MenuDataItem>, matched: MenuDataItem[] = []) {
   menuData.forEach((v) => {

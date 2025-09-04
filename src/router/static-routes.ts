@@ -19,6 +19,14 @@ export default [
     },
   },
   {
+    path: '/welcome',
+    name: 'Welcome',
+    component: () => import('@/pages/common/welcome.vue'),
+    meta: {
+      title: '欢迎',
+    },
+  },
+  {
     path: '/common',
     name: 'LayoutBasicRedirect',
     component: Layout,

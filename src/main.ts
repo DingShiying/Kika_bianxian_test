@@ -2,9 +2,9 @@ import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import type { App } from 'vue'
 import Root from './App.vue'
-import { setupI18n } from './locales'
+// import { setupI18n } from './locales'
 import {
-  setupAccessDirective,
+  // setupAccessDirective,
   setupLoadingDirective,
 } from './directive'
 import router from '~/router'
@@ -17,7 +17,7 @@ const pinia = createPinia()
 async function start() {
   const app: App = createApp(Root)
   app.use(pinia)
-  await setupI18n(app)
+  // await setupI18n(app)
   setupDirective(app)
   app.use(router)
   app.mount('#app')
@@ -27,6 +27,6 @@ async function start() {
 function setupDirective(app: App) {
   // 注册loading自定义指令
   setupLoadingDirective(app)
-  setupAccessDirective(app)
+  // setupAccessDirective(app)
 }
 start()

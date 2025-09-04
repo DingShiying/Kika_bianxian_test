@@ -1,21 +1,21 @@
 import { isUrl } from '@v-c/utils'
 import type { RouteRecordRaw } from 'vue-router'
 import { omit } from 'lodash'
-import { basicRouteMap, getRouterModule } from './router-modules'
+import { basicRouteMap } from './router-modules'
 import type { MenuData, MenuDataItem } from '~@/layouts/basic-layout/typing'
-import dynamicRoutes from '~@/router/dynamic-routes'
-import { ROOT_ROUTE_REDIRECT_PATH } from '~@/router/constant'
-import { i18n } from '~@/locales'
+// import { manageRouter as dynamicRoutes } from '~@/router/dynamic-routes'
+// import { ROOT_ROUTE_REDIRECT_PATH } from '~@/router/constant'
+// import { i18n } from '~@/locales'
 
 let cache_key = 1
 
 const getCacheKey = () => `Cache_Key_${cache_key++}`
 
 function renderTitle(route: RouteRecordRaw) {
-  const { title, locale } = route.meta || {}
+  const { title } = route.meta || {}
   if (!title)
     return ''
-  return locale ? (i18n.global as any).t(locale) : title
+  return title
 }
 
 function formatMenu(route: RouteRecordRaw, path?: string) {
@@ -63,161 +63,159 @@ export function genRoutes(routes: RouteRecordRaw[], parent?: MenuDataItem) {
   return menuData
 }
 
-/**
- * 请求后端的数据获取到的菜单的信息，默认数据是拉平的，需要对数据进行树结构的整理
- */
-export function generateTreeRoutes(menus: MenuData) {
-  const routeDataMap = new Map<string | number, RouteRecordRaw>()
-  const menuDataMap = new Map<string | number, MenuDataItem>()
-  // 遍历菜单树，建立字典
-  for (const menuItem of menus) {
-    if (!menuItem.id)
-      continue
-    const route = {
-      path: menuItem.path,
-      name: menuItem.name || getCacheKey(),
-      component: getRouterModule(menuItem.component!),
-      redirect: menuItem.redirect || undefined,
-      meta: {
-        title: menuItem?.title as string,
-        icon: menuItem?.icon as string,
-        keepAlive: menuItem?.keepAlive,
-        id: menuItem?.id,
-        parentId: menuItem?.parentId,
-        affix: menuItem?.affix,
-        parentKeys: menuItem?.parentKeys,
-        url: menuItem?.url,
-        hideInMenu: menuItem?.hideInMenu,
-        hideChildrenInMenu: menuItem?.hideChildrenInMenu,
-        hideInBreadcrumb: menuItem?.hideInBreadcrumb,
-        target: menuItem?.target,
-        locale: menuItem?.locale,
-      },
-    } as RouteRecordRaw
-    const menu = formatMenu(route)
-    routeDataMap.set(menuItem.id, route)
-    menuDataMap.set(menuItem.id, menu)
-  }
+// 请求后端的数据获取到的菜单的信息，默认数据是拉平的，需要对数据进行树结构的整理
+// export function generateTreeRoutes(menus: MenuData) {
+//   const routeDataMap = new Map<string | number, RouteRecordRaw>()
+//   const menuDataMap = new Map<string | number, MenuDataItem>()
+//   // 遍历菜单树，建立字典
+//   for (const menuItem of menus) {
+//     if (!menuItem.id)
+//       continue
+//     const route = {
+//       path: menuItem.path,
+//       name: menuItem.name || getCacheKey(),
+//       component: getRouterModule(menuItem.component!),
+//       redirect: menuItem.redirect || undefined,
+//       meta: {
+//         title: menuItem?.title as string,
+//         icon: menuItem?.icon as string,
+//         keepAlive: menuItem?.keepAlive,
+//         id: menuItem?.id,
+//         parentId: menuItem?.parentId,
+//         affix: menuItem?.affix,
+//         parentKeys: menuItem?.parentKeys,
+//         url: menuItem?.url,
+//         hideInMenu: menuItem?.hideInMenu,
+//         hideChildrenInMenu: menuItem?.hideChildrenInMenu,
+//         hideInBreadcrumb: menuItem?.hideInBreadcrumb,
+//         target: menuItem?.target,
+//         locale: menuItem?.locale,
+//       },
+//     } as RouteRecordRaw
+//     const menu = formatMenu(route)
+//     routeDataMap.set(menuItem.id, route)
+//     menuDataMap.set(menuItem.id, menu)
+//   }
 
-  // const extendTree = (menuItem: any) => {
-  //   if (menuItem.id) {
-  //     const route = {
-  //       path: menuItem.path,
-  //       name: menuItem.name || getCacheKey(),
-  //       component: getRouterModule(menuItem.component!),
-  //       redirect: menuItem.redirect || undefined,
-  //       meta: {
-  //         title: menuItem?.title as string,
-  //         icon: menuItem?.icon as string,
-  //         keepAlive: menuItem?.keepAlive,
-  //         id: menuItem?.id,
-  //         parentId: menuItem?.parentId,
-  //         affix: menuItem?.affix,
-  //         parentKeys: menuItem?.parentKeys,
-  //         url: menuItem?.url,
-  //         hideInMenu: menuItem?.hideInMenu,
-  //         hideChildrenInMenu: menuItem?.hideChildrenInMenu,
-  //         hideInBreadcrumb: menuItem?.hideInBreadcrumb,
-  //         target: menuItem?.target,
-  //         locale: menuItem?.locale,
-  //       },
-  //     } as RouteRecordRaw
-  //     const menu = formatMenu(route)
-  //     routeDataMap.set(menuItem.id, route)
-  //     menuDataMap.set(menuItem.id, menu)
-  //     if (menuItem.children && menuItem.children.length > 0) {
-  //       menuItem.children.forEach((child: any) => {
-  //         extendTree(child)
-  //       })
-  //     }
-  //   }
-  // }
-  // menus.forEach((menuItem) => {
-  //   extendTree(menuItem)
-  // })
+//   // const extendTree = (menuItem: any) => {
+//   //   if (menuItem.id) {
+//   //     const route = {
+//   //       path: menuItem.path,
+//   //       name: menuItem.name || getCacheKey(),
+//   //       component: getRouterModule(menuItem.component!),
+//   //       redirect: menuItem.redirect || undefined,
+//   //       meta: {
+//   //         title: menuItem?.title as string,
+//   //         icon: menuItem?.icon as string,
+//   //         keepAlive: menuItem?.keepAlive,
+//   //         id: menuItem?.id,
+//   //         parentId: menuItem?.parentId,
+//   //         affix: menuItem?.affix,
+//   //         parentKeys: menuItem?.parentKeys,
+//   //         url: menuItem?.url,
+//   //         hideInMenu: menuItem?.hideInMenu,
+//   //         hideChildrenInMenu: menuItem?.hideChildrenInMenu,
+//   //         hideInBreadcrumb: menuItem?.hideInBreadcrumb,
+//   //         target: menuItem?.target,
+//   //         locale: menuItem?.locale,
+//   //       },
+//   //     } as RouteRecordRaw
+//   //     const menu = formatMenu(route)
+//   //     routeDataMap.set(menuItem.id, route)
+//   //     menuDataMap.set(menuItem.id, menu)
+//   //     if (menuItem.children && menuItem.children.length > 0) {
+//   //       menuItem.children.forEach((child: any) => {
+//   //         extendTree(child)
+//   //       })
+//   //     }
+//   //   }
+//   // }
+//   // menus.forEach((menuItem) => {
+//   //   extendTree(menuItem)
+//   // })
 
-  // 路由数据、菜单数据
-  const routeData: RouteRecordRaw[] = []
-  const menuData: MenuData = []
+//   // 路由数据、菜单数据
+//   const routeData: RouteRecordRaw[] = []
+//   const menuData: MenuData = []
 
-  for (const menuItem of menus) {
-    if (!menuItem.id)
-      continue
-    const currentRoute = routeDataMap.get(menuItem.id)
-    const currentItem = menuDataMap.get(menuItem.id)
-    if (!menuItem.parentId) {
-      if (currentRoute && currentItem) {
-        routeData.push(currentRoute)
-        menuData.push(currentItem)
-      }
-    }
-    else {
-      const pRoute = routeDataMap.get(menuItem.parentId)
-      const pItem = menuDataMap.get(menuItem.parentId)
-      if (currentItem && currentRoute && pRoute && pItem) {
-        if (pRoute.children && pItem.children) {
-          pRoute.children.push(currentRoute)
-          pItem.children.push(currentItem)
-        }
-        else {
-          pItem.children = [currentItem]
-          pRoute.children = [currentRoute]
-        }
-      }
-    }
-  }
+//   for (const menuItem of menus) {
+//     if (!menuItem.id)
+//       continue
+//     const currentRoute = routeDataMap.get(menuItem.id)
+//     const currentItem = menuDataMap.get(menuItem.id)
+//     if (!menuItem.parentId) {
+//       if (currentRoute && currentItem) {
+//         routeData.push(currentRoute)
+//         menuData.push(currentItem)
+//       }
+//     }
+//     else {
+//       const pRoute = routeDataMap.get(menuItem.parentId)
+//       const pItem = menuDataMap.get(menuItem.parentId)
+//       if (currentItem && currentRoute && pRoute && pItem) {
+//         if (pRoute.children && pItem.children) {
+//           pRoute.children.push(currentRoute)
+//           pItem.children.push(currentItem)
+//         }
+//         else {
+//           pItem.children = [currentItem]
+//           pRoute.children = [currentRoute]
+//         }
+//       }
+//     }
+//   }
 
-  // const setData = (menuItem: any) => {
-  //   if (menuItem.id) {
-  //     const currentRoute = routeDataMap.get(menuItem.id)
-  //     const currentItem = menuDataMap.get(menuItem.id)
-  //     if (!menuItem.parentId) {
-  //       if (currentRoute && currentItem) {
-  //         routeData.push(currentRoute)
-  //         menuData.push(currentItem)
-  //       }
-  //     }
-  //     else {
-  //       const pRoute = routeDataMap.get(menuItem.parentId)
-  //       const pItem = menuDataMap.get(menuItem.parentId)
-  //       if (currentItem && currentRoute && pRoute && pItem) {
-  //         if (pRoute.children && pItem.children) {
-  //           pRoute.children.push(currentRoute)
-  //           pItem.children.push(currentItem)
-  //         }
-  //         else {
-  //           pItem.children = [currentItem]
-  //           pRoute.children = [currentRoute]
-  //         }
-  //       }
-  //     }
-  //     if (menuItem.children && menuItem.children.length > 0) {
-  //       menuItem.children.forEach((child: any) => {
-  //         setData(child)
-  //       })
-  //     }
-  //   }
-  // }
-  // menus.forEach((menu: any) => {
-  //   setData(menu)
-  // })
+//   // const setData = (menuItem: any) => {
+//   //   if (menuItem.id) {
+//   //     const currentRoute = routeDataMap.get(menuItem.id)
+//   //     const currentItem = menuDataMap.get(menuItem.id)
+//   //     if (!menuItem.parentId) {
+//   //       if (currentRoute && currentItem) {
+//   //         routeData.push(currentRoute)
+//   //         menuData.push(currentItem)
+//   //       }
+//   //     }
+//   //     else {
+//   //       const pRoute = routeDataMap.get(menuItem.parentId)
+//   //       const pItem = menuDataMap.get(menuItem.parentId)
+//   //       if (currentItem && currentRoute && pRoute && pItem) {
+//   //         if (pRoute.children && pItem.children) {
+//   //           pRoute.children.push(currentRoute)
+//   //           pItem.children.push(currentItem)
+//   //         }
+//   //         else {
+//   //           pItem.children = [currentItem]
+//   //           pRoute.children = [currentRoute]
+//   //         }
+//   //       }
+//   //     }
+//   //     if (menuItem.children && menuItem.children.length > 0) {
+//   //       menuItem.children.forEach((child: any) => {
+//   //         setData(child)
+//   //       })
+//   //     }
+//   //   }
+//   // }
+//   // menus.forEach((menu: any) => {
+//   //   setData(menu)
+//   // })
 
-  return {
-    menuData,
-    routeData,
-  }
-}
+//   return {
+//     menuData,
+//     routeData,
+//   }
+// }
 
 /**
  * 通过前端数据中的dynamic-routes动态生成菜单和数据
  */
-
-export async function generateRoutes() {
-  const { hasAccess } = useAccess()
+export async function generateRoutes(dynamicRoutes: RouteRecordRaw[]) {
+  // const { hasAccess } = useAccess()
   function filterRoutesByAccess(routes: RouteRecordRaw[]) {
     return routes
       .filter((route) => {
-        return !route.meta?.access || hasAccess(route.meta?.access)
+        // return !route.meta?.access || hasAccess(route.meta?.access)
+        return !route.meta?.access
       })
       .map((route) => {
         if (route.children?.length) {
@@ -267,12 +265,13 @@ function flatRoutes(routes: RouteRecordRaw[], parentName?: string, parentComps: 
   return flatRouteData
 }
 
-export function generateFlatRoutes(routes: RouteRecordRaw[]) {
+export function generateFlatRoutes(routes: RouteRecordRaw[], rootPath: string) {
   const flatRoutesList = flatRoutes(routes)
   // 拿到拉平后的路由，然后统一添加一个父级的路由,通过这层路由实现保活的功能
   const parentRoute: RouteRecordRaw = {
     path: '/',
-    redirect: ROOT_ROUTE_REDIRECT_PATH,
+    // redirect: ROOT_ROUTE_REDIRECT_PATH,
+    redirect: rootPath,
     name: 'ROOT_EMPTY_PATH',
     // fix: https://github.com/antdv-pro/antdv-pro/issues/179
     // component: getRouterModule('RouteView'),

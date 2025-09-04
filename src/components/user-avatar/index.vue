@@ -6,7 +6,8 @@ const userStore = useUserStore()
 const multiTabStore = useMultiTab()
 const layoutMenuStore = useLayoutMenu()
 const router = useRouter()
-const { avatar, nickname } = storeToRefs(userStore)
+const { avatar, nickname, isSuperManage } = storeToRefs(userStore)
+const { setSuperManage } = userStore
 async function handleClick({ key }: any) {
   if (key === 'logout') {
     const hide = message.loading('退出登录...', 0)
@@ -25,17 +26,23 @@ async function handleClick({ key }: any) {
     }
   }
 }
+
+function handleSuperManage() {
+  setSuperManage(!isSuperManage.value)
+  router.push('/welcome')
+}
 </script>
 
 <template>
-  <a-dropdown>
-    <span hover="bg-[var(--hover-color)]" flex items-center h-48px px-12px cursor-pointer class="transition-all-300">
-      <a-avatar :src="avatar" mr-8px size="small" />
-      <span class="anticon">{{ nickname }}</span>
-    </span>
-    <template #overlay>
-      <a-menu @click="handleClick">
-        <!-- <a-menu-item key="0">
+  <div class="super">
+    <a-dropdown>
+      <span hover="bg-[var(--hover-color)]" flex items-center h-48px px-12px cursor-pointer class="transition-all-300">
+        <a-avatar :src="avatar" mr-8px size="small" />
+        <span class="anticon">{{ nickname }}</span>
+      </span>
+      <template #overlay>
+        <a-menu @click="handleClick">
+          <!-- <a-menu-item key="0">
           <template #icon>
             <UserOutlined />
           </template>
@@ -52,13 +59,33 @@ async function handleClick({ key }: any) {
   </RouterLink>
 </a-menu-item>
 <a-menu-divider /> -->
-        <a-menu-item key="logout">
-          <template #icon>
-            <LogoutOutlined />
-          </template>
-          退出登录
-        </a-menu-item>
-      </a-menu>
-    </template>
-  </a-dropdown>
+          <a-menu-item key="logout">
+            <template #icon>
+              <LogoutOutlined />
+            </template>
+            退出登录
+          </a-menu-item>
+        </a-menu>
+      </template>
+    </a-dropdown>
+
+    <!-- <a-button type="ghost" style="color:#406aed;border: 1px solid #406aed;">
+      退出超级管理
+    </a-button> -->
+    <a-button type="default" class="but" @click="handleSuperManage">
+      {{ isSuperManage ? '退出超级管理' : '超级管理' }}
+    </a-button>
+  </div>
 </template>
+
+<style lang="scss" scoped>
+  .super{
+    display: flex;
+    align-items: center;
+    .but{
+      background-color: transparent;
+      color: #fff;
+      // box-shadow: 0 0 5px 1px #fff;
+    }
+  }
+</style>

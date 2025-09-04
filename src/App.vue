@@ -3,13 +3,14 @@ import { useLayoutMenuProvide } from '~/components/page-container/context'
 
 const appStore = useAppStore()
 const { theme } = storeToRefs(appStore)
-const { antd } = useI18nLocale()
+// const { antd } = useI18nLocale()
 const layoutMenu = useLayoutMenu()
 useLayoutMenuProvide(layoutMenu, appStore)
 </script>
 
 <template>
-  <a-config-provider :theme="theme" :locale="antd">
+  <!-- :locale="antd" -->
+  <a-config-provider :theme="theme">
     <a-app class="h-full font-chinese antialiased">
       <TokenProvider>
         <RouterView />

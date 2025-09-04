@@ -3,9 +3,10 @@ import { logoutApi } from '~@/api/common/login'
 import type { UserInfo } from '~@/api/common/user'
 import { getUserInfoApi } from '~@/api/common/user'
 import type { MenuData } from '~@/layouts/basic-layout/typing'
-import { rootRoute } from '~@/router/constant'
+// import { rootRoute } from '~@/router/constant'
 import { generateFlatRoutes, generateRoutes } from '~@/router/generate-route'
 // generateTreeRoutes
+import { configRouter, manageRouter } from '~@/router/dynamic-routes'
 
 export const useUserStore = defineStore('user', () => {
   const routerData = shallowRef()
@@ -15,6 +16,7 @@ export const useUserStore = defineStore('user', () => {
   const avatar = computed(() => userInfo.value?.avatar)
   const nickname = computed(() => userInfo.value?.nickname ?? userInfo.value?.username)
   const roles = computed(() => userInfo.value?.roles)
+  const isSuperManage = ref(false)
 
   // interface MenuDataItem {
   //   id: string | number
@@ -72,14 +74,17 @@ export const useUserStore = defineStore('user', () => {
   const generateDynamicRoutes = async () => {
     // const dynamicLoadWay = DYNAMIC_LOAD_WAY === DynamicLoadEnum.BACKEND ? getMenuRoutes : generateRoutes
     const dynamicLoadWay = generateRoutes
-    const { menuData: treeMenuData, routeData } = await dynamicLoadWay()
+
+    const { menuData: treeMenuData, routeData } = await dynamicLoadWay(isSuperManage.value ? manageRouter : configRouter)
     // const { menuData: treeMenuData, routeData } = await getMenuRoutes()
-
     menuData.value = treeMenuData
-
     routerData.value = {
-      ...rootRoute,
-      children: generateFlatRoutes(routeData),
+      // ...rootRoute,
+      path: '/',
+      name: 'rootPath',
+      redirect: routeData[0].path,
+      component: () => import('@/layouts/index.vue'),
+      children: generateFlatRoutes(routeData, routeData[0].path),
     }
     return routerData.value
   }
@@ -105,6 +110,13 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  const setSuperManage = (state: boolean) => {
+    userInfo.value = undefined
+    routerData.value = undefined
+    menuData.value = []
+    isSuperManage.value = state
+  }
+
   return {
     userInfo,
     roles,
@@ -115,5 +127,7 @@ export const useUserStore = defineStore('user', () => {
     generateDynamicRoutes,
     avatar,
     nickname,
+    setSuperManage,
+    isSuperManage,
   }
 })

@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios'
 import router from '~/router'
-import { useMetaTitle } from '~/composables/meta-title'
+// import { useMetaTitle } from '~/composables/meta-title'
 import { setRouteEmitter } from '~@/utils/route-listener'
 
 const allowList = ['/login', '/error', '/401', '/404', '/403']
@@ -24,12 +24,15 @@ router.beforeEach(async (to, _, next) => {
     }
   }
   else {
+    // console.log('userStore.userInfo', userStore.userInfo)
+    // console.log('to.path', to.path)
     if (!userStore.userInfo && !allowList.includes(to.path) && !to.path.startsWith('/redirect')) {
       try {
         // 获取用户信息
         await userStore.getUserInfo()
         // 获取路由菜单的信息
         const currentRoute = await userStore.generateDynamicRoutes()
+        // console.log(currentRoute)
         router.addRoute(currentRoute)
         next({
           ...to,
@@ -38,6 +41,7 @@ router.beforeEach(async (to, _, next) => {
         return
       }
       catch (e) {
+        console.log(e)
         if (e instanceof AxiosError && e?.response?.status === 401) {
           // 跳转到error页面
           next({

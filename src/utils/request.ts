@@ -41,8 +41,10 @@ async function requestHandler(config: InternalAxiosRequestConfig & RequestConfig
     config.headers.set(STORAGE_AUTHORIZE_KEY, token.value)
 
   // 增加多语言的配置
-  const { locale } = useI18nLocale()
-  config.headers.set('Accept-Language', locale.value ?? 'zh-CN')
+  // const { locale } = useI18nLocale()
+  // config.headers.set('Accept-Language', locale.value ?? 'zh-CN')
+  config.headers.set('Accept-Language', 'zh-CN')
+
   if (config.loading)
     axiosLoading.addLoading()
   return config
