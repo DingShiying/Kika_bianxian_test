@@ -510,7 +510,7 @@ function editAPP(record: any) {
                 样式管理
               </a-checkbox>
               <a-checkbox value="APP管理员">
-                APP管理员
+                APP权限人员
               </a-checkbox>
             </a-checkbox-group>
           </a-form-item>

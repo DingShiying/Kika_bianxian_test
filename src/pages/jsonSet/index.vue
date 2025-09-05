@@ -2,7 +2,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { CaretDownOutlined, CloseCircleOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import compareConfig from './components/compareConfig.vue'
-import AddOID from './components/AddOID.vue'
+import AddOID from './components/addOID.vue'
 
 interface SearchFormState {
   configName: string

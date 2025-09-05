@@ -54,7 +54,7 @@ export const configRouter: RouteRecordRaw[] = [
     name: 'jsonSet',
     component: () => import('~/pages/jsonSet/index.vue'),
     meta: {
-      title: 'JSON配置管理',
+      title: '广告配置',
       icon: 'TeamOutlined',
     },
   },
