@@ -1,8 +1,8 @@
 <script setup lang='ts' name='AddOID'>
 import { computed, reactive, ref } from 'vue'
-import { CaretDownOutlined, CloseCircleOutlined, PlusOutlined, RollbackOutlined } from '@ant-design/icons-vue'
-import { message } from 'ant-design-vue'
+import { CaretDownOutlined, CheckCircleOutlined, CloseCircleOutlined, PlusOutlined, RollbackOutlined } from '@ant-design/icons-vue'
 import selectOID from './selectOID.vue'
+import shareOID from './shareOID.vue'
 
 interface FormState {
   configName: string
@@ -14,21 +14,23 @@ interface FormState {
   }>
   copyConfig: string | undefined
   // 以上四个字段不包含在生成的json中
-  version: string
-  describe: string
-  ad_shares?: {
-    [key: string]: string
+  json: {
+    version: string
+    describe: string
+    ad_shares: {
+      [key: string]: string
+    }
+    ad_strong_shares: {
+      [key: string]: Array<string>
+    }
+    ad_chains_v2: {
+      [key: string]: Array<string>
+    }
+    styles: Array<any>
+    plans: Array<any>
+    ids: Array<any>
+    ad_positions: Array<any>
   }
-  ad_strong_shares?: {
-    [key: string]: Array<string>
-  }
-  ad_chains_v2?: {
-    [key: string]: Array<string>
-  }
-  styles: Array<any>
-  plans: Array<any>
-  ids: Array<any>
-  ad_positions: Array<any>
 }// 表单数据类型
 
 const emit = defineEmits(['close'])
@@ -45,12 +47,17 @@ const formState: FormState = reactive({
       value: undefined,
     },
   ],
-  version: '',
-  describe: '',
-  styles: [],
-  plans: [],
-  ids: [],
-  ad_positions: [],
+  json: {
+    version: '',
+    describe: '',
+    styles: [],
+    plans: [],
+    ids: [],
+    ad_positions: [],
+    ad_shares: {},
+    ad_strong_shares: {},
+    ad_chains_v2: {},
+  },
 })// 表单数据
 const copyJson = ref('')// 复制配置
 const visible = ref(false)
@@ -59,6 +66,12 @@ const rules: any = {
   configName: [
     { required: true, message: '配置名不能为空', trigger: 'blur', type: 'string' },
   ],
+  json: {
+    version: [{ required: true, message: '版本号不能为空', trigger: 'blur', type: 'string' }],
+    plan_id: [{ required: true, message: '请选择一个广告计划', trigger: 'blur', type: 'string' }],
+    ad_id: [{ required: true, message: '请选择一个广告源', trigger: 'blur', type: 'string' }],
+    style_id: [{ required: false, message: '请选择一个广告样式', trigger: 'blur', type: 'string' }],
+  },
 }// 表单验证规则
 
 const typeOptions = computed(() => {
@@ -208,137 +221,32 @@ const formatOptions = [
     value: 8,
   },
   {
-    label: 'APP_OPEN && INTERSTITIAL',
+    label: 'APP_OPEN && INTERSTITIAL', // 开屏广告 && 插屏广告
     value: 9,
   },
   {
-    label: 'NATIVE && BANNER',
+    label: 'NATIVE && BANNER', // 原生广告 && 横幅广告
     value: 10,
   },
-]
-
-const adsOptions = [
   {
-    label: 'ads_1',
-    value: 'ads_1',
-  },
-  {
-    label: 'ads_2',
-    value: 'ads_2',
-  },
-  {
-    label: 'ads_3',
-    value: 'ads_3',
-  },
-  {
-    label: 'ads_4',
-    value: 'ads_4',
+    label: 'FOLDBANNER && BANNER', // 可折叠横幅广告 && 横幅广告
+    value: 11,
   },
 ]
-const adStyleOptions = [
-  {
-    label: 'style_1',
-    value: 'style_1',
-  },
-  {
-    label: 'style_2',
-    value: 'style_2',
-  },
-  {
-    label: 'style_3',
-    value: 'style_3',
-  },
-  {
-    label: 'style_4',
-    value: 'style_4',
-  },
-]
-const adPlanOptions = [
-  {
-    label: 'plan_1',
-    value: 'plan_1',
-  },
-  {
-    label: 'plan_2',
-    value: 'plan_2',
-  },
-  {
-    label: 'plan_3',
-    value: 'plan_3',
-  },
-  {
-    label: 'plan_4',
-    value: 'plan_4',
-  },
-]
-const withOIDList = ref([
-  {
-    OIDName: 'jiashia_jsai',
-    OIDType: ['native', 'banner'],
-    ads: 'jsaks_jj',
-    adStyle: 'style_1',
-    adPlan: 'plan_1',
-    checked: false,
-  },
-  {
-    OIDName: 'sasa_ljjk',
-    OIDType: ['native'],
-    ads: 'jsaks_j',
-    adStyle: 'style_2',
-    adPlan: 'plan_2',
-    checked: false,
-  },
-  {
-    OIDName: 'gsyjgyj_kb',
-    OIDType: ['banner'],
-    ads: 'jsaks_jj',
-    adStyle: 'style_3',
-    adPlan: 'plan_3',
-    checked: false,
-  },
-  {
-    OIDName: 'vdjjdjh_habsba',
-    OIDType: ['native', 'banner'],
-    ads: 'jsaks_jj',
-    adStyle: 'style_4',
-    adPlan: 'plan_4',
-    checked: false,
-  },
-  {
-    OIDName: 'gbbxbncnbx_bb',
-    OIDType: ['native', 'banner'],
-    ads: 'jsaks_jj',
-    adStyle: 'style_5',
-    adPlan: 'plan_5',
-    checked: false,
-  },
-])
 
 interface OIDConfig {
   oid: string
   format: number
-  isCopy: boolean
+  isCopy?: boolean
   plan_id?: string
   ad_id?: string
   style_id?: string
+  share?: {
+    share_type: string
+    share_list: string | [string]
+  }
 }
 const OIDList = ref<OIDConfig[]>([])
-// function addOID() {
-//   OIDList.value.push({
-//     OIDName: '',
-//     OIDType: [],
-//     CopyOther: false,
-//     ads: undefined,
-//     adStyle: undefined,
-//     adPlan: undefined,
-//     shareType: 'ad_shares',
-//     shareList: {
-//       ad_shares: '',
-//       ad_strong_shares: [],
-//       ad_chains_v2: [],
-//     },
-//   })
-// }
 function delOID(index: number) {
   OIDList.value.splice(index, 1)
 }
@@ -369,87 +277,26 @@ function delCondition(index: number) {
   }
 }
 const searchValue = ref('')
-const open = ref(false)
 const selectOIDModal = ref(false)
-const searchOID = ref('')
-const loading = ref(false)
-const shareType = ref('ad_shares')
-const currentOID = ref()
-const shareList: any = ref({
-  ad_shares: '',
-  ad_strong_shares: [],
-  ad_chains_v2: [],
-})
-function onSearchOID() {
-  console.log(searchOID.value)
-}
-function handleOk() {
-  console.log(shareList.value)
-  // if (shareType.value === 'ad_strong_shares' && shareList.value.ad_strong_shares.length < 2) {
-  //   message.warn('ad_strongs_shares模式请选择至少两个目标OID')
-  // }
-  // else if (shareType.value === 'ad_chains_v2' && shareList.value.ad_chains_v2.length < 2) {
-  //   message.warn('ad_chains_v2模式请选择至少两个目标OID')
-  // }
-  // else {
-  //   OIDList.value[currentOID.value].isCopy = true
-  //   OIDList.value[currentOID.value].shareList = shareList.value
-  //   open.value = false
-  // }
-}// OID共享模式确定
-function handleCancel() {
-  OIDList.value[currentOID.value].isCopy = false
-  open.value = false
-}// OID共享模式取消
-function openShareModal(index: number) {
-  open.value = true
-  // shareType.value = OIDList.value[index].shareType
-  currentOID.value = index
-  resetOIDShare()
+const shareOIDModal = ref(false)
+const currentOID = ref<string>('')
+
+function openShareModal(oid: string) {
+  shareOIDModal.value = true
+  currentOID.value = oid
 }// OID共享弹窗打开
-function resetOIDShare() {
-  shareList.value.ad_shares = ''
-  shareList.value.ad_strong_shares = []
-  shareList.value.ad_chains_v2 = []
-  withOIDList.value.forEach(item => item.checked = false)
-}// 重置OID共享
-function OIDChange(OIDName: string) {
-  if (shareType.value === 'ad_shares') {
-    if (shareList.value.ad_shares && shareList.value.ad_shares !== OIDName) {
-      message.warning('ad_shares模式仅支持选择一个目标OID')
-      const item: any = withOIDList.value.find(OID => OID.OIDName === OIDName)
-      item.checked = false
-    }
-    else if (shareList.value.ad_shares === OIDName) {
-      const item: any = withOIDList.value.find(OID => OID.OIDName === OIDName)
-      item.checked = false
-      shareList.value.ad_shares = ''
-    }
-    else {
-      shareList.value.ad_shares = OIDName
-    }
-  }
-  else if (shareType.value === 'ad_strong_shares') {
-    if (shareList.value.ad_strong_shares.includes(OIDName)) {
-      const index = shareList.value.ad_strong_shares.indexOf(OIDName)
-      shareList.value.ad_strong_shares.splice(index, 1)
-    }
-    else {
-      shareList.value.ad_strong_shares.push(OIDName)
-    }
-  }
-  else {
-    if (shareList.value.ad_chains_v2.includes(OIDName)) {
-      const index = shareList.value.ad_chains_v2.indexOf(OIDName)
-      shareList.value.ad_chains_v2.splice(index, 1)
-    }
-    else {
-      shareList.value.ad_chains_v2.push(OIDName)
-    }
-  }
-}// 选中处理
 function closeSelectModal(value: boolean) {
   selectOIDModal.value = value
+}
+function closeShareModal(value: boolean) {
+  shareOIDModal.value = value
+  // @ts-expect-error:...
+  OIDList.value.find(item => item.oid === currentOID.value).isCopy = false
+}
+function handleOkShare(value: any) {
+  // @ts-expect-error:...
+  OIDList.value.find(item => item.oid === currentOID.value).share = value
+  shareOIDModal.value = false
 }
 function pushToOIDList(arr: Array<any>) {
   arr.forEach((item: OIDConfig) => {
@@ -458,6 +305,10 @@ function pushToOIDList(arr: Array<any>) {
         oid: item.oid,
         format: item.format,
         isCopy: false,
+        share: {
+          share_type: 'ad_shares',
+          share_list: '',
+        },
       })
     }
   })
@@ -689,12 +540,14 @@ const ids = [
       [
         {
           'priority': 2,
+          'format': 0,
           'source': 'MAX',
           'value': 'ceebc434ea2f112d',
         },
       ],
       [
         {
+          'format': 2,
           'priority': 1,
           'value': 'ca-app-pub-6350683154336052/7533401279',
         },
@@ -707,12 +560,14 @@ const ids = [
       [
         {
           'priority': 2,
+          'format': 4,
           'source': 'MAX',
           'value': '4372adc2263018eb',
         },
       ],
       [
         {
+          'format': 6,
           'priority': 1,
           'value': 'ca-app-pub-6350683154336052/9932317997',
         },
@@ -725,6 +580,7 @@ const ids = [
       [
         {
           'priority': 3,
+          'format': 4,
           'value': 'ca-app-pub-6350683154336052/6270479042',
         },
       ],
@@ -732,6 +588,7 @@ const ids = [
         {
           'priority': 2,
           'source': 'MAX',
+          'format': 6,
           'value': '8162a215852d5b1b',
         },
       ],
@@ -754,6 +611,7 @@ const ids = [
       [
         {
           'priority': 3,
+          'format': 2,
           'value': 'ca-app-pub-6350683154336052/8261574646',
         },
       ],
@@ -761,6 +619,7 @@ const ids = [
         {
           'priority': 2,
           'source': 'MAX',
+          'format': 0,
           'value': '7f90411561338ba6',
         },
       ],
@@ -1985,487 +1844,174 @@ const ids = [
     ],
   },
 ]
-const ad_positions = [
-  {
-    'oid': 'tm_unlock_rw',
-    'format': 1,
-    'plan_id': 'reward_default',
-    'ad_id': 'tm_unlock_rw_id',
-  },
-  {
-    'oid': 'kb_detail_enter_i',
-    'format': 0,
-    'plan_id': 'inter_default',
-    'ad_id': 'kb_detail_enter_i_id',
-  },
-  {
-    'oid': 'tm_unlock_ba',
-    'format': 6,
-    'plan_id': 'bannerr_default',
-    'ad_id': 'tm_unlock_ba_id',
-  },
-  {
-    'oid': 'splash',
-    'format': 2,
-    'plan_id': 'splash_default',
-    'ad_id': 'splash_id',
-  },
-  {
-    'oid': 'wp_feed_na',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'wp_feed_na_id',
-    'style_id': '203',
-  },
-  {
-    'oid': 'kb_detail_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_detail_nab_id',
-    'style_id': '200',
-  },
-  {
-    'oid': 'kb_setup_na',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_setup_na_id',
-    'style_id': '302',
-  },
-  {
-    'oid': 'kb_setup_nab',
-    'format': 4,
-    'plan_id': 'native_compare',
-    'ad_id': 'kb_setup_nab_id',
-    'style_id': '207',
-  },
-  {
-    'oid': 'kb_unlock_na',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_unlock_na_id',
-    'style_id': '302',
-  },
-  {
-    'oid': 'kb_unlock_nab_test1',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_unlock_nab_test1_id',
-    'style_id': '206',
-  },
-  {
-    'oid': 'kb_unlock_nab_test2',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_unlock_nab_test2_id',
-    'style_id': '206',
-  },
-  {
-    'oid': 'kb_download_nab_test2',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_download_nab_test2_id',
-    'style_id': '216',
-  },
-  {
-    'oid': 'wp_set_na',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'wp_set_na_id',
-    'style_id': '304',
-  },
-  {
-    'oid': 'wp_detail_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'wp_detail_nab_id',
-    'style_id': '210',
-  },
-  {
-    'oid': 'st_detail_na',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'st_detail_na_id',
-    'style_id': '304',
-  },
-  {
-    'oid': 'mine_tm_na',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'mine_tm_na_id',
-    'style_id': '304',
-  },
-  {
-    'oid': 'st_feed_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'st_feed_nab_id',
-    'style_id': '203',
-  },
-  {
-    'oid': 'st_preview_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'st_preview_nab_id',
-    'style_id': '200',
-  },
-  {
-    'oid': 'wp_unlock_success_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'wp_unlock_success_nab_id',
-    'style_id': '206',
-  },
-  {
-    'oid': 'wp_edit_bo_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'wp_edit_bo_nab_id',
-    'style_id': '209',
-  },
-  {
-    'oid': 'super_detail_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_detail_nab_id',
-    'style_id': '206',
-  },
-  {
-    'oid': 'ai_generating_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'ai_generating_nab_id',
-    'style_id': '213',
-  },
-  {
-    'oid': 'ai_finish_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'ai_finish_nab_id',
-    'style_id': '214',
-  },
-  {
-    'oid': 'ai_style_ba',
-    'format': 6,
-    'plan_id': 'banner_default_2',
-    'ad_id': 'ai_style_ba_id',
-  },
-  {
-    'oid': 'super_preview_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_preview_nab_id',
-    'style_id': '200',
-  },
-  {
-    'oid': 'wp_preview_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'wp_preview_nab_id',
-    'style_id': '200',
-  },
-  {
-    'oid': 'diy_set_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'diy_set_nab_id',
-    'style_id': '208',
-  },
-  {
-    'oid': 'kb_detailpage_nab',
-    'format': 4,
-    'plan_id': 'native_compare',
-    'ad_id': 'kb_detailpage_nab_id',
-    'style_id': '234_coin',
-  },
-  {
-    'oid': 'kb_detailpage_na',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_detailpage_na_id',
-    'style_id': '309',
-  },
-  {
-    'oid': 'control_center_preview_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'control_center_preview_nab_id',
-    'style_id': '234_coin',
-  },
-  {
-    'oid': 'control_function_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'control_function_nab_id',
-    'style_id': '234_coin',
-  },
-  {
-    'oid': 'control_center_permission_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'control_center_permission_nab_id',
-    'style_id': '234_coin',
-  },
-  {
-    'oid': 'kb_unlockpage_na_test3',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_unlockpage_na_test3_id',
-    'style_id': '313_coin',
-  },
-  {
-    'oid': 'kb_unlock_nab_test4',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_unlock_nab_test4_id',
-    'style_id': '206',
-  },
-  {
-    'oid': 'discover_category_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'discover_category_nab_id',
-    'style_id': '208',
-  },
-  {
-    'oid': 'category_detail_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'category_detail_nab_id',
-    'style_id': '208',
-  },
-  {
-    'oid': 'super_detail_na_style2',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_detail_na_style2_id',
-    'style_id': '206_coin',
-  },
-  {
-    'oid': 'super_detail_na_style5',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_detail_na_style5_id',
-    'style_id': '320_super_detail',
-  },
-  {
-    'oid': 'super_preview_nab_style4',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_preview_nab_style4_id',
-    'style_id': '234_coin',
-  },
-  {
-    'oid': 'kb_detailpage_nab_test',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_detailpage_nab_test_id',
-    'style_id': '234_coin',
-  },
-  {
-    'oid': 'super_apply_na',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_apply_na_id',
-    'style_id': '320_super_detail',
-  },
-  {
-    'oid': 'kb_unlockpage_na_test4',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_unlockpage_na_test4_id',
-    'style_id': '313_coin',
-  },
-  {
-    'oid': 'kb_detailpage_nab_test2',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_detailpage_nab_test2_id',
-    'style_id': '234_coin',
-  },
-  {
-    'oid': 'push_kb_detailpage_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'push_kb_detailpage_nab_id',
-    'style_id': '234_coin',
-  },
-  {
-    'oid': 'kb_detailpage_nab_test',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_detailpage_nab_test_id',
-    'style_id': '234_coin',
-  },
-  {
-    'oid': 'push_kb_detailpage_nab_test2',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'push_kb_detailpage_nab_test2_id',
-    'style_id': '234_coin',
-  },
-  {
-    'oid': 'kb_detailpage_nab_test3',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_detailpage_nab_test3_id',
-    'style_id': '236_coin',
-  },
-  {
-    'oid': 'kb_detailpage_popup_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_detailpage_popup_nab_id',
-    'style_id': '236_coin',
-  },
-  {
-    'oid': 'push_kb_unlockpage_na_test3',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'push_kb_unlockpage_na_test3_id',
-    'style_id': '313_coin',
-  },
-  {
-    'oid': 'super_preview_nab_style5',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_preview_nab_style5_id',
-    'style_id': '234_coin',
-  },
-  {
-    'oid': 'super_detail_na_style6',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_detail_na_style6_id',
-    'style_id': '310_super_detail',
-  },
-  {
-    'oid': 'super_detail_na_style7',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_detail_na_style7_id',
-    'style_id': '310_super_detail',
-  },
-  {
-    'oid': 'super_detail_na_style8',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_detail_na_style8_id',
-    'style_id': '310_super_detail',
-  },
-  {
-    'oid': 'super_unlock_popup_nab7',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_unlock_popup_nab7_id',
-    'style_id': '206_coin',
-  },
-  {
-    'oid': 'super_unlock_popup_nab8',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_unlock_popup_nab8_id',
-    'style_id': '206_coin',
-  },
-  {
-    'oid': 'super_apply_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_apply_nab_id',
-    'style_id': '234_coin',
-  },
-  {
-    'oid': 'collapsible_ba',
-    'format': 6,
-    'plan_id': 'banner_default_2',
-    'ad_id': 'collapsible_ba_id',
-  },
-  {
-    'oid': 'kb_unlockpage_na_test5',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_unlockpage_na_test5_id',
-    'style_id': '313_coin',
-  },
-  {
-    'oid': 'kb_unlockpage_na_test6',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'kb_unlockpage_na_test6_id',
-    'style_id': '313_coin',
-  },
-  {
-    'oid': 'super_preview_na_style6',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_preview_na_style6_id',
-    'style_id': '321',
-  },
-  {
-    'oid': 'super_preview_na_style7',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_preview_na_style7_id',
-    'style_id': '310_super_detail',
-  },
-  {
-    'oid': 'super_preview_na_style8',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_preview_na_style8_id',
-    'style_id': '320_super_detail',
-  },
-  {
-    'oid': 'super_preview_nab_style9',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_preview_nab_style9_id',
-    'style_id': '236_coin',
-  },
-  {
-    'oid': 'super_preview_nab_style10',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_preview_nab_style10_id',
-    'style_id': '234_coin',
-  },
-  {
-    'oid': 'super_preview_nab_style11',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'super_preview_nab_style11_id',
-    'style_id': '236_coin',
-  },
-  {
-    'oid': 'st_detail_nab',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'st_detail_nab_id',
-    'style_id': '206_coin',
-  },
-  {
-    'oid': 'wp_preview_nab_style2',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'wp_preview_nab_style2_id',
-    'style_id': '200',
-  },
-  {
-    'oid': 'wp_detail_nab_style2',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'wp_detail_nab_style2_id',
-    'style_id': '236_coin',
-  },
-  {
-    'oid': 'wp_unlock_nab_style2',
-    'format': 4,
-    'plan_id': 'native_default',
-    'ad_id': 'wp_unlock_nab_style2_id',
-    'style_id': '206_coin',
-  },
-]
+function getAds(format: number) {
+  if (format === 9) {
+    const specialAds: any = []
+    ids.forEach((item) => {
+      const isTrue = new Set()
+      item.ads.forEach((ads) => {
+        ads.forEach((ad) => {
+          // @ts-expect-error:...
+          if (ad.format === 0) {
+            isTrue.add(0)
+          }
+          // @ts-expect-error:...
+          else if (ad.format === 2) {
+            isTrue.add(2)
+          }
+        })
+      })
+      if (isTrue.size === 2) {
+        specialAds.push({
+          value: item.id,
+          ...item,
+        })
+      }
+    })
+    return specialAds
+  }
+  else if (format === 10) {
+    const specialAds: any = []
+    ids.forEach((item) => {
+      const isTrue = new Set()
+      item.ads.forEach((ads) => {
+        ads.forEach((ad) => {
+          // @ts-expect-error:...
+          if (ad.format === 4) {
+            isTrue.add(4)
+          }
+          // @ts-expect-error:...
+          else if (ad.format === 6) {
+            isTrue.add(6)
+          }
+        })
+      })
+      if (isTrue.size === 2) {
+        specialAds.push({
+          value: item.id,
+          ...item,
+        })
+      }
+    })
+    return specialAds
+  }
+  else if (format === 11) {
+    const specialAds: any = []
+    ids.forEach((item) => {
+      item.ads.forEach((ads) => {
+        if (ads.some((ad) => {
+          // @ts-expect-error:...
+          if (ad.banner_extra) {
+            // @ts-expect-error:...
+            if (ad.banner_extra.type === 1) {
+              return true
+            }
+            else {
+              return false
+            }
+          }
+          else {
+            return false
+          }
+        })) {
+          specialAds.push({
+            value: item.id,
+            ...item,
+          })
+        }
+      })
+    })
+    return specialAds
+  }
+  else {
+    return ids.map((item) => {
+      return {
+        value: item.id,
+        ...item,
+      }
+    })
+  }
+}
+function getStyles() {
+  return styles.map((item) => {
+    return {
+      value: item.id,
+      ...item,
+    }
+  })
+}
 function getPlans(format: number) {
-
+  if (format === 11) {
+    const specialPlans: any = []
+    plans.forEach((item) => {
+      if (item.refill === 0) {
+        specialPlans.push({
+          value: item.id,
+          ...item,
+        })
+      }
+    })
+    return specialPlans
+  }
+  else {
+    return plans.map((item) => {
+      return {
+        value: item.id,
+        ...item,
+      }
+    })
+  }
+}
+function submitJSON() {
+  formRef.value
+    .validate()
+    .then(() => {
+      OIDList.value.forEach((item) => {
+        if (!item.isCopy) {
+          if (!formState.json.ids.some(id => id.id === item.ad_id)) {
+            formState.json.ids.push(ids.find(i => i.id === item.ad_id))
+          }
+          if (!formState.json.plans.some(plan => plan.id === item.plan_id)) {
+            formState.json.plans.push(plans.find(i => i.id === item.plan_id))
+          }
+          if (!formState.json.styles.some(style => style.id === item.style_id)) {
+            formState.json.styles.push(styles.find(i => i.id === item.style_id))
+          }
+          delete item.isCopy
+          delete item.share
+          formState.json.ad_positions.push({
+            ...item,
+          })
+        }
+        else {
+          if (item.share?.share_type === 'ad_shares') {
+            // @ts-expect-error:...
+            formState.json.ad_shares[item.oid] = item.share.share_list
+            if (!formState.json.ids.includes(item.share?.share_list)) {
+              formState.json.ids.push(ids.find(i => i.id === item.share?.share_list))
+            }
+            if (!formState.json.plans.includes(item.plan_id)) {
+              formState.json.plans.push(plans.find(i => i.id === item.plan_id))
+            }
+            if (!formState.json.styles.includes(item.style_id)) {
+              formState.json.styles.push(styles.find(i => i.id === item.style_id))
+            }
+          }
+          else if (item.share?.share_type === 'ad_strong_shares') {
+            // @ts-expect-error:...
+            formState.json.ad_strong_shares[item.oid] = item.share.share_list
+          }
+          else {
+            // @ts-expect-error:...
+            formState.json.ad_chains_v2[item.oid] = item.share.share_list
+          }
+        }
+      })
+      console.log(JSON.stringify(formState.json))
+    })
+    .catch((error: any) => {
+      console.error('error', error)
+    })
 }
 </script>
 
@@ -2483,16 +2029,16 @@ function getPlans(format: number) {
 
     <div class="containner">
       <a-form
-        ref="formRef" :model="formState" :rules="rules" :label-col="{ style: { width: '80px' } }" layout="inline"
+        ref="formRef" :model="formState" :label-col="{ style: { width: '80px' } }" layout="inline"
         class="form-part"
       >
         <a-space class="top">
-          <a-form-item label="配置名称" name="configName">
+          <a-form-item label="配置名称" name="configName" :rules="rules.configName">
             <a-input v-model:value="formState.configName" placeholder="请输入配置名称" />
           </a-form-item>
 
           <a-form-item label="描述" name="describe">
-            <a-input v-model:value="formState.describe" placeholder="请输入配置描述" />
+            <a-input v-model:value="formState.json.describe" placeholder="请输入配置描述" />
           </a-form-item>
 
           <a-form-item label="备注" name="user_describe">
@@ -2500,7 +2046,7 @@ function getPlans(format: number) {
           </a-form-item>
 
           <a-form-item label="版本" name="version">
-            <a-input v-model:value="formState.version" placeholder="请输入配置版本" type="number" />
+            <a-input v-model:value="formState.json.version" placeholder="请输入配置版本" type="number" />
           </a-form-item>
 
           <a-form-item label="复用配置" name="copyConfig">
@@ -2525,6 +2071,7 @@ function getPlans(format: number) {
             </a-select>
           </a-form-item>
         </a-space>
+
         <div v-if="formState.copyConfig === 'jsonCopy'" class="copy-json">
           <a-textarea v-model:value="copyJson" placeholder="请输入复用JSON" :rows="4" />
           <a-button type="primary">
@@ -2605,198 +2152,132 @@ function getPlans(format: number) {
             </div>
           </div>
         </a-space>
-      </a-form>
 
-      <a-space class="OID-add">
-        <a-button type="primary" @click="() => selectOIDModal = true">
-          <template #icon>
-            <PlusOutlined />
-          </template>
-          添加OID并配置
-        </a-button>
-        <div class="OID-content">
-          <div v-for="(item, index) in OIDList" :key="index" class="OID">
-            <CloseCircleOutlined class="OID-delete" @click="delOID(index)" />
-            <a-tooltip trigger="click" placement="topLeft">
-              <template #title>
-                {{ item.oid }}
-              </template>
-              <div class="name">
-                {{ item.oid }}
-              </div>
-            </a-tooltip>
-            <div class="format">
-              <span>广告类型:&nbsp;&nbsp;</span>
-              <a-tag color="blue" style="font-size: 14px;">
-                {{ formatOptions.find((i) => i.value === item.format)?.label.toLowerCase() }}
-              </a-tag>
-            </div>
-            <div class="copy-other">
-              <span>是否共享其他OID配置</span>
-              <a-radio-group v-model:value="item.isCopy">
-                <a-radio :value="true" @click="openShareModal(index)">
-                  是
-                </a-radio>
-                <a-radio :value="false">
-                  否
-                </a-radio>
-              </a-radio-group>
-            </div>
-            <div v-if="!item.isCopy" class="nocopy">
-              <div class="ads">
-                <div>广告源ads</div>
-                <a-select
-                  v-model:value="item.ad_id" :options="adsOptions" style="text-align: center;"
-                  placeholder="请选择广告源"
-                />
-              </div>
-              <div class="adstyle">
-                <div>广告样式</div>
-                <a-select
-                  v-model:value="item.style_id" :options="adStyleOptions" style="text-align: center;"
-                  placeholder="请选择广告样式"
-                />
-              </div>
-              <div class="adplan">
-                <div>广告计划</div>
-                <a-select
-                  v-model:value="item.plan_id" :options="adPlanOptions" style="text-align: center;"
-                  placeholder="请选择广告计划"
-                />
-              </div>
-            </div>
-            <!-- <div v-else class="withcopy">
-              <div class="copy-header">
-                <div>目标OID</div>
-                <a-tag
-                  :color="item.shareType === 'ad_shares' ? '#daeafe' : item.shareType === 'ad_strong_shares' ? '#84fcba' : '#cbec36'"
-                >
-                  {{ item.shareType === 'ad_shares' ? '基础共享模式' : item.shareType === 'ad_strong_shares' ? '速度优先模式'
-                    : '价值优先模式'
-                  }}
-                </a-tag>
-                <span>已选择&nbsp;&nbsp;{{ item.shareType === 'ad_shares' ? 1 : item.shareType === 'ad_strong_shares'
-                  ? item.shareList.ad_strong_shares.length : item.shareList.ad_chains_v2.length
-                }}&nbsp;&nbsp;个OID</span>
-              </div>
-              <div class="copyOID">
-                <template v-if="item.shareType === 'ad_shares'">
-                  <a-tag color="success">
-                    <template #icon>
-                      <CheckCircleOutlined />
-                    </template>
-                    {{ item.shareList.ad_shares }}
-                  </a-tag>
-                </template>
-                <template v-else-if="item.shareType === 'ad_strong_shares'">
-                  <a-tag v-for="tag in item.shareList.ad_strong_shares" :key="tag" color="success">
-                    <template #icon>
-                      <CheckCircleOutlined />
-                    </template>
-                    {{ tag }}
-                  </a-tag>
-                </template>
-                <template v-else>
-                  <a-tag v-for="tag in item.shareList.ad_chains_v2" :key="tag" color="success">
-                    <template #icon>
-                      <CheckCircleOutlined />
-                    </template>
-                    {{ tag }}
-                  </a-tag>
-                </template>
-              </div>
-            </div> -->
-          </div>
-        </div>
-      </a-space>
-    </div>
-    <a-modal
-      v-model:open="open" style="top:10vh;width:75vw;" title="共享OID配置" :mask-closable="false" @ok="handleOk"
-      @cancel="handleCancel"
-    >
-      <a-input-search
-        v-model:value="searchOID" placeholder="请输入目标OID名称" style="width:40vw;" enter-button
-        @search="onSearchOID"
-      />
-      <a-form-item label="共享模式" class="share-type">
-        <a-radio-group v-model:value="shareType" @change="resetOIDShare">
-          <a-radio value="ad_shares">
-            <div class="radio-content">
-              <span>基础共享模式</span>
-              <span>(ad_shares)</span>
-            </div>
-          </a-radio>
-          <a-radio value="ad_strong_shares">
-            <div class="radio-content">
-              <span>速度优先模式</span>
-              <span>(ad_strong_shares)</span>
-            </div>
-          </a-radio>
-          <a-radio value="ad_chains_v2">
-            <div class="radio-content">
-              <span>价值优先共享模式</span>
-              <span>(ad_chains_v2)</span>
-            </div>
-          </a-radio>
-        </a-radio-group>
-      </a-form-item>
-      <div class="OID-part1">
-        <a-checkbox
-          v-for="item in withOIDList" :key="item.OIDName" v-model:checked="item.checked"
-          @change="OIDChange(item.OIDName)"
-        >
-          <div class="OID">
-            <div class="OID-name">
-              <a-tooltip>
+        <a-space class="OID-add">
+          <a-button type="primary" @click="() => selectOIDModal = true">
+            <template #icon>
+              <PlusOutlined />
+            </template>
+            添加OID并配置
+          </a-button>
+          <div class="OID-content">
+            <div v-for="(item, index) in OIDList" :key="index" class="OID">
+              <CloseCircleOutlined class="OID-delete" @click="delOID(index)" />
+              <a-tooltip trigger="click" placement="topLeft">
                 <template #title>
-                  {{ item.OIDName }}
+                  {{ item.oid }}
                 </template>
-                <span class="name">{{ item.OIDName }}</span>
+                <div class="name">
+                  {{ item.oid }}
+                </div>
               </a-tooltip>
-              <div class="type">
-                <p>广告类型:</p>
-                <a-tag v-for="tag in item.OIDType" :key="tag">
-                  {{ tag }}
+              <div class="format">
+                <span>广告类型:&nbsp;&nbsp;</span>
+                <a-tag color="blue" style="font-size: 14px;">
+                  {{ formatOptions.find((i) => i.value === item.format)?.label.toLowerCase() }}
                 </a-tag>
               </div>
-            </div>
-            <div class="nocopy">
-              <div class="ads">
-                <div>广告源ads</div>
-                <a-button>{{ item.ads }}</a-button>
+              <div class="copy-other">
+                <span>是否共享其他OID配置</span>
+                <a-radio-group v-model:value="item.isCopy">
+                  <a-radio
+                    :value="true" @click="openShareModal(item.oid)"
+                  >
+                    是
+                  </a-radio>
+                  <a-radio :value="false">
+                    否
+                  </a-radio>
+                </a-radio-group>
               </div>
-              <div class="adstyle">
-                <div>广告样式</div>
-                <a-button>{{ item.adStyle }}</a-button>
+              <div v-if="!item.isCopy" class="nocopy">
+                <div class="ads">
+                  <div>广告源ads</div>
+                  <a-form-item>
+                    <a-select v-model:value="item.ad_id" style="text-align: center;" placeholder="请选择广告源" show-search>
+                      <template v-for="ads in getAds(item.format)" :key="ads.value">
+                        <a-select-option :value="ads.value">
+                          <a-tooltip placement="left">
+                            <template #title>
+                              {{ ads.value }}
+                            </template>
+                            {{ ads.value }}
+                          </a-tooltip>
+                        </a-select-option>
+                      </template>
+                    </a-select>
+                  </a-form-item>
+                </div>
+                <div class="adstyle">
+                  <div>广告样式</div>
+                  <a-select v-model:value="item.style_id" style="text-align: center;" placeholder="请选择广告样式" show-search>
+                    <template v-for="style in getStyles()" :key="style.value">
+                      <a-select-option :value="style.value">
+                        <a-tooltip placement="left">
+                          <template #title>
+                            {{ style.value }}
+                          </template>
+                          {{ style.value }}
+                        </a-tooltip>
+                      </a-select-option>
+                    </template>
+                  </a-select>
+                </div>
+                <div class="adplan">
+                  <div>广告计划</div>
+                  <a-select v-model:value="item.plan_id" style="text-align: center;" placeholder="请选择广告计划" show-search>
+                    <template v-for="plan in getPlans(item.format)" :key="plan.value">
+                      <a-select-option :value="plan.value">
+                        <a-tooltip placement="left">
+                          <template #title>
+                            {{ plan.value }}
+                          </template>
+                          {{ plan.value }}
+                        </a-tooltip>
+                      </a-select-option>
+                    </template>
+                  </a-select>
+                </div>
               </div>
-              <div class="adplan">
-                <div>广告计划</div>
-                <a-button>{{ item.adPlan }}</a-button>
+              <div v-else class="withcopy">
+                <div class="copy-header">
+                  <a-tag
+                    :color="item.share?.share_type === 'ad_shares' ? '#daeafe' : item.share?.share_type === 'ad_strong_shares' ? '#84fcba' : '#cbec36'"
+                  >
+                    {{ item.share?.share_type }}
+                  </a-tag>
+                  <span>选择&nbsp;{{ item.share?.share_type === 'ad_shares' ? 1 : item.share?.share_list.length }}&nbsp;个目标OID</span>
+                </div>
+                <div class="copyOID">
+                  <template v-if="item.share?.share_type === 'ad_shares'">
+                    <a-tag color="success">
+                      {{ item.share?.share_list }}
+                    </a-tag>
+                  </template>
+                  <template v-else>
+                    <a-tag v-for="tag in item.share?.share_list" :key="tag" color="success">
+                      {{ tag }}
+                    </a-tag>
+                  </template>
+                </div>
               </div>
             </div>
           </div>
-        </a-checkbox>
-      </div>
-
-      <template #footer>
-        <a-button key="back" @click="handleCancel">
-          取消
-        </a-button>
-        <a-button key="submit" type="primary" :loading="loading" @click="handleOk">
-          确定
-        </a-button>
-      </template>
-    </a-modal>
-
+        </a-space>
+      </a-form>
+    </div>
     <a-space v-if="selectOIDModal">
       <selectOID @close="closeSelectModal" @select="pushToOIDList" />
+    </a-space>
+    <a-space v-if="shareOIDModal">
+      <shareOID @close="closeShareModal" @share="handleOkShare" />
     </a-space>
 
     <div class="footer">
       <a-button @click="emit('close', false)">
         取消
       </a-button>
-      <a-button type="primary">
+      <a-button type="primary" @click="submitJSON">
         确定
       </a-button>
     </div>
@@ -2867,12 +2348,61 @@ function getPlans(format: number) {
 .form-part {
   width: 85%;
   margin: 0 auto;
-  padding: 20px;
   padding-bottom: 10px;
   border-radius: 10px;
   display: flex;
   justify-content: space-between;
+}
+
+.top {
+  width: 100%;
+  padding: 20px;
+  height: 106px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   background-color: #fff;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+
+  .ant-form-item {
+    margin: 0;
+  }
+
+  :deep(.ant-form-item-row) {
+    flex-direction: column;
+    width: 15vw;
+
+    .ant-form-item-label {
+      text-align: left;
+    }
+  }
+}
+
+.copy-json {
+  width: 100%;
+  padding: 0 20px;
+  background-color: #fff;
+  position: relative;
+
+  .ant-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+  }
+}
+
+.condition {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0 !important;
+  background-color: #fff;
+  padding: 0 20px;
+  padding-bottom: 20px;
+  width: 100%;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
 
   .ant-form-item {
     margin: 0;
@@ -2887,91 +2417,65 @@ function getPlans(format: number) {
     }
   }
 
-  .top {
-    width: 100%;
-    height: 86px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+  .label {
+    height: 32px;
+    text-align: left;
+    line-height: 32px;
   }
 
-  .copy-json {
-    width: 100%;
+  .level-select {
+    width: 50vw;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
     position: relative;
 
-    .ant-btn {
+    .condition-delete {
+      font-size: 20px;
       position: absolute;
-      bottom: 10px;
-      right: 10px;
-    }
-  }
-
-  .condition {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0 !important;
-
-    .label {
-      height: 32px;
-      text-align: left;
-      line-height: 32px;
+      right: 3px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
     }
 
-    .level-select {
-      width: 50vw;
-      border: 1px solid #d9d9d9;
-      border-radius: 8px;
-      padding: 5px;
+    .sub-select {
+      width: 75%;
       display: flex;
       align-items: center;
-      margin-bottom: 10px;
-      position: relative;
+      padding: 0 5px;
 
-      .condition-delete {
-        font-size: 20px;
-        position: absolute;
-        right: 3px;
-        top: 50%;
-        transform: translateY(-50%);
+      .area-select {
+        width: 45%;
+        text-align: center;
         cursor: pointer;
+        color: grey;
       }
 
-      .sub-select {
-        width: 75%;
+      .rate {
+        width: 90%;
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        padding: 0 5px;
 
-        .area-select {
-          width: 45%;
-          text-align: center;
-          cursor: pointer;
-          color: grey;
+        .ant-btn {
+          width: 10%;
         }
 
-        .rate {
-          width: 90%;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-
-          .ant-btn {
-            width: 10%;
-          }
-
-          .ant-slider {
-            width: 75%;
-          }
+        .ant-slider {
+          width: 75%;
         }
+      }
 
-        .add-condition {
-          text-align: center;
-          color: #409eff;
-          margin-left: 10px;
-          font-weight: bold;
-          cursor: pointer;
-        }
+      .add-condition {
+        text-align: center;
+        color: #409eff;
+        margin-left: 10px;
+        font-weight: bold;
+        cursor: pointer;
       }
     }
   }
@@ -2990,8 +2494,7 @@ function getPlans(format: number) {
 }
 
 .OID-add {
-  width: 85%;
-  margin: 0 auto;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -3003,189 +2506,57 @@ function getPlans(format: number) {
       width: 100%;
     }
   }
-
-  .OID-content {
-    background-color: #fff;
-    margin-top: 10px;
-    margin-bottom: 60px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 300px);
-    justify-content: space-around;
-    width: 100%;
-    min-height: 300px;
-    padding: 20px;
-    border-radius: 10px;
-    gap: 10px;
-
-    .OID {
-      width: 300px;
-      min-height: 210px;
-      background-color: #f5f7fa;
-      border-radius: 15px;
-      padding: 15px;
-      margin-bottom: 20px;
-      position: relative;
-
-      .name {
-        width: 100%;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        color: #409eff;
-        font-size: 20px;
-        font-weight: 600;
-        cursor: pointer;
-      }
-
-      .format {
-        width: 100%;
-        font-size: 15px;
-      }
-
-      .copy-other {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 10px;
-
-        span {
-          font-size: 14px;
-        }
-      }
-
-      .nocopy {
-        width: 100%;
-
-        .ads,
-        .adstyle,
-        .adplan {
-          width: 100%;
-          margin-top: 10px;
-          display: flex;
-          align-items: center;
-
-          div {
-            width: 100px;
-          }
-
-          .ant-select {
-            width: calc(100% - 110px);
-          }
-        }
-      }
-
-      .withcopy {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-
-        // align-items: center;
-        .copy-header {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          background-color: #f5f7fa;
-
-          .ant-tag {
-            color: black;
-            margin: 0 10px;
-          }
-        }
-
-        .ant-tag {
-          font-size: 14px;
-          margin-top: 10px;
-        }
-      }
-
-      .OID-delete {
-        width: 15px;
-        height: 15px;
-        position: absolute;
-        top: 0;
-        right: -10px;
-        cursor: pointer;
-      }
-    }
-  }
 }
 
-.share-type {
-  margin-top: 20px;
-
-  :deep(.ant-form-item-row) {
-    align-items: center;
-
-    .ant-radio-wrapper {
-      padding: 3px;
-      gap: 5px;
-      margin-right: 20px;
-      width: 170px;
-
-      &:first-of-type {
-        background-color: #daeafe;
-      }
-
-      &:nth-of-type(2) {
-        background-color: #84fcba;
-      }
-
-      &:last-of-type {
-        background-color: #cbec36;
-      }
-    }
-  }
-
-  .radio-content {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-.OID-part1 {
-  margin-top: 20px;
+.OID-content {
+  background-color: #fff;
+  margin-top: 10px;
+  margin-bottom: 60px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, 312px);
+  grid-template-columns: repeat(auto-fill, 300px);
   justify-content: space-around;
   width: 100%;
+  min-height: 300px;
+  padding: 20px;
+  border-radius: 10px;
   gap: 10px;
-  max-height: 50vh;
   overflow-y: auto;
+  overflow-x: hidden;
 
   .OID {
-    width: 280px;
-    min-height: 210px;
+    width: 300px;
+    height:fit-content;
+    // min-height: 210px;
     background-color: #f5f7fa;
     border-radius: 15px;
-    padding: 10px;
+    padding: 15px;
     margin-bottom: 20px;
+    position: relative;
 
-    .OID-name {
+    .name {
+      width: 100%;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #409eff;
+      font-size: 20px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .format {
+      width: 100%;
+      font-size: 15px;
+    }
+
+    .copy-other {
       width: 100%;
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
 
-      .name {
-        font-size: 18px;
-        font-weight: bolder;
-        color: #409eff;
-        width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        margin-bottom: 10px;
-      }
-
-      .type {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-
-        p {
-          margin: 0;
-          margin-right: 20px;
-        }
+      span {
+        font-size: 14px;
       }
     }
 
@@ -3196,18 +2567,70 @@ function getPlans(format: number) {
       .adstyle,
       .adplan {
         width: 100%;
-        margin-top: 10px;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
+        height: 54px;
 
         div {
-          width: 80px;
+          width: 100px;
         }
 
-        .ant-btn {
-          width: calc(100% - 110px);
+        .ant-form-item {
+          margin: 0;
+          width: 160px;
+        }
+
+        .ant-select{
+          width: 160px;
+        }
+        .style_id{
+          width:160px;
+          padding:5px 10px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          border:1px solid #d9d9d9;
+          border-radius: 4px;
         }
       }
+
+      .ads {
+        margin-top: 10px;
+      }
+    }
+
+    .withcopy {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+
+      // align-items: center;
+      .copy-header {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #f5f7fa;
+
+        .ant-tag {
+          color: black;
+          margin:0;
+        }
+      }
+
+      .ant-tag {
+        font-size: 14px;
+        margin-top: 10px;
+      }
+    }
+
+    .OID-delete {
+      width: 15px;
+      height: 15px;
+      position: absolute;
+      top: 0;
+      right: -10px;
+      cursor: pointer;
     }
   }
 }

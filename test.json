@@ -1,0 +1,59 @@
+{
+  "version": "",
+  "describe": "",
+  "styles": [
+    {
+      "id": "320_super_detail",
+      "base_id": 320,
+      "cta_text_color": "#333333",
+      "cta_text": "Install",
+      "cta_angle": 270,
+      "cta_start_color": "#46EB72",
+      "cta_end_color": "#7FFA49",
+      "cta_radius": 20,
+      "choice_location": 1
+    }
+  ],
+  "plans": [
+    {
+      "id": "inter_user_level",
+      "count": 1,
+      "refill": 1,
+      "load_strategy": 4
+    }
+  ],
+  "ids": [
+    {
+      "id": "tm_unlock_rw_id",
+      "ads": [
+        [
+          {
+            "priority": 2,
+            "format": 0,
+            "source": "MAX",
+            "value": "ceebc434ea2f112d"
+          }
+        ],
+        [
+          {
+            "format": 2,
+            "priority": 1,
+            "value": "ca-app-pub-6350683154336052/7533401279"
+          }
+        ]
+      ]
+    }
+  ],
+  "ad_positions": [
+    {
+      "oid": "123456",
+      "format": 9,
+      "ad_id": "tm_unlock_rw_id",
+      "style_id": "320_super_detail",
+      "plan_id": "inter_user_level"
+    }
+  ],
+  "ad_shares": {},
+  "ad_strong_shares": {},
+  "ad_chains_v2": {}
+}

@@ -62,7 +62,7 @@ const data: DataItem[] = [
     key: 1,
     oid: '123456',
     desc: '测试',
-    format: 0,
+    format: 9,
     creator: 'admin',
     createTime: '2023-01-01',
   },
@@ -70,7 +70,7 @@ const data: DataItem[] = [
     key: 2,
     oid: '789012',
     desc: '测试111',
-    format: 8,
+    format: 10,
     creator: 'admin',
     createTime: '2023-01-01',
   },
@@ -84,15 +84,15 @@ const data: DataItem[] = [
   },
   {
     key: 4,
-    oid: '123456',
+    oid: '3323231',
     desc: '测试',
-    format: 0,
+    format: 11,
     creator: 'admin',
     createTime: '2023-01-01',
   },
   {
     key: 5,
-    oid: '789012',
+    oid: '43424234',
     desc: '测试111',
     format: 8,
     creator: 'admin',
@@ -100,7 +100,7 @@ const data: DataItem[] = [
   },
   {
     key: 6,
-    oid: '345678',
+    oid: '4234235435545',
     desc: '测试444',
     format: 3,
     creator: 'admin',
@@ -108,7 +108,7 @@ const data: DataItem[] = [
   },
   {
     key: 7,
-    oid: '123456',
+    oid: '5253908375890',
     desc: '测试',
     format: 0,
     creator: 'admin',
@@ -116,7 +116,7 @@ const data: DataItem[] = [
   },
   {
     key: 8,
-    oid: '789012',
+    oid: '87580978979501',
     desc: '测试111',
     format: 8,
     creator: 'admin',
@@ -124,7 +124,7 @@ const data: DataItem[] = [
   },
   {
     key: 9,
-    oid: '345678',
+    oid: 'jgijougi981739',
     desc: '测试444',
     format: 3,
     creator: 'admin',
@@ -178,18 +178,22 @@ const formatOptions = [
     value: 8,
   },
   {
-    label: 'APP_OPEN && INTERSTITIAL',
+    label: 'APP_OPEN && INTERSTITIAL', // 开屏广告 && 插屏广告
     value: 9,
   },
   {
-    label: 'NATIVE && BANNER',
+    label: 'NATIVE && BANNER', // 原生广告 && 横幅广告
     value: 10,
+  },
+  {
+    label: 'FOLDBANNER && BANNER', // 可折叠横幅广告 && 横幅广告
+    value: 11,
   },
 ]
 
 const pagination = ref({
   current: 1,
-  pageSize: 5,
+  pageSize: 10,
   total: data.length,
 })// 表格分页
 
@@ -234,7 +238,7 @@ function selectOID() {
 
 <template>
   <a-modal
-    v-model:open="open" style="top:10vh;width:75vw;" title="共享OID配置" :mask-closable="false" @ok="selectOID"
+    v-model:open="open" style="top:10vh;width:75vw;" title="添加OID" :mask-closable="false" @ok="selectOID"
     @cancel="cancelSelectOID"
   >
     <template #footer>
@@ -266,7 +270,8 @@ function selectOID() {
     </div>
     <a-table
       :columns="columns" :data-source="data" :row-selection="rowSelection"
-      :pagination="pagination" position="both" @change="handleTableChange($event)"
+      :pagination="pagination" position="both" :scroll="{ y: '38vh' }"
+      @change="handleTableChange($event)"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'format'">
