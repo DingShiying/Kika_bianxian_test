@@ -1,8 +1,10 @@
 <script setup lang='ts' name='AddOID'>
 import { computed, reactive, ref } from 'vue'
-import { CaretDownOutlined, CheckCircleOutlined, CloseCircleOutlined, PlusOutlined, RollbackOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import { CaretDownOutlined, CloseCircleOutlined, PlusOutlined, RollbackOutlined } from '@ant-design/icons-vue'
 import selectOID from './selectOID.vue'
 import shareOID from './shareOID.vue'
+import Loading from '@/components/base-loading/index.vue'
 
 interface FormState {
   configName: string
@@ -50,17 +52,18 @@ const formState: FormState = reactive({
   json: {
     version: '',
     describe: '',
+    ad_shares: {},
+    ad_strong_shares: {},
+    ad_chains_v2: {},
     styles: [],
     plans: [],
     ids: [],
     ad_positions: [],
-    ad_shares: {},
-    ad_strong_shares: {},
-    ad_chains_v2: {},
   },
 })// 表单数据
-const copyJson = ref('')// 复制配置
+const copyJSON = ref('')// 复制配置
 const visible = ref(false)
+const loading = ref(false)
 
 const rules: any = {
   configName: [
@@ -243,7 +246,7 @@ interface OIDConfig {
   style_id?: string
   share?: {
     share_type: string
-    share_list: string | [string]
+    share_list: string | Array<string>
   }
 }
 const OIDList = ref<OIDConfig[]>([])
@@ -360,7 +363,7 @@ watch(searchValue, (newValue) => {
   })
 })
 
-const plans = [
+const plans = reactive([
   {
     'id': 'inter_default',
     'count': 1,
@@ -425,8 +428,8 @@ const plans = [
     'refill': 1,
     'load_strategy': 21,
   },
-]
-const styles = [
+])
+const styles = reactive([
   {
     'id': '312_coin',
     'base_id': 312,
@@ -532,8 +535,8 @@ const styles = [
     'cta_radius': 24,
     'choice_location': 1,
   },
-]
-const ids = [
+])
+const ids = reactive([
   {
     'id': 'tm_unlock_rw_id',
     'ads': [
@@ -1843,7 +1846,563 @@ const ids = [
       ],
     ],
   },
-]
+])
+const positions = reactive([
+  {
+    'oid': 'tm_unlock_rw',
+    'format': 1,
+    'plan_id': 'reward_default',
+    'ad_id': 'tm_unlock_rw_id',
+  },
+  {
+    'oid': 'kb_detail_enter_i',
+    'format': 0,
+    'plan_id': 'inter_default',
+    'ad_id': 'kb_detail_enter_i_id',
+  },
+  {
+    'oid': 'tm_unlock_ba',
+    'format': 6,
+    'plan_id': 'bannerr_default',
+    'ad_id': 'tm_unlock_ba_id',
+  },
+  {
+    'oid': 'splash',
+    'format': 2,
+    'plan_id': 'splash_default',
+    'ad_id': 'splash_id',
+  },
+  {
+    'oid': 'wp_feed_na',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'wp_feed_na_id',
+    'style_id': '203',
+  },
+  {
+    'oid': 'kb_detail_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_detail_nab_id',
+    'style_id': '200',
+  },
+  {
+    'oid': 'kb_setup_na',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_setup_na_id',
+    'style_id': '302',
+  },
+  {
+    'oid': 'kb_setup_nab',
+    'format': 4,
+    'plan_id': 'native_compare',
+    'ad_id': 'kb_setup_nab_id',
+    'style_id': '207',
+  },
+  {
+    'oid': 'kb_unlock_na',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_unlock_na_id',
+    'style_id': '302',
+  },
+  {
+    'oid': 'kb_unlock_nab_test1',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_unlock_nab_test1_id',
+    'style_id': '206',
+  },
+  {
+    'oid': 'kb_unlock_nab_test2',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_unlock_nab_test2_id',
+    'style_id': '206',
+  },
+  {
+    'oid': 'kb_download_nab_test2',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_download_nab_test2_id',
+    'style_id': '216',
+  },
+  {
+    'oid': 'wp_set_na',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'wp_set_na_id',
+    'style_id': '304',
+  },
+  {
+    'oid': 'wp_detail_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'wp_detail_nab_id',
+    'style_id': '210',
+  },
+  {
+    'oid': 'st_detail_na',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'st_detail_na_id',
+    'style_id': '304',
+  },
+  {
+    'oid': 'mine_tm_na',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'mine_tm_na_id',
+    'style_id': '304',
+  },
+  {
+    'oid': 'st_feed_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'st_feed_nab_id',
+    'style_id': '203',
+  },
+  {
+    'oid': 'st_preview_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'st_preview_nab_id',
+    'style_id': '200',
+  },
+  {
+    'oid': 'wp_unlock_success_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'wp_unlock_success_nab_id',
+    'style_id': '206',
+  },
+  {
+    'oid': 'wp_edit_bo_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'wp_edit_bo_nab_id',
+    'style_id': '209',
+  },
+  {
+    'oid': 'super_detail_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_detail_nab_id',
+    'style_id': '206',
+  },
+  {
+    'oid': 'ai_generating_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'ai_generating_nab_id',
+    'style_id': '213',
+  },
+  {
+    'oid': 'ai_finish_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'ai_finish_nab_id',
+    'style_id': '214',
+  },
+  {
+    'oid': 'ai_style_ba',
+    'format': 6,
+    'plan_id': 'banner_default_2',
+    'ad_id': 'ai_style_ba_id',
+  },
+  {
+    'oid': 'super_preview_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_preview_nab_id',
+    'style_id': '200',
+  },
+  {
+    'oid': 'wp_preview_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'wp_preview_nab_id',
+    'style_id': '200',
+  },
+  {
+    'oid': 'diy_set_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'diy_set_nab_id',
+    'style_id': '208',
+  },
+  {
+    'oid': 'kb_detailpage_nab',
+    'format': 4,
+    'plan_id': 'native_compare',
+    'ad_id': 'kb_detailpage_nab_id',
+    'style_id': '234_coin',
+  },
+  {
+    'oid': 'kb_detailpage_na',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_detailpage_na_id',
+    'style_id': '309',
+  },
+  {
+    'oid': 'control_center_preview_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'control_center_preview_nab_id',
+    'style_id': '234_coin',
+  },
+  {
+    'oid': 'control_function_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'control_function_nab_id',
+    'style_id': '234_coin',
+  },
+  {
+    'oid': 'control_center_permission_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'control_center_permission_nab_id',
+    'style_id': '234_coin',
+  },
+  {
+    'oid': 'kb_unlockpage_na_test3',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_unlockpage_na_test3_id',
+    'style_id': '313_coin',
+  },
+  {
+    'oid': 'kb_unlock_nab_test4',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_unlock_nab_test4_id',
+    'style_id': '206',
+  },
+  {
+    'oid': 'discover_category_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'discover_category_nab_id',
+    'style_id': '208',
+  },
+  {
+    'oid': 'category_detail_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'category_detail_nab_id',
+    'style_id': '208',
+  },
+  {
+    'oid': 'super_detail_na_style2',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_detail_na_style2_id',
+    'style_id': '206_coin',
+  },
+  {
+    'oid': 'super_detail_na_style5',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_detail_na_style5_id',
+    'style_id': '320_super_detail',
+  },
+  {
+    'oid': 'super_preview_nab_style4',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_preview_nab_style4_id',
+    'style_id': '234_coin',
+  },
+  {
+    'oid': 'kb_detailpage_nab_test',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_detailpage_nab_test_id',
+    'style_id': '234_coin',
+  },
+  {
+    'oid': 'super_apply_na',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_apply_na_id',
+    'style_id': '320_super_detail',
+  },
+  {
+    'oid': 'kb_unlockpage_na_test4',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_unlockpage_na_test4_id',
+    'style_id': '313_coin',
+  },
+  {
+    'oid': 'kb_detailpage_nab_test2',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_detailpage_nab_test2_id',
+    'style_id': '234_coin',
+  },
+  {
+    'oid': 'push_kb_detailpage_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'push_kb_detailpage_nab_id',
+    'style_id': '234_coin',
+  },
+  {
+    'oid': 'kb_detailpage_nab_test',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_detailpage_nab_test_id',
+    'style_id': '234_coin',
+  },
+  {
+    'oid': 'push_kb_detailpage_nab_test2',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'push_kb_detailpage_nab_test2_id',
+    'style_id': '234_coin',
+  },
+  {
+    'oid': 'kb_detailpage_nab_test3',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_detailpage_nab_test3_id',
+    'style_id': '236_coin',
+  },
+  {
+    'oid': 'kb_detailpage_popup_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_detailpage_popup_nab_id',
+    'style_id': '236_coin',
+  },
+  {
+    'oid': 'push_kb_unlockpage_na_test3',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'push_kb_unlockpage_na_test3_id',
+    'style_id': '313_coin',
+  },
+  {
+    'oid': 'super_preview_nab_style5',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_preview_nab_style5_id',
+    'style_id': '234_coin',
+  },
+  {
+    'oid': 'super_detail_na_style6',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_detail_na_style6_id',
+    'style_id': '310_super_detail',
+  },
+  {
+    'oid': 'super_detail_na_style7',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_detail_na_style7_id',
+    'style_id': '310_super_detail',
+  },
+  {
+    'oid': 'super_detail_na_style8',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_detail_na_style8_id',
+    'style_id': '310_super_detail',
+  },
+  {
+    'oid': 'super_unlock_popup_nab7',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_unlock_popup_nab7_id',
+    'style_id': '206_coin',
+  },
+  {
+    'oid': 'super_unlock_popup_nab8',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_unlock_popup_nab8_id',
+    'style_id': '206_coin',
+  },
+  {
+    'oid': 'super_apply_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_apply_nab_id',
+    'style_id': '234_coin',
+  },
+  {
+    'oid': 'collapsible_ba',
+    'format': 6,
+    'plan_id': 'banner_default_2',
+    'ad_id': 'collapsible_ba_id',
+  },
+  {
+    'oid': 'kb_unlockpage_na_test5',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_unlockpage_na_test5_id',
+    'style_id': '313_coin',
+  },
+  {
+    'oid': 'kb_unlockpage_na_test6',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'kb_unlockpage_na_test6_id',
+    'style_id': '313_coin',
+  },
+  {
+    'oid': 'super_preview_na_style6',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_preview_na_style6_id',
+    'style_id': '321',
+  },
+  {
+    'oid': 'super_preview_na_style7',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_preview_na_style7_id',
+    'style_id': '310_super_detail',
+  },
+  {
+    'oid': 'super_preview_na_style8',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_preview_na_style8_id',
+    'style_id': '320_super_detail',
+  },
+  {
+    'oid': 'super_preview_nab_style9',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_preview_nab_style9_id',
+    'style_id': '236_coin',
+  },
+  {
+    'oid': 'super_preview_nab_style10',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_preview_nab_style10_id',
+    'style_id': '234_coin',
+  },
+  {
+    'oid': 'super_preview_nab_style11',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'super_preview_nab_style11_id',
+    'style_id': '236_coin',
+  },
+  {
+    'oid': 'st_detail_nab',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'st_detail_nab_id',
+    'style_id': '206_coin',
+  },
+  {
+    'oid': 'wp_preview_nab_style2',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'wp_preview_nab_style2_id',
+    'style_id': '200',
+  },
+  {
+    'oid': 'wp_detail_nab_style2',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'wp_detail_nab_style2_id',
+    'style_id': '236_coin',
+  },
+  {
+    'oid': 'wp_unlock_nab_style2',
+    'format': 4,
+    'plan_id': 'native_default',
+    'ad_id': 'wp_unlock_nab_style2_id',
+    'style_id': '206_coin',
+  },
+])
+
+function parseJson() {
+  loading.value = true
+  setTimeout(() => {
+    try {
+      if (copyJSON.value) {
+        const jsonData = JSON.parse(copyJSON.value)
+        formState.json.version = jsonData.version
+        formState.json.describe = jsonData.describe
+
+        OIDList.value = []
+        Object.assign(plans, jsonData.plans)
+        Object.assign(styles, jsonData.styles)
+        Object.assign(ids, jsonData.ids)
+        Object.assign(positions, jsonData.ad_positions)
+
+        jsonData.ad_positions.forEach((item: any) => {
+          OIDList.value.push({
+            oid: item.oid,
+            format: item.format,
+            isCopy: false,
+            plan_id: item.plan_id,
+            ad_id: item.ad_id,
+            style_id: item.style_id,
+            share: {
+              share_type: 'ad_shares',
+              share_list: '',
+            },
+          })
+        })
+        for (const key in jsonData.ad_shares) {
+          OIDList.value.push({
+            oid: key,
+            format: 100,
+            isCopy: true,
+            share: {
+              share_type: 'ad_shares',
+              share_list: jsonData.ad_shares[key],
+            },
+          })
+        }
+        for (const key in jsonData.ad_strong_shares) {
+          OIDList.value.push({
+            oid: key,
+            format: 100,
+            isCopy: true,
+            share: {
+              share_type: 'ad_strong_shares',
+              share_list: jsonData.ad_strong_shares[key],
+            },
+          })
+        }
+        for (const key in jsonData.ad_chains_v2) {
+          OIDList.value.push({
+            oid: key,
+            format: 100,
+            isCopy: true,
+            share: {
+              share_type: 'ad_chains_v2',
+              share_list: jsonData.ad_chains_v2[key],
+            },
+          })
+        }
+        message.success('JSON解析成功')
+      }
+      else {
+        throw new Error('请输入自定义样式的JSON文本')
+      }
+    }
+    catch (err: any) {
+      message.warning(err.message)
+    }
+    finally {
+      loading.value = false
+    }
+  }, 1000)
+}
 function getAds(format: number) {
   if (format === 9) {
     const specialAds: any = []
@@ -1968,42 +2527,96 @@ function submitJSON() {
     .then(() => {
       OIDList.value.forEach((item) => {
         if (!item.isCopy) {
-          if (!formState.json.ids.some(id => id.id === item.ad_id)) {
+          if (!formState.json.ids.some(id => id?.id === item.ad_id)) {
             formState.json.ids.push(ids.find(i => i.id === item.ad_id))
           }
-          if (!formState.json.plans.some(plan => plan.id === item.plan_id)) {
+          if (!formState.json.plans.some(plan => plan?.id === item.plan_id)) {
             formState.json.plans.push(plans.find(i => i.id === item.plan_id))
+            console.log(item, formState.json.plans)
           }
-          if (!formState.json.styles.some(style => style.id === item.style_id)) {
-            formState.json.styles.push(styles.find(i => i.id === item.style_id))
+          if (!formState.json.styles.some(style => style?.id === item.style_id)) {
+            const cur_style = styles.find(i => i.id === item?.style_id)
+            if (cur_style) {
+              formState.json.styles.push(cur_style)
+            }
           }
-          delete item.isCopy
-          delete item.share
-          formState.json.ad_positions.push({
-            ...item,
-          })
+          if (!formState.json.ad_positions.some(position => position?.oid === item.oid)) {
+            delete item.isCopy
+            delete item.share
+            formState.json.ad_positions.push({
+              ...item,
+            })
+          }
         }
         else {
           if (item.share?.share_type === 'ad_shares') {
             // @ts-expect-error:...
             formState.json.ad_shares[item.oid] = item.share.share_list
-            if (!formState.json.ids.includes(item.share?.share_list)) {
-              formState.json.ids.push(ids.find(i => i.id === item.share?.share_list))
-            }
-            if (!formState.json.plans.includes(item.plan_id)) {
-              formState.json.plans.push(plans.find(i => i.id === item.plan_id))
-            }
-            if (!formState.json.styles.includes(item.style_id)) {
-              formState.json.styles.push(styles.find(i => i.id === item.style_id))
+            if (!formState.json.ad_positions.some(position => position?.oid === item.share?.share_list)) {
+              const cur_OID = positions.find(i => i.oid === item.share?.share_list)
+              if (!formState.json.ids.some(id => id?.id === cur_OID?.ad_id)) {
+                formState.json.ids.push(ids.find(i => i.id === cur_OID?.ad_id))
+              }
+              if (!formState.json.plans.some(plan => plan?.id === cur_OID?.plan_id)) {
+                formState.json.plans.push(plans.find(i => i.id === cur_OID?.plan_id))
+                console.log(cur_OID, formState.json.plans)
+              }
+              if (!formState.json.styles.some(style => style?.id === cur_OID?.style_id)) {
+                const cur_style = styles.find(i => i.id === cur_OID?.style_id)
+                if (cur_style) {
+                  formState.json.styles.push(cur_style)
+                }
+              }
+              formState.json.ad_positions.push(cur_OID)
             }
           }
           else if (item.share?.share_type === 'ad_strong_shares') {
             // @ts-expect-error:...
             formState.json.ad_strong_shares[item.oid] = item.share.share_list
+            // @ts-expect-error:...
+            item.share.share_list.forEach((share: string) => {
+              if (!formState.json.ad_positions.some(position => position?.oid === share)) {
+                const cur_OID = positions.find(i => i.oid === share)
+                if (!formState.json.ids.some(id => id?.id === cur_OID?.ad_id)) {
+                  formState.json.ids.push(ids.find(i => i.id === cur_OID?.ad_id))
+                }
+                if (!formState.json.plans.some(plan => plan?.id === cur_OID?.plan_id)) {
+                  formState.json.plans.push(plans.find(i => i.id === cur_OID?.plan_id))
+                  console.log(cur_OID, formState.json.plans)
+                }
+                if (!formState.json.styles.some(style => style?.id === cur_OID?.style_id)) {
+                  const cur_style = styles.find(i => i.id === cur_OID?.style_id)
+                  if (cur_style) {
+                    formState.json.styles.push(cur_style)
+                  }
+                }
+                formState.json.ad_positions.push(cur_OID)
+              }
+            })
           }
           else {
             // @ts-expect-error:...
             formState.json.ad_chains_v2[item.oid] = item.share.share_list
+            // @ts-expect-error:...
+            item.share.share_list.forEach((share: string) => {
+              if (!formState.json.ad_positions.some(position => position?.oid === share)) {
+                const cur_OID = positions.find(i => i.oid === share)
+                if (!formState.json.ids.some(id => id?.id === cur_OID?.ad_id)) {
+                  formState.json.ids.push(ids.find(i => i.id === cur_OID?.ad_id))
+                }
+                if (!formState.json.plans.some(plan => plan?.id === cur_OID?.plan_id)) {
+                  formState.json.plans.push(plans.find(i => i.id === cur_OID?.plan_id))
+                  console.log(cur_OID, formState.json.plans)
+                }
+                if (!formState.json.styles.some(style => style?.id === cur_OID?.style_id)) {
+                  const cur_style = styles.find(i => i.id === cur_OID?.style_id)
+                  if (cur_style) {
+                    formState.json.styles.push(cur_style)
+                  }
+                }
+                formState.json.ad_positions.push(cur_OID)
+              }
+            })
           }
         }
       })
@@ -2028,17 +2641,23 @@ function submitJSON() {
     </div>
 
     <div class="containner">
+      <Loading v-if="loading" />
       <a-form
         ref="formRef" :model="formState" :label-col="{ style: { width: '80px' } }" layout="inline"
         class="form-part"
       >
         <a-space class="top">
-          <a-form-item label="配置名称" name="configName" :rules="rules.configName">
+          <a-form-item label="配置名称" name="configName">
             <a-input v-model:value="formState.configName" placeholder="请输入配置名称" />
           </a-form-item>
 
           <a-form-item label="描述" name="describe">
-            <a-input v-model:value="formState.json.describe" placeholder="请输入配置描述" />
+            <a-tooltip trigger="click">
+              <template #title>
+                {{ formState.json.describe }}
+              </template>
+              <a-input v-model:value="formState.json.describe" placeholder="请输入配置描述" />
+            </a-tooltip>
           </a-form-item>
 
           <a-form-item label="备注" name="user_describe">
@@ -2073,8 +2692,8 @@ function submitJSON() {
         </a-space>
 
         <div v-if="formState.copyConfig === 'jsonCopy'" class="copy-json">
-          <a-textarea v-model:value="copyJson" placeholder="请输入复用JSON" :rows="4" />
-          <a-button type="primary">
+          <a-textarea v-model:value="copyJSON" placeholder="请输入复用JSON" :rows="4" />
+          <a-button type="primary" @click="parseJson">
             解析JSON
           </a-button>
         </div>
@@ -2180,9 +2799,7 @@ function submitJSON() {
               <div class="copy-other">
                 <span>是否共享其他OID配置</span>
                 <a-radio-group v-model:value="item.isCopy">
-                  <a-radio
-                    :value="true" @click="openShareModal(item.oid)"
-                  >
+                  <a-radio :value="true" @click="openShareModal(item.oid)">
                     是
                   </a-radio>
                   <a-radio :value="false">
@@ -2208,21 +2825,6 @@ function submitJSON() {
                     </a-select>
                   </a-form-item>
                 </div>
-                <div class="adstyle">
-                  <div>广告样式</div>
-                  <a-select v-model:value="item.style_id" style="text-align: center;" placeholder="请选择广告样式" show-search>
-                    <template v-for="style in getStyles()" :key="style.value">
-                      <a-select-option :value="style.value">
-                        <a-tooltip placement="left">
-                          <template #title>
-                            {{ style.value }}
-                          </template>
-                          {{ style.value }}
-                        </a-tooltip>
-                      </a-select-option>
-                    </template>
-                  </a-select>
-                </div>
                 <div class="adplan">
                   <div>广告计划</div>
                   <a-select v-model:value="item.plan_id" style="text-align: center;" placeholder="请选择广告计划" show-search>
@@ -2238,6 +2840,21 @@ function submitJSON() {
                     </template>
                   </a-select>
                 </div>
+                <div class="adstyle">
+                  <div>广告样式</div>
+                  <a-select v-model:value="item.style_id" style="text-align: center;" placeholder="请选择广告样式" show-search>
+                    <template v-for="style in getStyles()" :key="style.value">
+                      <a-select-option :value="style.value">
+                        <a-tooltip placement="left">
+                          <template #title>
+                            {{ style.value }}
+                          </template>
+                          {{ style.value }}
+                        </a-tooltip>
+                      </a-select-option>
+                    </template>
+                  </a-select>
+                </div>
               </div>
               <div v-else class="withcopy">
                 <div class="copy-header">
@@ -2246,7 +2863,8 @@ function submitJSON() {
                   >
                     {{ item.share?.share_type }}
                   </a-tag>
-                  <span>选择&nbsp;{{ item.share?.share_type === 'ad_shares' ? 1 : item.share?.share_list.length }}&nbsp;个目标OID</span>
+                  <span>选择&nbsp;{{ item.share?.share_type === 'ad_shares' ? 1 : item.share?.share_list.length
+                  }}&nbsp;个目标OID</span>
                 </div>
                 <div class="copyOID">
                   <template v-if="item.share?.share_type === 'ad_shares'">
@@ -2388,7 +3006,7 @@ function submitJSON() {
   .ant-btn {
     position: absolute;
     bottom: 10px;
-    right: 30px;
+    right: 40px;
   }
 }
 
@@ -2525,7 +3143,7 @@ function submitJSON() {
 
   .OID {
     width: 300px;
-    height:fit-content;
+    height: fit-content;
     // min-height: 210px;
     background-color: #f5f7fa;
     border-radius: 15px;
@@ -2580,16 +3198,17 @@ function submitJSON() {
           width: 160px;
         }
 
-        .ant-select{
+        .ant-select {
           width: 160px;
         }
-        .style_id{
-          width:160px;
-          padding:5px 10px;
+
+        .style_id {
+          width: 160px;
+          padding: 5px 10px;
           white-space: nowrap;
           text-overflow: ellipsis;
           overflow: hidden;
-          border:1px solid #d9d9d9;
+          border: 1px solid #d9d9d9;
           border-radius: 4px;
         }
       }
@@ -2614,7 +3233,7 @@ function submitJSON() {
 
         .ant-tag {
           color: black;
-          margin:0;
+          margin: 0;
         }
       }
 

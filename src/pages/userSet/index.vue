@@ -1,7 +1,8 @@
 <script setup lang="ts" name="userSet">
 import { onMounted, reactive, ref } from 'vue'
-import { PlusSquareOutlined } from '@ant-design/icons-vue'
+import { FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { Modal, message } from 'ant-design-vue'
+import addUser from './components/addUser.vue'
 import userApps from './components/userApps.vue'
 import { getUserListData } from '~@/api/authority/index.ts'
 
@@ -111,6 +112,7 @@ const pagination = ref({
 
 const open = ref(false)// 表单弹窗状态
 const userAppOpen = ref(false)// 分配APP弹窗状态
+const addUserOpen = ref(false)// 新增用户弹窗状态
 
 const currentUser: any = ref()// 当前用户
 
@@ -273,15 +275,16 @@ function selectThisApp(businessIndex: number, appIndex: number) {
   }
 }
 
+function closeAddUser(value: boolean) {
+  addUserOpen.value = value
+}
 function openCard(user: any) {
   currentUser.value = user
   userAppOpen.value = true
 }
-
 function closeCard(target: boolean) {
   userAppOpen.value = target
 }
-
 function resetUserApps(value: any) {
   Object.assign(formState, value)
   Object.assign(formDisabled, {
@@ -323,64 +326,61 @@ onMounted(() => {
 <template>
   <page-container>
     <template #extra>
-      <a-button type="primary" :disabled="userAppOpen" @click="() => open = true">
+      <a-button type="primary" :disabled="userAppOpen || addUserOpen" @click="() => addUserOpen = true">
         <template #icon>
-          <PlusSquareOutlined />
+          <PlusOutlined />
         </template>
         新增用户
       </a-button>
     </template>
 
-    <a-card v-if="!userAppOpen">
-      <a-input-search
-        v-model:value="searchParams.userName" placeholder="请输入用户名称" enter-button="搜索"
-        style="width: 350px;margin-bottom: 15px;" @search="getData(searchParams)"
-      />
-      <a-table
-        :columns="columns" :data-source="response.data" :loading="loading" :pagination="pagination"
-        class="table-part" @change="handleTableChange($event)"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.dataIndex === 'business'">
-            <div class="business">
-              <div v-for="item in record.business" :key="item" class="business-item">
-                {{ item }}
+    <template v-if="!userAppOpen && !addUserOpen">
+      <a-card>
+        <a-input-search
+          v-model:value="searchParams.userName" placeholder="请输入用户名称" enter-button="搜索"
+          style="width: 350px;margin-bottom: 15px;" @search="getData(searchParams)"
+        />
+        <a-table
+          :columns="columns" :data-source="response.data" :loading="loading" :pagination="pagination"
+          class="table-part" @change="handleTableChange($event)"
+        >
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.dataIndex === 'business'">
+              <div class="business">
+                <div v-for="item in record.business" :key="item" class="business-item">
+                  {{ item }}
+                </div>
               </div>
-            </div>
-          </template>
-          <template v-if="column.dataIndex === 'role'">
-            <div class="role">
-              {{ record.role }}
-            </div>
-          </template>
-          <template v-if="column.dataIndex === 'operation'">
-            <div class="option">
-              <div class="link-app">
-                <img src="@/assets/images/key.svg">
-                <span @click="openCard(record)">分配APP</span>
+            </template>
+            <template v-if="column.dataIndex === 'role'">
+              <div class="role">
+                {{ record.role }}
               </div>
+            </template>
+            <template v-if="column.dataIndex === 'operation'">
+              <div class="option">
+                <div class="link-app">
+                  <img src="@/assets/images/key.svg">
+                  <span @click="openCard(record)">管理APP</span>
+                </div>
 
-              <div class="link-app">
-                <img src="@/assets/images/business.svg">
-                <span @click="resetUserBusiness(record)">分配业务组</span>
-              </div>
+                <div class="link-app">
+                  <FormOutlined />
+                  <span @click="resetUserBusiness(record)">编辑</span>
+                </div>
 
-              <div class="link-app">
-                <img src="@/assets/images/role.svg">
-                <span @click="resetUserRole(record)">分配角色</span>
+                <span>删除</span>
               </div>
-
-              <span>删除</span>
-            </div>
+            </template>
           </template>
-        </template>
-        <template #footer>
-          显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
-          {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
-            * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
-        </template>
-      </a-table>
-    </a-card>
+          <template #footer>
+            显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
+            {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
+              * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
+          </template>
+        </a-table>
+      </a-card>
+    </template>
 
     <a-modal
       v-model:open="open" title="新增用户" style="top:10vh;width:70vw;" :mask-closable="false" @ok="handleOk"
@@ -485,8 +485,12 @@ onMounted(() => {
       </template>
     </a-modal>
 
+    <a-card v-if="addUserOpen" style="margin-bottom:40px;">
+      <addUser @close="closeAddUser" />
+    </a-card>
+
     <a-card v-if="userAppOpen">
-      <userApps :close-card="closeCard" :current-user="currentUser" @reset="resetUserApps" />
+      <userApps :current="currentUser" @close="closeCard" @reset="resetUserApps" />
     </a-card>
   </page-container>
 </template>
@@ -551,12 +555,12 @@ onMounted(() => {
       span {
         font-size: 14px;
         color: #4e46e5;
+        margin-inline-start: 5px;
       }
 
       img {
         height: 14px;
         object-fit: contain;
-        margin-right: 5px;
       }
     }
   }

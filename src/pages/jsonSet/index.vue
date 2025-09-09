@@ -26,6 +26,7 @@ interface ConfigListData {
     version: string
     creator: string
     createTime: string
+    json: any
   }>
 }// 请求接口数据类型
 
@@ -33,30 +34,1486 @@ const response = ref<ConfigListData>({
   data: [
     {
       configID: '1',
-      configName: '分地区测试',
+      configName: '高级配置',
       describe: '基准是基础配置',
       condition: '国家/地区==印度',
       version: '19',
       creator: '张三',
       createTime: '2022-11-01',
+      json: {
+        'version': '1111',
+        'describe': 'awqw',
+        'styles': [
+          {
+            'id': '312_coin',
+            'base_id': 312,
+            'cta_text_color': '#000000',
+            'cta_angle': 270,
+            'cta_start_color': '#46EB72',
+            'cta_end_color': '#7FFA49',
+            'cta_radius': 24,
+          },
+        ],
+        'plans': [
+          {
+            'id': 'inter_default',
+            'count': 1,
+            'refill': 1,
+            'prob': 30,
+          },
+          {
+            'id': 'reward_default',
+            'count': 1,
+            'refill': 1,
+          },
+          {
+            'id': 'bannerr_default',
+            'count': 1,
+            'refill': 1,
+          },
+          {
+            'id': 'splash_default',
+            'count': 1,
+            'refill': 0,
+          },
+          {
+            'id': 'native_default',
+            'count': 1,
+            'refill': 1,
+          },
+          {
+            'id': 'native_compare',
+            'count': 1,
+            'refill': 1,
+            'load_strategy': 21,
+          },
+        ],
+        'ids': [
+          {
+            'id': 'tm_unlock_rw_id',
+            'ads': [
+              [
+                {
+                  'priority': 2,
+                  'format': 0,
+                  'source': 'MAX',
+                  'value': 'ceebc434ea2f112d',
+                },
+              ],
+              [
+                {
+                  'format': 2,
+                  'priority': 1,
+                  'value': 'ca-app-pub-6350683154336052/7533401279',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_detail_enter_i_id',
+            'ads': [
+              [
+                {
+                  'priority': 2,
+                  'format': 4,
+                  'source': 'MAX',
+                  'value': '4372adc2263018eb',
+                },
+              ],
+              [
+                {
+                  'format': 6,
+                  'priority': 1,
+                  'value': 'ca-app-pub-6350683154336052/9932317997',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'tm_unlock_ba_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'format': 4,
+                  'value': 'ca-app-pub-6350683154336052/6270479042',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'format': 6,
+                  'value': '8162a215852d5b1b',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'splash_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/4847385034',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'wp_feed_na_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'format': 2,
+                  'value': 'ca-app-pub-6350683154336052/8261574646',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'format': 0,
+                  'value': '7f90411561338ba6',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_detail_nab_id',
+            'ads': [
+              [
+                {
+                  'priority': 4,
+                  'value': 'ca-app-pub-6350683154336052/6467619277',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '7802c0c94d4f3e25',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_setup_na_id',
+            'ads': [
+              [
+                {
+                  'priority': 4,
+                  'value': 'ca-app-pub-6350683154336052/5538345985',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': 'f95a6c95c0303eee',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_setup_nab_id',
+            'ads': [
+              [
+                {
+                  'priority': 4,
+                  'source': 'Olaex',
+                  'value': '1040000',
+                },
+              ],
+              [
+                {
+                  'priority': 3,
+                  'source': 'Olaex',
+                  'value': '1039999',
+                },
+              ],
+              [
+                {
+                  'priority': 5,
+                  'value': 'ca-app-pub-6350683154336052/5603191795',
+                },
+              ],
+              [
+                {
+                  'priority': 4,
+                  'source': 'Olaex',
+                  'value': '1039998',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': 'c79df75af9fab2cb',
+                },
+                {
+                  'priority': 1,
+                  'source': 'Olaex',
+                  'value': '1039997',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '530fbef34003d30f',
+                },
+                {
+                  'priority': 1,
+                  'source': 'Olaex',
+                  'value': '1039996',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_unlock_na_id',
+            'ads': [
+              [
+                {
+                  'priority': 4,
+                  'value': 'ca-app-pub-6350683154336052/6851427657',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '7a95b976763733bd',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_unlock_nab_test1_id',
+            'ads': [
+              [
+                {
+                  'priority': 4,
+                  'value': 'ca-app-pub-6350683154336052/5615666050',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '4b011c41b3136785',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_unlock_nab_test2_id',
+            'ads': [
+              [
+                {
+                  'priority': 4,
+                  'value': 'ca-app-pub-6350683154336052/1474472654',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '4b011c41b3136785',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_download_nab_test2_id',
+            'ads': [
+              [
+                {
+                  'priority': 4,
+                  'value': 'ca-app-pub-6350683154336052/2270918694',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '4b011c41b3136785',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'wp_set_na_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/3362936334',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': 'f95a6c95c0303eee',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'wp_detail_nab_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/4708927155',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '4b011c41b3136785',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'st_detail_na_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/7110609658',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': 'f95a6c95c0303eee',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'mine_tm_na_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/3171364645',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': 'f95a6c95c0303eee',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'st_feed_nab_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/1181935054',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '4b011c41b3136785',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'st_preview_nab_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/5705866940',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '4b011c41b3136785',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'wp_unlock_success_nab_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/6054245522',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '4b011c41b3136785',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'wp_edit_bo_nab_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/6054245522',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '4b011c41b3136785',
+                },
+              ],
+            ],
+          },
+        ],
+        'ad_positions': [
+          {
+            'oid': '123456',
+            'format': 9,
+            'ad_id': 'tm_unlock_rw_id',
+            'style_id': '312_coin',
+            'plan_id': 'inter_default',
+          },
+          {
+            'oid': 'tm_unlock_rw',
+            'format': 1,
+            'plan_id': 'reward_default',
+            'ad_id': 'tm_unlock_rw_id',
+          },
+          {
+            'oid': 'kb_detail_enter_i',
+            'format': 0,
+            'plan_id': 'inter_default',
+            'ad_id': 'kb_detail_enter_i_id',
+          },
+          {
+            'oid': 'tm_unlock_ba',
+            'format': 6,
+            'plan_id': 'bannerr_default',
+            'ad_id': 'tm_unlock_ba_id',
+          },
+          {
+            'oid': 'splash',
+            'format': 2,
+            'plan_id': 'splash_default',
+            'ad_id': 'splash_id',
+          },
+          {
+            'oid': 'wp_feed_na',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'wp_feed_na_id',
+            'style_id': '203',
+          },
+          {
+            'oid': 'kb_detail_nab',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'kb_detail_nab_id',
+            'style_id': '200',
+          },
+          {
+            'oid': 'kb_setup_na',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'kb_setup_na_id',
+            'style_id': '302',
+          },
+          {
+            'oid': 'kb_setup_nab',
+            'format': 4,
+            'plan_id': 'native_compare',
+            'ad_id': 'kb_setup_nab_id',
+            'style_id': '207',
+          },
+          {
+            'oid': 'kb_unlock_na',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'kb_unlock_na_id',
+            'style_id': '302',
+          },
+          {
+            'oid': 'kb_unlock_nab_test1',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'kb_unlock_nab_test1_id',
+            'style_id': '206',
+          },
+          {
+            'oid': 'kb_unlock_nab_test2',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'kb_unlock_nab_test2_id',
+            'style_id': '206',
+          },
+          {
+            'oid': 'kb_download_nab_test2',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'kb_download_nab_test2_id',
+            'style_id': '216',
+          },
+          {
+            'oid': 'wp_set_na',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'wp_set_na_id',
+            'style_id': '304',
+          },
+          {
+            'oid': 'wp_detail_nab',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'wp_detail_nab_id',
+            'style_id': '210',
+          },
+          {
+            'oid': 'st_detail_na',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'st_detail_na_id',
+            'style_id': '304',
+          },
+          {
+            'oid': 'mine_tm_na',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'mine_tm_na_id',
+            'style_id': '304',
+          },
+          {
+            'oid': 'st_feed_nab',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'st_feed_nab_id',
+            'style_id': '203',
+          },
+          {
+            'oid': 'st_preview_nab',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'st_preview_nab_id',
+            'style_id': '200',
+          },
+          {
+            'oid': 'wp_unlock_success_nab',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'wp_unlock_success_nab_id',
+            'style_id': '206',
+          },
+          {
+            'oid': 'wp_edit_bo_nab',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'wp_edit_bo_nab_id',
+            'style_id': '209',
+          },
+        ],
+        'ad_shares': {
+          '789012': 'tm_unlock_rw',
+        },
+        'ad_strong_shares': {
+          '345678': [
+            'tm_unlock_rw',
+            'kb_detail_enter_i',
+            'tm_unlock_ba',
+            'splash',
+            'wp_feed_na',
+            'kb_detail_nab',
+            'kb_setup_na',
+            'kb_setup_nab',
+            'kb_unlock_na',
+            'kb_unlock_nab_test1',
+          ],
+        },
+        'ad_chains_v2': {
+          '3323231': [
+            'tm_unlock_rw',
+            'kb_detail_enter_i',
+            'tm_unlock_ba',
+            'splash',
+            'wp_feed_na',
+            'kb_detail_nab',
+            'kb_setup_na',
+            'kb_setup_nab',
+            'kb_unlock_na',
+            'kb_unlock_nab_test1',
+            'kb_unlock_nab_test2',
+            'kb_download_nab_test2',
+            'wp_set_na',
+            'wp_detail_nab',
+            'st_detail_na',
+            'mine_tm_na',
+            'st_feed_nab',
+            'st_preview_nab',
+            'wp_unlock_success_nab',
+            'wp_edit_bo_nab',
+          ],
+        },
+      },
     },
     {
       configID: '2',
-      configName: '呵呵测试',
+      configName: '中级测试',
       describe: 'hhajhsjabj',
       condition: 'Build>=109',
       version: '19',
       creator: '李四',
       createTime: '2022-11-01',
+      json: {
+        'version': '24131',
+        'describe': 'fvdgfwafsfcd',
+        'ad_shares': {
+          '789012': 'tm_unlock_ba',
+        },
+        'ad_strong_shares': {
+          '123456': [
+            'tm_unlock_rw',
+            'kb_detail_enter_i',
+            'tm_unlock_ba',
+            'splash',
+            'wp_feed_na',
+            'kb_detail_nab',
+            'kb_setup_na',
+            'kb_setup_nab',
+            'kb_unlock_na',
+            'kb_unlock_nab_test1',
+          ],
+        },
+        'ad_chains_v2': {
+          '345678': [
+            'super_detail_na_style6',
+            'super_detail_na_style7',
+            'super_detail_na_style8',
+            'super_unlock_popup_nab7',
+            'super_unlock_popup_nab8',
+            'super_apply_nab',
+            'collapsible_ba',
+            'kb_unlockpage_na_test5',
+            'kb_unlockpage_na_test6',
+            'super_preview_na_style6',
+          ],
+        },
+        'styles': [
+          {
+            'id': '310_super_detail',
+            'base_id': 310,
+            'cta_text_color': '#333333',
+            'cta_text': 'Install',
+            'cta_angle': 270,
+            'cta_start_color': '#46EB72',
+            'cta_end_color': '#7FFA49',
+            'cta_radius': 24,
+            'choice_location': 1,
+          },
+          {
+            'id': '206_coin',
+            'base_id': 206,
+            'cta_text_color': '#000000',
+            'cta_angle': 270,
+            'cta_start_color': '#46EB72',
+            'cta_end_color': '#7FFA49',
+            'info_bg_color': '#212121',
+            'title_color': '#FFFFFF',
+            'bg_color': '#353535',
+            'cta_radius': 20,
+            'info_bg_radius': 10,
+          },
+          {
+            'id': '234_coin',
+            'base_id': 234,
+            'cta_text_color': '#333333',
+            'cta_text': 'Download',
+            'cta_angle': 270,
+            'cta_start_color': '#46EB72',
+            'cta_end_color': '#7FFA49',
+            'cta_radius': 20,
+          },
+          {
+            'id': '313_coin',
+            'base_id': 313,
+            'cta_text_color': '#000000',
+            'cta_angle': 270,
+            'cta_start_color': '#46EB72',
+            'cta_end_color': '#7FFA49',
+            'cta_radius': 24,
+          },
+        ],
+        'plans': [
+          {
+            'id': 'reward_default',
+            'count': 1,
+            'refill': 1,
+          },
+          {
+            'id': 'inter_default',
+            'count': 1,
+            'refill': 1,
+            'prob': 30,
+          },
+          {
+            'id': 'bannerr_default',
+            'count': 1,
+            'refill': 1,
+          },
+          {
+            'id': 'splash_default',
+            'count': 1,
+            'refill': 0,
+          },
+          {
+            'id': 'native_default',
+            'count': 1,
+            'refill': 1,
+          },
+          {
+            'id': 'native_compare',
+            'count': 1,
+            'refill': 1,
+            'load_strategy': 21,
+          },
+          {
+            'id': 'banner_default_2',
+            'count': 1,
+            'refill': 0,
+          },
+        ],
+        'ids': [
+          {
+            'id': 'tm_unlock_rw_id',
+            'ads': [
+              [
+                {
+                  'priority': 2,
+                  'format': 0,
+                  'source': 'MAX',
+                  'value': 'ceebc434ea2f112d',
+                },
+              ],
+              [
+                {
+                  'format': 2,
+                  'priority': 1,
+                  'value': 'ca-app-pub-6350683154336052/7533401279',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_detail_enter_i_id',
+            'ads': [
+              [
+                {
+                  'priority': 2,
+                  'format': 4,
+                  'source': 'MAX',
+                  'value': '4372adc2263018eb',
+                },
+              ],
+              [
+                {
+                  'format': 6,
+                  'priority': 1,
+                  'value': 'ca-app-pub-6350683154336052/9932317997',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'tm_unlock_ba_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'format': 4,
+                  'value': 'ca-app-pub-6350683154336052/6270479042',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'format': 6,
+                  'value': '8162a215852d5b1b',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'splash_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/4847385034',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'wp_feed_na_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'format': 2,
+                  'value': 'ca-app-pub-6350683154336052/8261574646',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'format': 0,
+                  'value': '7f90411561338ba6',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_detail_nab_id',
+            'ads': [
+              [
+                {
+                  'priority': 4,
+                  'value': 'ca-app-pub-6350683154336052/6467619277',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '7802c0c94d4f3e25',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_setup_na_id',
+            'ads': [
+              [
+                {
+                  'priority': 4,
+                  'value': 'ca-app-pub-6350683154336052/5538345985',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': 'f95a6c95c0303eee',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_setup_nab_id',
+            'ads': [
+              [
+                {
+                  'priority': 4,
+                  'source': 'Olaex',
+                  'value': '1040000',
+                },
+              ],
+              [
+                {
+                  'priority': 3,
+                  'source': 'Olaex',
+                  'value': '1039999',
+                },
+              ],
+              [
+                {
+                  'priority': 5,
+                  'value': 'ca-app-pub-6350683154336052/5603191795',
+                },
+              ],
+              [
+                {
+                  'priority': 4,
+                  'source': 'Olaex',
+                  'value': '1039998',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': 'c79df75af9fab2cb',
+                },
+                {
+                  'priority': 1,
+                  'source': 'Olaex',
+                  'value': '1039997',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '530fbef34003d30f',
+                },
+                {
+                  'priority': 1,
+                  'source': 'Olaex',
+                  'value': '1039996',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_unlock_na_id',
+            'ads': [
+              [
+                {
+                  'priority': 4,
+                  'value': 'ca-app-pub-6350683154336052/6851427657',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '7a95b976763733bd',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_unlock_nab_test1_id',
+            'ads': [
+              [
+                {
+                  'priority': 4,
+                  'value': 'ca-app-pub-6350683154336052/5615666050',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '4b011c41b3136785',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'super_detail_na_style6_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/2654897506',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '7a95b976763733bd',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'super_detail_na_style7_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/5699647646',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '7a95b976763733bd',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'super_detail_na_style8_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/1210610432',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '7a95b976763733bd',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'super_unlock_popup_nab7_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/9467717863',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '7802c0c94d4f3e25',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'super_unlock_popup_nab8_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/7584447095',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '7802c0c94d4f3e25',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'super_apply_nab_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/9777056668',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '7802c0c94d4f3e25',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'collapsible_ba_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/5045037952',
+                  'banner_extra': {
+                    'type': 1,
+                  },
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '8162a215852d5b1b',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_unlockpage_na_test5_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/4346267017',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '7a95b976763733bd',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'kb_unlockpage_na_test6_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/1309040137',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '7a95b976763733bd',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'super_preview_na_style6_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/6764245478',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '7a95b976763733bd',
+                },
+              ],
+            ],
+          },
+        ],
+        'ad_positions': [
+          {
+            'oid': 'tm_unlock_rw',
+            'format': 1,
+            'plan_id': 'reward_default',
+            'ad_id': 'tm_unlock_rw_id',
+          },
+          {
+            'oid': 'kb_detail_enter_i',
+            'format': 0,
+            'plan_id': 'inter_default',
+            'ad_id': 'kb_detail_enter_i_id',
+          },
+          {
+            'oid': 'tm_unlock_ba',
+            'format': 6,
+            'plan_id': 'bannerr_default',
+            'ad_id': 'tm_unlock_ba_id',
+          },
+          {
+            'oid': 'splash',
+            'format': 2,
+            'plan_id': 'splash_default',
+            'ad_id': 'splash_id',
+          },
+          {
+            'oid': 'wp_feed_na',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'wp_feed_na_id',
+            'style_id': '203',
+          },
+          {
+            'oid': 'kb_detail_nab',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'kb_detail_nab_id',
+            'style_id': '200',
+          },
+          {
+            'oid': 'kb_setup_na',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'kb_setup_na_id',
+            'style_id': '302',
+          },
+          {
+            'oid': 'kb_setup_nab',
+            'format': 4,
+            'plan_id': 'native_compare',
+            'ad_id': 'kb_setup_nab_id',
+            'style_id': '207',
+          },
+          {
+            'oid': 'kb_unlock_na',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'kb_unlock_na_id',
+            'style_id': '302',
+          },
+          {
+            'oid': 'kb_unlock_nab_test1',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'kb_unlock_nab_test1_id',
+            'style_id': '206',
+          },
+          {
+            'oid': 'super_detail_na_style6',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'super_detail_na_style6_id',
+            'style_id': '310_super_detail',
+          },
+          {
+            'oid': 'super_detail_na_style7',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'super_detail_na_style7_id',
+            'style_id': '310_super_detail',
+          },
+          {
+            'oid': 'super_detail_na_style8',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'super_detail_na_style8_id',
+            'style_id': '310_super_detail',
+          },
+          {
+            'oid': 'super_unlock_popup_nab7',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'super_unlock_popup_nab7_id',
+            'style_id': '206_coin',
+          },
+          {
+            'oid': 'super_unlock_popup_nab8',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'super_unlock_popup_nab8_id',
+            'style_id': '206_coin',
+          },
+          {
+            'oid': 'super_apply_nab',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'super_apply_nab_id',
+            'style_id': '234_coin',
+          },
+          {
+            'oid': 'collapsible_ba',
+            'format': 6,
+            'plan_id': 'banner_default_2',
+            'ad_id': 'collapsible_ba_id',
+          },
+          {
+            'oid': 'kb_unlockpage_na_test5',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'kb_unlockpage_na_test5_id',
+            'style_id': '313_coin',
+          },
+          {
+            'oid': 'kb_unlockpage_na_test6',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'kb_unlockpage_na_test6_id',
+            'style_id': '313_coin',
+          },
+          {
+            'oid': 'super_preview_na_style6',
+            'format': 4,
+            'plan_id': 'native_default',
+            'ad_id': 'super_preview_na_style6_id',
+            'style_id': '321',
+          },
+        ],
+      },
     },
     {
       configID: '3',
-      configName: '基础配置',
+      configName: '低级测试',
       describe: '基础配置',
       condition: '国家/地区==印度',
       version: '19',
       creator: '王五',
       createTime: '2022-11-01',
+      json: {
+        'version': '17717',
+        'describe': 'fsfssdfsdf',
+        'ad_shares': {},
+        'ad_strong_shares': {},
+        'ad_chains_v2': {},
+        'styles': [
+          {
+            'id': '312_coin',
+            'base_id': 312,
+            'cta_text_color': '#000000',
+            'cta_angle': 270,
+            'cta_start_color': '#46EB72',
+            'cta_end_color': '#7FFA49',
+            'cta_radius': 24,
+          },
+          {
+            'id': '233_super_preview',
+            'base_id': 233,
+            'cta_text_color': '#333333',
+            'cta_text': 'Download',
+            'cta_angle': 270,
+            'cta_start_color': '#46EB72',
+            'cta_end_color': '#7FFA49',
+            'cta_radius': 20,
+          },
+          {
+            'id': '318_super_detail',
+            'base_id': 318,
+            'cta_text_color': '#333333',
+            'cta_text': 'Install',
+            'cta_angle': 270,
+            'cta_start_color': '#46EB72',
+            'cta_end_color': '#7FFA49',
+            'cta_radius': 20,
+            'choice_location': 1,
+          },
+        ],
+        'plans': [
+          {
+            'id': 'inter_default',
+            'count': 1,
+            'refill': 1,
+            'prob': 30,
+          },
+          {
+            'id': 'reward_default',
+            'count': 1,
+            'refill': 1,
+          },
+          {
+            'id': 'native_user_level',
+            'count': 1,
+            'refill': 1,
+            'load_strategy': 4,
+          },
+          {
+            'id': 'top_inter_default_test',
+            'count': 1,
+            'refill': 0,
+            'offset': 1,
+            'prob': 30,
+            'load_strategy': 4,
+          },
+        ],
+        'ids': [
+          {
+            'id': 'tm_unlock_rw_id',
+            'ads': [
+              [
+                {
+                  'priority': 2,
+                  'format': 0,
+                  'source': 'MAX',
+                  'value': 'ceebc434ea2f112d',
+                },
+              ],
+              [
+                {
+                  'format': 2,
+                  'priority': 1,
+                  'value': 'ca-app-pub-6350683154336052/7533401279',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'tm_unlock_ba_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'format': 4,
+                  'value': 'ca-app-pub-6350683154336052/6270479042',
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'format': 6,
+                  'value': '8162a215852d5b1b',
+                },
+              ],
+            ],
+          },
+          {
+            'id': 'collapsible_ba_id',
+            'ads': [
+              [
+                {
+                  'priority': 3,
+                  'value': 'ca-app-pub-6350683154336052/5045037952',
+                  'banner_extra': {
+                    'type': 1,
+                  },
+                },
+              ],
+              [
+                {
+                  'priority': 2,
+                  'source': 'MAX',
+                  'value': '8162a215852d5b1b',
+                },
+              ],
+            ],
+          },
+        ],
+        'ad_positions': [
+          {
+            'oid': '123456',
+            'format': 9,
+            'ad_id': 'tm_unlock_rw_id',
+            'style_id': '312_coin',
+            'plan_id': 'inter_default',
+          },
+          {
+            'oid': '789012',
+            'format': 10,
+            'style_id': '312_coin',
+            'ad_id': 'tm_unlock_ba_id',
+            'plan_id': 'reward_default',
+          },
+          {
+            'oid': '345678',
+            'format': 3,
+            'ad_id': 'tm_unlock_ba_id',
+            'style_id': '233_super_preview',
+            'plan_id': 'native_user_level',
+          },
+          {
+            'oid': '3323231',
+            'format': 11,
+            'ad_id': 'collapsible_ba_id',
+            'style_id': '318_super_detail',
+            'plan_id': 'top_inter_default_test',
+          },
+        ],
+      },
+
     },
   ],
 })// 请求接口数据
@@ -447,6 +1904,9 @@ function controlHighSearch() {
         class="table-part" @change="handleTableChange($event)"
       >
         <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'version'">
+            <span>{{ record.json.version }}</span>
+          </template>
           <template v-if="column.dataIndex === 'operation'">
             <div class="option">
               <span>编辑</span>

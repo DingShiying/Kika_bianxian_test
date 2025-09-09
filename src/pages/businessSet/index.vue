@@ -297,7 +297,7 @@ function editLinkUser(record: any) {
                 <span @click="editBusiness(record)">编辑</span>
               </div>
 
-              <div class="link-app">
+              <!-- <div class="link-app">
                 <img src="@/assets/images/link.svg">
                 <span @click="editLinkAPP(record)">关联APP</span>
               </div>
@@ -305,7 +305,7 @@ function editLinkUser(record: any) {
               <div class="link-app">
                 <img src="@/assets/images/link.svg">
                 <span @click="editLinkUser(record)">关联用户</span>
-              </div>
+              </div> -->
 
               <span>删除</span>
             </div>

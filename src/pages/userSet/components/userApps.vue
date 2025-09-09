@@ -2,8 +2,8 @@
 import { RollbackOutlined } from '@ant-design/icons-vue'
 import { computed, ref } from 'vue'
 
-const { closeCard, currentUser } = defineProps(['closeCard', 'currentUser'])
-const emit = defineEmits(['reset'])
+const { current } = defineProps(['current'])
+const emit = defineEmits(['reset', 'close'])
 
 interface APPList {
   appID: string
@@ -390,14 +390,14 @@ function resetForm() {
 
 <template>
   <div class="header">
-    <a-button type="primary" @click="closeCard(false)">
+    <a-button type="primary" @click="() => emit('close', false)">
       <template #icon>
         <RollbackOutlined />
       </template>
       返回
     </a-button>
-    <span>{{ currentUser.userName }}的APP权限管理</span>
-    <a-button type="primary" @click="() => emit('reset', currentUser)">
+    <span>{{ current.userName }}的APP权限管理</span>
+    <a-button type="primary" @click="() => emit('reset', current)">
       重新分配APP
     </a-button>
   </div>

@@ -77,9 +77,9 @@ export const configRouter: RouteRecordRaw[] = [
     },
   },
   {
-    path: '/adSet',
-    name: 'adSet',
-    component: () => import('~/pages/adSet/index.vue'),
+    path: '/adUnitSet',
+    name: 'adUnitSet',
+    component: () => import('~/pages/adUnitSet/index.vue'),
     meta: {
       title: '广告单元管理',
       icon: 'TabletOutlined',

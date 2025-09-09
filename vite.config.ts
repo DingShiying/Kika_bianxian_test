@@ -97,6 +97,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       },
     },
     server: {
+      host: '0.0.0.0',
       port: 6678,
       proxy: {
         ...proxyObj,
