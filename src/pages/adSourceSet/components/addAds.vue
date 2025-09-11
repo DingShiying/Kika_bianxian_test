@@ -304,7 +304,7 @@ function handleOk() {
                       <a-form-item label="广告单元" name="value">
                         <a-select
                           v-model:value="adItem.value" placeholder="请选择广告单元" style="width:30vw;"
-                          :options="valueOptions"
+                          :options="valueOptions" show-search
                         />
                       </a-form-item>
                     </div>

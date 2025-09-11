@@ -1,20 +1,20 @@
 <script setup lang="ts" name="platform">
-import { onMounted, reactive, ref } from 'vue'
-import { PlusSquareOutlined } from '@ant-design/icons-vue'
-import { Modal, message } from 'ant-design-vue'
+import { onMounted, ref } from 'vue'
+import { FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import addPlatform from './components/addPlatform.vue'
 
-interface FormState {
-  platformName: string
-  strategyName: string
-  strategeScore: string
-}// 表单数据类型
+// interface FormState {
+//   platformName: string
+//   strategyName: string
+//   strategeScore: string
+// }// 表单数据类型
 
 interface PlatformListData {
   data: Array<{
     platformName: string
     creator: string
     createTime: string
-    state: boolean
+    status: boolean
     strategyName: string
     strategeScore: string
   }>
@@ -34,7 +34,7 @@ const response = ref<PlatformListData>({
       platformName: 'Google',
       creator: '张三',
       createTime: '2023-01-01',
-      state: true,
+      status: true,
       strategyName: '策略1',
       strategeScore: '90',
     },
@@ -42,7 +42,7 @@ const response = ref<PlatformListData>({
       platformName: 'Facebook',
       creator: '李四',
       createTime: '2023-01-01',
-      state: false,
+      status: false,
       strategyName: '策略2',
       strategeScore: '80',
     },
@@ -50,14 +50,14 @@ const response = ref<PlatformListData>({
       platformName: 'Amazon',
       creator: '王五',
       createTime: '2023-01-01',
-      state: true,
+      status: true,
       strategyName: '策略3',
       strategeScore: '70',
     },
   ],
 })// 请求接口数据
 
-const columns = [
+const columns: any = [
   {
     title: '上架平台',
     dataIndex: 'platformName',
@@ -67,25 +67,30 @@ const columns = [
     title: '创建人',
     dataIndex: 'creator',
     key: 'creator',
+    align: 'center',
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
     key: 'createTime',
+    align: 'center',
   },
   {
     title: '状态',
-    dataIndex: 'state',
-    key: 'state',
+    dataIndex: 'status',
+    key: 'status',
+    align: 'center',
   },
   {
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
+    align: 'center',
   },
 ]// 表格列头
 
 const loading = ref(false) // 表格加载状态
+const currentPlatform = ref() // 当前选中平台
 
 const pagination = ref({
   current: 1,
@@ -93,20 +98,21 @@ const pagination = ref({
   total: response.value.data.length,
 })// 表格分页
 
-const open = ref(false)// 表单弹窗状态
+// const open = ref(false)// 表单弹窗状态
+const addPlatformOpen = ref(false)// 新增弹窗状态
 
-const formRef = ref()// 表单引用
-const formState: FormState = reactive({
-  platformName: '',
-  strategyName: '',
-  strategeScore: '',
-})// 表单数据
+// const formRef = ref()// 表单引用
+// const formState: FormState = reactive({
+//   platformName: '',
+//   strategyName: '',
+//   strategeScore: '',
+// })// 表单数据
 
-const rules: any = {
-  platformName: [{ required: true, message: '上架平台名称不能为空', trigger: 'blur', type: 'string' }],
-  strategyName: [{ required: true, message: '策略名称不能为空', trigger: 'blur', type: 'string' }],
-  strategeScore: [{ required: true, message: '策略值不能为空', trigger: 'blur', type: 'string' }],
-}// 表单验证规则
+// const rules: any = {
+//   platformName: [{ required: true, message: '上架平台名称不能为空', trigger: 'blur', type: 'string' }],
+//   strategyName: [{ required: true, message: '策略名称不能为空', trigger: 'blur', type: 'string' }],
+//   strategeScore: [{ required: true, message: '策略值不能为空', trigger: 'blur', type: 'string' }],
+// }// 表单验证规则
 
 // async function getData(searchParams: Params) {
 //   try {
@@ -148,30 +154,32 @@ function handleTableChange(event: any) {
   pagination.value = event
 }// 表格分页改变
 
-function handleOk() {
-  formRef.value.validate().then(() => {
-    console.log(formState)
-    open.value = false
-    Modal.destroyAll()
-    formRef.value.resetFields()
-    message.success('新建用户成功！')
-  })
-}// 表单提交
-function handleCancel() {
-  open.value = false
-  Modal.destroyAll()
-  Object.assign(formState, {
-    platformName: '',
-    strategyName: '',
-    strategeScore: '',
-  })
-}// 表单取消
+// function handleOk() {
+//   formRef.value.validate().then(() => {
+//     console.log(formState)
+//     open.value = false
+//     Modal.destroyAll()
+//     formRef.value.resetFields()
+//     message.success('新建用户成功！')
+//   })
+// }// 表单提交
+// function handleCancel() {
+//   open.value = false
+//   Modal.destroyAll()
+//   Object.assign(formState, {
+//     platformName: '',
+//     strategyName: '',
+//     strategeScore: '',
+//   })
+// }// 表单取消
 
 function editPlatform(record: any) {
-  formState.platformName = record.platformName
-  formState.strategyName = record.strategyName
-  formState.strategeScore = record.strategeScore
-  open.value = true
+  currentPlatform.value = record
+  addPlatformOpen.value = true
+}
+function closeAddPlatform(value: boolean) {
+  addPlatformOpen.value = value
+  currentPlatform.value = null
 }
 
 // onMounted(() => {
@@ -182,15 +190,15 @@ function editPlatform(record: any) {
 <template>
   <page-container>
     <template #extra>
-      <a-button type="primary" @click="() => open = true">
+      <a-button type="primary" @click="() => addPlatformOpen = true">
         <template #icon>
-          <PlusSquareOutlined />
+          <PlusOutlined />
         </template>
         新增
       </a-button>
     </template>
 
-    <a-card>
+    <a-card v-if="!addPlatformOpen">
       <a-input-search
         v-model:value="searchParams.platformName" placeholder="请输入平台名称" enter-button="搜索"
         style="width: 350px;margin-bottom: 15px;" @search="() => console.log(searchParams)"
@@ -200,12 +208,13 @@ function editPlatform(record: any) {
         class="table-part" @change="handleTableChange($event)"
       >
         <template #bodyCell="{ column, record }">
-          <template v-if="column.dataIndex === 'state'">
-            <a-switch v-model:checked="record.state" />
+          <template v-if="column.dataIndex === 'status'">
+            <a-switch v-model:checked="record.status" />
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <div class="option">
               <div class="link-app">
+                <FormOutlined />
                 <span @click="editPlatform(record)">编辑</span>
               </div>
 
@@ -220,8 +229,11 @@ function editPlatform(record: any) {
         </template>
       </a-table>
     </a-card>
+    <a-card v-else>
+      <addPlatform :current="currentPlatform" @close="closeAddPlatform" />
+    </a-card>
 
-    <a-modal
+    <!-- <a-modal
       v-model:open="open" title="新增平台" style="top:20vh;width:50vw;" :mask-closable="false" @ok="handleOk"
       @cancel="handleCancel"
     >
@@ -259,7 +271,7 @@ function editPlatform(record: any) {
           确定
         </a-button>
       </template>
-    </a-modal>
+    </a-modal> -->
   </page-container>
 </template>
 
@@ -323,6 +335,7 @@ function editPlatform(record: any) {
       span {
         font-size: 14px;
         color: #4e46e5;
+        margin-inline-start: 5px;
       }
 
       img {

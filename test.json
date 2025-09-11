@@ -122,46 +122,8 @@
     "kb_popup_rw": "tm_unlock_rw",
     "st_popup_nw": "tm_unlock_rw"
   },
-  "plans": [
-    {
-      "id": "reward_default",
-      "count": 1,
-      "refill": 1
-    },
-    {
-      "id": "inter_default",
-      "count": 1,
-      "refill": 1,
-      "prob": 30
-    },
-    {
-      "id": "bannerr_default",
-      "count": 1,
-      "refill": 1
-    },
-    {
-      "id": "splash_default",
-      "count": 1,
-      "refill": 0
-    },
-    {
-      "id": "native_default",
-      "count": 1,
-      "refill": 1
-    },
-    {
-      "id": "native_compare",
-      "count": 1,
-      "refill": 1,
-      "load_strategy": 21
-    },
-    {
-      "id": "banner_default_2",
-      "count": 1,
-      "refill": 0
-    },
-    null
-  ],
+  "ad_strong_shares": {},
+  "ad_chains_v2": {},
   "styles": [
     {
       "id": "234_coin",
@@ -226,6 +188,45 @@
       "cta_end_color": "#7FFA49",
       "cta_radius": 24,
       "choice_location": 1
+    }
+  ],
+  "plans": [
+    {
+      "id": "reward_default",
+      "count": 1,
+      "refill": 1
+    },
+    {
+      "id": "inter_default",
+      "count": 1,
+      "refill": 1,
+      "prob": 30
+    },
+    {
+      "id": "bannerr_default",
+      "count": 1,
+      "refill": 1
+    },
+    {
+      "id": "splash_default",
+      "count": 1,
+      "refill": 0
+    },
+    {
+      "id": "native_default",
+      "count": 1,
+      "refill": 1
+    },
+    {
+      "id": "native_compare",
+      "count": 1,
+      "refill": 1,
+      "load_strategy": 21
+    },
+    {
+      "id": "banner_default_2",
+      "count": 1,
+      "refill": 0
     }
   ],
   "ids": [
@@ -1511,8 +1512,7 @@
           }
         ]
       ]
-    },
-    null
+    }
   ],
   "ad_positions": [
     {
@@ -1819,6 +1819,13 @@
       "style_id": "234_coin"
     },
     {
+      "oid": "kb_detailpage_nab_test",
+      "format": 4,
+      "plan_id": "native_default",
+      "ad_id": "kb_detailpage_nab_test_id",
+      "style_id": "234_coin"
+    },
+    {
       "oid": "push_kb_detailpage_nab_test2",
       "format": 4,
       "plan_id": "native_default",
@@ -1984,9 +1991,6 @@
       "plan_id": "native_default",
       "ad_id": "wp_unlock_nab_style2_id",
       "style_id": "206_coin"
-    },
-    null,
-    null,
-    null
+    }
   ]
 }

@@ -1,20 +1,20 @@
 <script setup lang="ts" name="appSet">
-import { onMounted, reactive, ref } from 'vue'
-import { PlusSquareOutlined } from '@ant-design/icons-vue'
-import { Modal, message } from 'ant-design-vue'
+import { onMounted, ref } from 'vue'
+import { PlusOutlined } from '@ant-design/icons-vue'
+import addApp from './components/addApp.vue'
 
-interface FormState {
-  appName: string
-  package: string
-  firebaseID: string
-  business: string | undefined
-  manager: string[]
-  system: string
-  platform: string[]
-  icon: string
-  copyAppID: string | undefined
-  copyConfig: string[]
-}// 表单数据类型
+// interface FormState {
+//   appName: string
+//   package: string
+//   firebaseID: string
+//   business: string | undefined
+//   manager: string[]
+//   system: string
+//   platform: string[]
+//   icon: string
+//   copyAppID: string | undefined
+//   copyConfig: string[]
+// }// 表单数据类型
 
 interface APPListData {
   data: Array<{
@@ -29,6 +29,8 @@ interface APPListData {
     icon: string
     creator: string
     createTime: string
+    copyAppID?: string | undefined
+    copyConfig?: string[]
   }>
   businessList: Array<{
     label: string
@@ -71,6 +73,8 @@ const response = ref<APPListData>({
       icon: '/src/assets/images/icon2.png',
       creator: '王五',
       createTime: '2022-01-01',
+      copyAppID: 'app-1',
+      copyConfig: ['OID管理', '样式管理', 'APP权限人员'],
     },
     {
       appID: 'app-3',
@@ -130,7 +134,7 @@ const response = ref<APPListData>({
   ],
 })// 请求接口数据
 
-const columns = [
+const columns: any = [
   {
     title: '应用ID',
     dataIndex: 'appID',
@@ -140,26 +144,31 @@ const columns = [
     title: '应用名称',
     dataIndex: 'appName',
     key: 'appName',
+    align: 'center',
   },
   {
     title: '应用图标',
     dataIndex: 'icon',
     key: 'icon',
+    align: 'center',
   },
   {
     title: '包名',
     dataIndex: 'package',
     key: 'package',
+    align: 'center',
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
     key: 'createTime',
+    align: 'center',
   },
   {
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
+    align: 'center',
   },
 ]// 表格列头
 
@@ -170,46 +179,49 @@ const pagination = ref({
   pageSize: 10,
   total: response.value.data.length,
 })// 表格分页
+const currentApp = ref()// 当前选中应用
+const copyApp = ref()// 复制应用
 
-const open = ref(false)// 表单弹窗状态
+// const open = ref(false)// 表单弹窗状态
+const addAppOpen = ref(false)// 新增应用弹窗状态
 
-const formRef = ref()// 表单引用
-const formState: FormState = reactive({
-  appName: '',
-  package: '',
-  firebaseID: '',
-  business: undefined,
-  manager: [],
-  system: 'iOS',
-  platform: [],
-  icon: '',
-  copyAppID: undefined,
-  copyConfig: [],
-})// 表单数据
+// const formRef = ref()// 表单引用
+// const formState: FormState = reactive({
+//   appName: '',
+//   package: '',
+//   firebaseID: '',
+//   business: undefined,
+//   manager: [],
+//   system: 'iOS',
+//   platform: [],
+//   icon: '',
+//   copyAppID: undefined,
+//   copyConfig: [],
+// })// 表单数据
 
-const formDisabled = reactive({
-  appName: false,
-  package: false,
-  firebaseID: false,
-  business: false,
-  manager: false,
-  system: false,
-  platform: false,
-  icon: false,
-  copyAppID: false,
-  copyConfig: false,
-})
+// const formDisabled = reactive({
+//   appName: false,
+//   package: false,
+//   firebaseID: false,
+//   business: false,
+//   manager: false,
+//   system: false,
+//   platform: false,
+//   icon: false,
+//   copyAppID: false,
+//   copyConfig: false,
+// })
 
-const rules: any = {
-  appName: [{ required: true, message: '应用名称不能为空', trigger: 'blur', type: 'string' }],
-  package: [{ required: true, message: '包名不能为空', trigger: 'blur', type: 'string' }],
-  firebaseID: [{ required: true, message: 'firebase关联ID不能为空', trigger: 'blur', type: 'string' }],
-  business: [{ required: true, message: '归属业务组不能为空', trigger: 'blur', type: 'string' }],
-  manager: [{ required: true, message: '请至少选择一名管理员', trigger: 'blur', type: 'array' }],
-  platform: [{ required: true, message: '请至少选择一个上架平台', trigger: 'blur', type: 'array' }],
-  // icon: [{ required: true, message: '请上传应用图标', trigger: 'blur', type: 'string' }],
-  copyConfig: [{ required: true, message: '请至少选择一个配置项', trigger: 'blur', type: 'array' }],
-}// 表单验证规则
+// const rules: any = {
+//   appName: [{ required: true, message: '应用名称不能为空', trigger: 'blur', type: 'string' }],
+//   package: [{ required: true, message: '包名不能为空', trigger: 'blur', type: 'string' }],
+//   firebaseID: [{ required: true, message: 'firebase关联ID不能为空', trigger: 'blur', type: 'string' }],
+//   business: [{ required: true, message: '归属业务组不能为空', trigger: 'blur', type: 'string' }],
+//   manager: [{ required: true, message: '请至少选择一名管理员', trigger: 'blur', type: 'array' }],
+//   platform: [{ required: true, message: '请至少选择一个上架平台', trigger: 'blur', type: 'array' }],
+//   // icon: [{ required: true, message: '请上传应用图标', trigger: 'blur', type: 'string' }],
+//   copyConfig: [{ required: true, message: '请至少选择一个配置项', trigger: 'blur', type: 'array' }],
+// }// 表单验证规则
 
 // async function getData(searchParams: Params) {
 //   try {
@@ -251,103 +263,62 @@ function handleTableChange(event: any) {
   pagination.value = event
 }// 表格分页改变
 
-function handleOk() {
-  formRef.value.validate().then(() => {
-    open.value = false
-    Modal.destroyAll()
-    formRef.value.resetFields()
-    message.success('新建用户成功！')
-  })
-}// 表单提交
+// function handleOk() {
+//   formRef.value.validate().then(() => {
+//     open.value = false
+//     Modal.destroyAll()
+//     formRef.value.resetFields()
+//     message.success('新建用户成功！')
+//   })
+// }// 表单提交
 
-function handleCancel() {
-  open.value = false
-  Modal.destroyAll()
-  Object.assign(formState, {
-    appName: '',
-    package: '',
-    firebaseID: '',
-    business: undefined,
-    manager: [],
-    system: 'iOS',
-    platform: [],
-    icon: '',
-    copyAppID: undefined,
-    copyConfig: [],
-  })
-  Object.assign(formDisabled, {
-    appName: false,
-    package: false,
-    firebaseID: false,
-    business: false,
-    manager: false,
-    system: false,
-    platform: false,
-    icon: false,
-    copyAppID: false,
-    copyConfig: false,
-  })
-}// 表单取消
+// function handleCancel() {
+//   open.value = false
+//   Modal.destroyAll()
+//   Object.assign(formState, {
+//     appName: '',
+//     package: '',
+//     firebaseID: '',
+//     business: undefined,
+//     manager: [],
+//     system: 'iOS',
+//     platform: [],
+//     icon: '',
+//     copyAppID: undefined,
+//     copyConfig: [],
+//   })
+//   Object.assign(formDisabled, {
+//     appName: false,
+//     package: false,
+//     firebaseID: false,
+//     business: false,
+//     manager: false,
+//     system: false,
+//     platform: false,
+//     icon: false,
+//     copyAppID: false,
+//     copyConfig: false,
+//   })
+// }// 表单取消
+
+function closeAddApp(value: boolean) {
+  addAppOpen.value = value
+  currentApp.value = null
+  copyApp.value = null
+}
 
 function editManager(record: any) {
-  Object.keys(formState).forEach((key) => {
-    if (key in record) {
-      // @ts-expect-error:忽略
-      formState[key] = record[key]
-    }
-  })
-  Object.assign(formDisabled, {
-    appName: true,
-    package: true,
-    firebaseID: true,
-    business: true,
-    manager: false,
-    system: true,
-    platform: true,
-    icon: true,
-    copyAppID: true,
-    copyConfig: true,
-  })
-  open.value = true
+  console.log(record)
 }
 
 function copyCreateAPP(record: any) {
-  formState.copyAppID = record.appID
-  Object.assign(formDisabled, {
-    appName: true,
-    package: true,
-    firebaseID: false,
-    business: false,
-    manager: false,
-    system: false,
-    platform: false,
-    icon: false,
-    copyAppID: true,
-    copyConfig: false,
-  })
-  open.value = true
+  copyApp.value = record
+  addAppOpen.value = true
 }
 
 function editAPP(record: any) {
-  Object.keys(formState).forEach((key) => {
-    if (key in record) {
-      // @ts-expect-error:忽略
-      formState[key] = record[key]
-    }
-  })
-  Object.assign(formDisabled, {
-    appName: true,
-    package: true,
-    firebaseID: false,
-    business: false,
-    manager: false,
-    system: false,
-    platform: false,
-    icon: false,
-    copyAppID: true,
-    copyConfig: true,
-  })
-  open.value = true
+  currentApp.value = record
+  addAppOpen.value = true
 }
 
 // onMounted(() => {
@@ -358,15 +329,15 @@ function editAPP(record: any) {
 <template>
   <page-container>
     <template #extra>
-      <a-button type="primary" @click="() => open = true">
+      <a-button type="primary" @click="() => addAppOpen = true">
         <template #icon>
-          <PlusSquareOutlined />
+          <PlusOutlined />
         </template>
         新增
       </a-button>
     </template>
 
-    <a-card>
+    <a-card v-if="!addAppOpen">
       <a-table
         :columns="columns" :data-source="response.data" :loading="loading" :pagination="pagination"
         class="table-part" @change="handleTableChange($event)"
@@ -400,7 +371,11 @@ function editAPP(record: any) {
       </a-table>
     </a-card>
 
-    <a-modal
+    <a-card v-else style="margin-bottom:40px;">
+      <addApp :current="currentApp" :copy="copyApp" @close="closeAddApp" />
+    </a-card>
+
+    <!-- <a-modal
       v-model:open="open" title="新建应用" style="top:8vh;width:60vw;" :mask-closable="false" @ok="handleOk"
       @cancel="handleCancel"
     >
@@ -525,7 +500,7 @@ function editAPP(record: any) {
           确定
         </a-button>
       </template>
-    </a-modal>
+    </a-modal> -->
   </page-container>
 </template>
 

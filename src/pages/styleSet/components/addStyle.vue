@@ -700,7 +700,7 @@ function handleToAppCancel() {
     </div>
     <div v-if="!choiceType" class="choice">
       <a-button @click="normalStyle">
-        原生样式
+        基准样式
       </a-button>
       <a-button @click="diyStyle">
         自定义样式

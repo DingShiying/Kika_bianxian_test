@@ -29,6 +29,24 @@ export const manageRouter: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/loadingSet',
+    name: 'loadingSet',
+    component: () => import('~/pages/loadingSet/index.vue'),
+    meta: {
+      title: '加载策略维护',
+      icon: 'Loading3QuartersOutlined',
+    },
+  },
+  {
+    path: '/scatterSet',
+    name: 'scatterSet',
+    component: () => import('~/pages/scatterSet/index.vue'),
+    meta: {
+      title: '分散加载策略维护',
+      icon: 'FullscreenOutlined',
+    },
+  },
+  {
     path: '/appSet',
     name: 'appSet',
     component: () => import('~/pages/appSet/index.vue'),

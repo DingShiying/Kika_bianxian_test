@@ -1782,7 +1782,7 @@ function controlHighSearch() {
         <template #icon>
           <PlusOutlined />
         </template>
-        新增配置
+        新增
       </a-button>
     </template>
 

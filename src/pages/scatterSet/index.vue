@@ -1,142 +1,92 @@
-<script setup lang="ts" name="businessSet">
+<script setup lang="ts" name="loadingSet">
 import { onMounted, ref } from 'vue'
-import { PlusOutlined } from '@ant-design/icons-vue'
-import addBusiness from './components/addBusiness.vue'
+import { FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import addLoading from './components/addLoading.vue'
 
-// interface FormState {
-//   businessName: string
-//   linkUser: string[]
-//   linkAPP: string[]
-// }// 表单数据类型
-
-interface BusinessListData {
+interface PlatformListData {
   data: Array<{
-    businessName: string
+    strategyName: string
+    load_strategy: number
     creator: string
     createTime: string
-    linkUser: string[]
-    linkAPP: string[]
-  }>
-  userList: Array<{
-    label: string
-    value: string
-  }>
-  appList: Array<{
-    label: string
-    value: string
+    status: boolean
   }>
 }// 请求接口数据类型
 
 interface Params {
-  businessName: string
+  load_strategy: string
 }// 查询参数类型
 
 const searchParams = ref<Params>({
-  businessName: '',
+  load_strategy: '',
 })// 查询参数
 
-const response = ref<BusinessListData>({
+const response = ref<PlatformListData>({
   data: [
     {
-      businessName: '电商业务组',
+      strategyName: '价格优先',
+      load_strategy: 0,
       creator: '张三',
       createTime: '2023-01-01',
-      linkUser: ['张三', '李四'],
-      linkAPP: ['APP1', 'APP2'],
+      status: true,
     },
     {
-      businessName: '金融业务组',
-      creator: '王五',
-      createTime: '2023-01-02',
-      linkUser: ['王五', '赵六'],
-      linkAPP: ['APP3', 'APP4'],
+      strategyName: '速度优先',
+      load_strategy: 1,
+      creator: '张三',
+      createTime: '2023-01-01',
+      status: false,
     },
     {
-      businessName: '物流业务组',
-      creator: '钱七',
-      createTime: '2023-01-03',
-      linkUser: ['钱七', '孙八'],
-      linkAPP: ['APP5', 'APP6'],
-    },
-  ],
-  userList: [
-    {
-      label: '张三',
-      value: '张三',
-    },
-    {
-      label: '李四',
-      value: '李四',
-    },
-    {
-      label: '王五',
-      value: '王五',
-    },
-    {
-      label: '赵六',
-      value: '赵六',
-    },
-    {
-      label: '钱七',
-      value: '钱七',
-    },
-    {
-      label: '孙八',
-      value: '孙八',
-    },
-  ],
-  appList: [
-    {
-      label: 'APP1',
-      value: 'APP1',
-    },
-    {
-      label: 'APP2',
-      value: 'APP2',
-    },
-    {
-      label: 'APP3',
-      value: 'APP3',
-    },
-    {
-      label: 'APP4',
-      value: 'APP4',
-    },
-    {
-      label: 'APP5',
-      value: 'APP5',
-    },
-    {
-      label: 'APP6',
-      value: 'APP6',
+      strategyName: '混合模式',
+      load_strategy: 2,
+      creator: '张三',
+      createTime: '2023-01-01',
+      status: true,
     },
   ],
 })// 请求接口数据
 
-const columns = [
+const columns: any = [
   {
-    title: '业务组名称',
-    dataIndex: 'businessName',
-    key: 'businessName',
+    title: '加载策略名称',
+    dataIndex: 'strategyName',
+    key: 'strategyName',
+  },
+  {
+    title: '加载策略值',
+    dataIndex: 'load_strategy',
+    key: 'load_strategy',
+    align: 'center',
   },
   {
     title: '创建人',
     dataIndex: 'creator',
     key: 'creator',
+    align: 'center',
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
     key: 'createTime',
+    align: 'center',
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    key: 'status',
+    align: 'center',
   },
   {
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
+    align: 'center',
   },
 ]// 表格列头
 
 const loading = ref(false) // 表格加载状态
+const currentStrategy = ref() // 当前选中平台
 
 const pagination = ref({
   current: 1,
@@ -144,28 +94,7 @@ const pagination = ref({
   total: response.value.data.length,
 })// 表格分页
 
-// const open = ref(false)// 表单弹窗状态
-const addBusinessOpen = ref(false)// 新增业务组弹窗状态
-const currentBusiness = ref()
-
-// const formRef = ref()// 表单引用
-// const formState: FormState = reactive({
-//   businessName: '',
-//   linkUser: [],
-//   linkAPP: [],
-// })// 表单数据
-
-// const formDisabled = reactive({
-//   businessName: false,
-//   linkUser: false,
-//   linkAPP: false,
-// })
-
-// const rules: any = {
-//   businessName: [{ required: true, message: '业务组名称不能为空', trigger: 'blur', type: 'string' }],
-//   linkUser: [{ required: true, message: '请至少选择一个用户', trigger: 'change', type: 'array' }],
-//   linkAPP: [{ required: true, message: '请至少选择一个APP', trigger: 'change', type: 'array' }],
-// }// 表单验证规则
+const addLoadingOpen = ref(false)// 新增弹窗状态
 
 // async function getData(searchParams: Params) {
 //   try {
@@ -207,62 +136,14 @@ function handleTableChange(event: any) {
   pagination.value = event
 }// 表格分页改变
 
-// function handleOk() {
-//   formRef.value.validate().then(() => {
-//     console.log(formState)
-//     open.value = false
-//     Modal.destroyAll()
-//     formRef.value.resetFields()
-//     message.success('新建用户成功！')
-//   })
-// }// 表单提交
-// function handleCancel() {
-//   open.value = false
-//   Modal.destroyAll()
-//   Object.assign(formState, {
-//     businessName: '',
-//     linkUser: [],
-//     linkAPP: [],
-//   })
-//   Object.assign(formDisabled, {
-//     businessName: false,
-//     linkUser: false,
-//     linkAPP: false,
-//   })
-// }// 表单取消
-
-function editBusiness(record: any) {
-  currentBusiness.value = record.businessName
-  addBusinessOpen.value = true
+function editStratgy(record: any) {
+  currentStrategy.value = record
+  addLoadingOpen.value = true
 }
-function closeAddBusiness(value: boolean) {
-  addBusinessOpen.value = value
-  currentBusiness.value = null
+function closeAddStrategy(value: boolean) {
+  addLoadingOpen.value = value
+  currentStrategy.value = null
 }
-
-// function editLinkAPP(record: any) {
-//   formState.businessName = record.businessName
-//   formState.linkUser = record.linkUser
-//   formState.linkAPP = record.linkAPP
-//   Object.assign(formDisabled, {
-//     businessName: true,
-//     linkUser: true,
-//     linkAPP: false,
-//   })
-//   open.value = true
-// }
-
-// function editLinkUser(record: any) {
-//   formState.businessName = record.businessName
-//   formState.linkUser = record.linkUser
-//   formState.linkAPP = record.linkAPP
-//   Object.assign(formDisabled, {
-//     businessName: true,
-//     linkUser: false,
-//     linkAPP: true,
-//   })
-//   open.value = true
-// }
 
 // onMounted(() => {
 //   getData(searchParams.value)
@@ -272,7 +153,7 @@ function closeAddBusiness(value: boolean) {
 <template>
   <page-container>
     <template #extra>
-      <a-button type="primary" @click="() => addBusinessOpen = true">
+      <a-button type="primary" @click="() => addLoadingOpen = true">
         <template #icon>
           <PlusOutlined />
         </template>
@@ -280,9 +161,9 @@ function closeAddBusiness(value: boolean) {
       </a-button>
     </template>
 
-    <a-card v-if="!addBusinessOpen">
+    <a-card v-if="!addLoadingOpen">
       <a-input-search
-        v-model:value="searchParams.businessName" placeholder="请输入业务组名称" enter-button="搜索"
+        v-model:value="searchParams.load_strategy" placeholder="请输入加载策略值" enter-button="搜索"
         style="width: 350px;margin-bottom: 15px;" @search="() => console.log(searchParams)"
       />
       <a-table
@@ -290,21 +171,15 @@ function closeAddBusiness(value: boolean) {
         class="table-part" @change="handleTableChange($event)"
       >
         <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'status'">
+            <a-switch v-model:checked="record.status" />
+          </template>
           <template v-if="column.dataIndex === 'operation'">
             <div class="option">
               <div class="link-app">
-                <span @click="editBusiness(record)">编辑</span>
+                <FormOutlined />
+                <span @click="editStratgy(record)">编辑</span>
               </div>
-
-              <!-- <div class="link-app">
-                <img src="@/assets/images/link.svg">
-                <span @click="editLinkAPP(record)">关联APP</span>
-              </div>
-
-              <div class="link-app">
-                <img src="@/assets/images/link.svg">
-                <span @click="editLinkUser(record)">关联用户</span>
-              </div> -->
 
               <span>删除</span>
             </div>
@@ -317,50 +192,9 @@ function closeAddBusiness(value: boolean) {
         </template>
       </a-table>
     </a-card>
-
     <a-card v-else>
-      <addBusiness :current="currentBusiness" @close="closeAddBusiness" />
+      <addLoading :current="currentStrategy" @close="closeAddStrategy" />
     </a-card>
-
-    <!-- <a-modal
-      v-model:open="open" title="新增角色" style="top:20vh;width:50vw;" :mask-closable="false" @ok="handleOk"
-      @cancel="handleCancel"
-    >
-      <a-form
-        ref="formRef" :model="formState" :rules="rules" :label-col="{ style: { width: '100px' } }"
-        class="form-part"
-      >
-        <a-form-item label="业务组名称" name="businessName" style="width: 35vw;">
-          <a-input
-            v-model:value="formState.businessName" placeholder="请输入业务组名称"
-            :disabled="formDisabled.businessName" auto-complete="off"
-          />
-        </a-form-item>
-
-        <a-form-item label="关联用户" name="linkUser" style="width: 35vw;">
-          <a-select
-            v-model:value="formState.linkUser" show-search placeholder="请选择关联用户"
-            :options="response.userList" mode="multiple" :disabled="formDisabled.linkUser"
-          />
-        </a-form-item>
-
-        <a-form-item label="关联APP" name="linkAPP" style="width: 35vw;">
-          <a-select
-            v-model:value="formState.linkAPP" show-search placeholder="请选择关联APP"
-            :options="response.appList" mode="multiple" :disabled="formDisabled.linkAPP"
-          />
-        </a-form-item>
-      </a-form>
-
-      <template #footer>
-        <a-button key="back" @click="handleCancel">
-          取消
-        </a-button>
-        <a-button key="submit" type="primary" :loading="loading" @click="handleOk">
-          确定
-        </a-button>
-      </template>
-    </a-modal> -->
   </page-container>
 </template>
 
@@ -424,6 +258,7 @@ function closeAddBusiness(value: boolean) {
       span {
         font-size: 14px;
         color: #4e46e5;
+        margin-inline-start: 5px;
       }
 
       img {
@@ -618,42 +453,6 @@ function closeAddBusiness(value: boolean) {
         }
       }
     }
-  }
-}
-
-.form-part {
-  max-height: 60vh;
-  overflow: auto;
-  overflow-x: hidden;
-
-  /* 设置滚动条的宽度 */
-  &::-webkit-scrollbar {
-    width: 3px;
-    /* 水平滚动条的宽度 */
-    height: 3px;
-    /* 垂直滚动条的高度 */
-  }
-
-  /* 设置滚动条轨道的样式 */
-  &::-webkit-scrollbar-track {
-    background: transparent;
-    /* 轨道背景颜色 */
-    border-radius: 10px;
-    /* 轨道的圆角 */
-  }
-
-  /* 设置滚动条滑块的样式 */
-  &::-webkit-scrollbar-thumb {
-    background: #888;
-    /* 滑块颜色 */
-    border-radius: 10px;
-    /* 滑块的圆角 */
-  }
-
-  /* 设置滚动条滑块在悬停时的样式 */
-  &::-webkit-scrollbar-thumb:hover {
-    background: #555;
-    /* 悬停时的滑块颜色 */
   }
 }
 </style>

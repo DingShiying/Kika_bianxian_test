@@ -79,7 +79,7 @@ const business_apps_check = ref<Business_apps_check[]>([{
   checkList: [],
 }])// 表示业务组下属app是否全选
 
-const columns = [
+const columns: any = [
   {
     title: '用户名称',
     dataIndex: 'userName',
@@ -99,6 +99,7 @@ const columns = [
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
+    align: 'center',
   },
 ]// 表格列头
 
@@ -277,6 +278,7 @@ function selectThisApp(businessIndex: number, appIndex: number) {
 
 function closeAddUser(value: boolean) {
   addUserOpen.value = value
+  currentUser.value = null
 }
 function openCard(user: any) {
   currentUser.value = user
@@ -284,6 +286,7 @@ function openCard(user: any) {
 }
 function closeCard(target: boolean) {
   userAppOpen.value = target
+  currentUser.value = null
 }
 function resetUserApps(value: any) {
   Object.assign(formState, value)
@@ -295,28 +298,31 @@ function resetUserApps(value: any) {
   })
   open.value = true
 }
-
-function resetUserBusiness(user: any) {
-  Object.assign(formState, user)
-  Object.assign(formDisabled, {
-    email: true,
-    business: false,
-    role: true,
-    apps: true,
-  })
-  open.value = true
+function editUser(user: any) {
+  currentUser.value = user
+  addUserOpen.value = true
 }
+// function resetUserBusiness(user: any) {
+//   Object.assign(formState, user)
+//   Object.assign(formDisabled, {
+//     email: true,
+//     business: false,
+//     role: true,
+//     apps: true,
+//   })
+//   open.value = true
+// }
 
-function resetUserRole(user: any) {
-  Object.assign(formState, user)
-  Object.assign(formDisabled, {
-    email: true,
-    business: true,
-    role: false,
-    apps: true,
-  })
-  open.value = true
-}
+// function resetUserRole(user: any) {
+//   Object.assign(formState, user)
+//   Object.assign(formDisabled, {
+//     email: true,
+//     business: true,
+//     role: false,
+//     apps: true,
+//   })
+//   open.value = true
+// }
 
 onMounted(() => {
   getData(searchParams.value)
@@ -330,7 +336,7 @@ onMounted(() => {
         <template #icon>
           <PlusOutlined />
         </template>
-        新增用户
+        新增
       </a-button>
     </template>
 
@@ -359,14 +365,14 @@ onMounted(() => {
             </template>
             <template v-if="column.dataIndex === 'operation'">
               <div class="option">
-                <div class="link-app">
+                <div class="link-app" @click="openCard(record)">
                   <img src="@/assets/images/key.svg">
-                  <span @click="openCard(record)">管理APP</span>
+                  <span>管理APP</span>
                 </div>
 
-                <div class="link-app">
+                <div class="link-app" @click="editUser(record)">
                   <FormOutlined />
-                  <span @click="resetUserBusiness(record)">编辑</span>
+                  <span>编辑</span>
                 </div>
 
                 <span>删除</span>
@@ -382,7 +388,7 @@ onMounted(() => {
       </a-card>
     </template>
 
-    <a-modal
+    <!-- <a-modal
       v-model:open="open" title="新增用户" style="top:10vh;width:70vw;" :mask-closable="false" @ok="handleOk"
       @cancel="handleCancel"
     >
@@ -404,17 +410,6 @@ onMounted(() => {
             :disabled="formDisabled.role"
           />
         </a-form-item>
-
-        <!-- <a-form-item label="分配APP" name="app">
-          <a-radio-group v-model:value="formState.app">
-            <a-radio :value="true">
-              归属业务组的全部APP
-            </a-radio>
-            <a-radio :value="false">
-              自定义
-            </a-radio>
-          </a-radio-group>
-        </a-form-item> -->
         <a-form-item-rest label="分配APP" name="selectAPPs">
           <div class="select_app">
             <div class="left">
@@ -483,10 +478,10 @@ onMounted(() => {
           确定
         </a-button>
       </template>
-    </a-modal>
+    </a-modal> -->
 
     <a-card v-if="addUserOpen" style="margin-bottom:40px;">
-      <addUser @close="closeAddUser" />
+      <addUser :current="currentUser" @close="closeAddUser" />
     </a-card>
 
     <a-card v-if="userAppOpen">

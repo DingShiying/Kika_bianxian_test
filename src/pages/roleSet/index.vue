@@ -1,14 +1,13 @@
 <script setup lang="ts" name="roleSet">
-import { onMounted, reactive, ref } from 'vue'
-import { PlusSquareOutlined } from '@ant-design/icons-vue'
-import { Modal, message } from 'ant-design-vue'
-import type { TreeDataItem } from 'ant-design-vue/es/tree/Tree'
+import { onMounted, ref } from 'vue'
+import { FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import addRole from './components/addRole.vue'
 
-interface FormState {
-  roleName: string
-  roleScore: string | undefined
-  roleAuth: string[]
-}// 表单数据类型
+// interface FormState {
+//   roleName: string
+//   roleScore: string | undefined
+//   roleAuth: string[]
+// }// 表单数据类型
 interface AuthList {
   title: string
   name: string
@@ -28,6 +27,8 @@ interface RoleListData {
 interface Params {
   roleName: string
 }// 查询参数类型
+
+const addRoleOpen = ref(false)// 新增角色弹窗
 
 const searchParams = ref<Params>({
   roleName: '',
@@ -89,49 +90,49 @@ const response = ref<RoleListData>({
   ],
 })// 请求接口数据
 
-const treeData: TreeDataItem[] = [
-  {
-    title: '系统管理',
-    key: 'systemSet',
-    children: [
-      {
-        title: '用户管理',
-        key: 'userSet',
-        children: [
-          { title: '用户新增', key: 'userAdd' },
-          { title: '用户修改', key: 'userEdit' },
-        ],
-      },
-      {
-        title: '角色管理',
-        key: 'roleSet',
-        children: [
-          { title: '角色新增', key: 'roleAdd' },
-          { title: '角色修改', key: 'roleEdit' },
-        ],
-      },
-    ],
-  },
-  {
-    title: '业务管理',
-    key: 'businessSet',
-    children: [
-      {
-        title: '业务组管理',
-        key: 'businessGroupSet',
-        children: [
-          { title: '业务组新增', key: 'businessGroupAdd' },
-          { title: '业务组修改', key: 'businessGroupEdit' },
-        ],
-      },
-    ],
-  },
-]
-// const expandedKeys = ref<string[]>(['systemSet', 'userSet', 'roleSet', 'businessSet', 'businessGroupSet'])
+// const treeData: TreeDataItem[] = [
+//   {
+//     title: '系统管理',
+//     key: 'systemSet',
+//     children: [
+//       {
+//         title: '用户管理',
+//         key: 'userSet',
+//         children: [
+//           { title: '用户新增', key: 'userAdd' },
+//           { title: '用户修改', key: 'userEdit' },
+//         ],
+//       },
+//       {
+//         title: '角色管理',
+//         key: 'roleSet',
+//         children: [
+//           { title: '角色新增', key: 'roleAdd' },
+//           { title: '角色修改', key: 'roleEdit' },
+//         ],
+//       },
+//     ],
+//   },
+//   {
+//     title: '业务管理',
+//     key: 'businessSet',
+//     children: [
+//       {
+//         title: '业务组管理',
+//         key: 'businessGroupSet',
+//         children: [
+//           { title: '业务组新增', key: 'businessGroupAdd' },
+//           { title: '业务组修改', key: 'businessGroupEdit' },
+//         ],
+//       },
+//     ],
+//   },
+// ]
+// // const expandedKeys = ref<string[]>(['systemSet', 'userSet', 'roleSet', 'businessSet', 'businessGroupSet'])
 
-const expandedKeys = ref(findChild(treeData))
+// const expandedKeys = ref(findChild(treeData))
 
-const columns = [
+const columns: any = [
   {
     title: '角色名称',
     dataIndex: 'roleName',
@@ -141,25 +142,30 @@ const columns = [
     title: '展示顺序',
     dataIndex: 'roleScore',
     key: 'roleScore',
+    align: 'center',
   },
   {
     title: '创建人',
     dataIndex: 'creator',
     key: 'creator',
+    align: 'center',
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
     key: 'createTime',
+    align: 'center',
   },
   {
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
+    align: 'center',
   },
 ]// 表格列头
 
 const loading = ref(false) // 表格加载状态
+const currentRole = ref()
 
 const pagination = ref({
   current: 1,
@@ -167,37 +173,37 @@ const pagination = ref({
   total: response.value.data.length,
 })// 表格分页
 
-const open = ref(false)// 表单弹窗状态
+// const open = ref(false)// 表单弹窗状态
 
-const formRef = ref()// 表单引用
-const formState: FormState = reactive({
-  roleName: '',
-  roleScore: undefined,
-  roleAuth: [],
-})// 表单数据
+// const formRef = ref()// 表单引用
+// const formState: FormState = reactive({
+//   roleName: '',
+//   roleScore: undefined,
+//   roleAuth: [],
+// })// 表单数据
 
-const formDisabled = reactive({
-  roleName: false,
-  roleScore: false,
-  roleAuth: false,
-})
+// const formDisabled = reactive({
+//   roleName: false,
+//   roleScore: false,
+//   roleAuth: false,
+// })
 
-const rules: any = {
-  roleName: [
-    { required: true, message: '角色名不能为空', trigger: 'blur', type: 'string' },
-  ],
-  roleScore: [{ required: true, message: '显示顺序不能为空', trigger: 'blur', type: 'string' }, {
-    validator: (_: any, value: any) => {
-      if (value <= 0) {
-        return Promise.reject(new Error('显示顺序必须为正数'))
-      }
-      return Promise.resolve()
-    },
-    trigger: 'blur',
-    type: 'string',
-  }],
-  roleAuth: [{ required: true, message: '请至少选择一个权限', trigger: 'change', type: 'array' }],
-}// 表单验证规则
+// const rules: any = {
+//   roleName: [
+//     { required: true, message: '角色名不能为空', trigger: 'blur', type: 'string' },
+//   ],
+//   roleScore: [{ required: true, message: '显示顺序不能为空', trigger: 'blur', type: 'string' }, {
+//     validator: (_: any, value: any) => {
+//       if (value <= 0) {
+//         return Promise.reject(new Error('显示顺序必须为正数'))
+//       }
+//       return Promise.resolve()
+//     },
+//     trigger: 'blur',
+//     type: 'string',
+//   }],
+//   roleAuth: [{ required: true, message: '请至少选择一个权限', trigger: 'change', type: 'array' }],
+// }// 表单验证规则
 
 // async function getData(searchParams: Params) {
 //   try {
@@ -239,55 +245,52 @@ function handleTableChange(event: any) {
   pagination.value = event
 }// 表格分页改变
 
-function handleOk() {
-  formRef.value.validate().then(() => {
-    console.log(formState)
-    open.value = false
-    Modal.destroyAll()
-    formRef.value.resetFields()
-    message.success('新建用户成功！')
-  })
-}// 表单提交
-function handleCancel() {
-  open.value = false
-  Modal.destroyAll()
-  Object.assign(formState, {
-    roleName: '',
-    roleScore: undefined,
-    roleAuth: [],
-  })
-  Object.assign(formDisabled, {
-    roleName: false,
-    roleScore: false,
-    roleAuth: false,
-  })
-}// 表单取消
+// function handleOk() {
+//   formRef.value.validate().then(() => {
+//     console.log(formState)
+//     open.value = false
+//     Modal.destroyAll()
+//     formRef.value.resetFields()
+//     message.success('新建用户成功！')
+//   })
+// }// 表单提交
+// function handleCancel() {
+//   open.value = false
+//   Modal.destroyAll()
+//   Object.assign(formState, {
+//     roleName: '',
+//     roleScore: undefined,
+//     roleAuth: [],
+//   })
+//   Object.assign(formDisabled, {
+//     roleName: false,
+//     roleScore: false,
+//     roleAuth: false,
+//   })
+// }// 表单取消
 
-function findChild(treeData: TreeDataItem[]) {
-  const result: string[] = []
-  function innerFunc(treeData: TreeDataItem[]) {
-    treeData.forEach((item: TreeDataItem) => {
-      if (item.children) {
-        result.push(item.key as string)
-        innerFunc(item.children)
-      }
-    })
-  }
+// function findChild(treeData: TreeDataItem[]) {
+//   const result: string[] = []
+//   function innerFunc(treeData: TreeDataItem[]) {
+//     treeData.forEach((item: TreeDataItem) => {
+//       if (item.children) {
+//         result.push(item.key as string)
+//         innerFunc(item.children)
+//       }
+//     })
+//   }
 
-  innerFunc(treeData)
-  return result
+//   innerFunc(treeData)
+//   return result
+// }
+function closeAddRole(value: boolean) {
+  addRoleOpen.value = value
+  currentRole.value = null
 }
 
 function editRole(record: any) {
-  formState.roleName = record.roleName
-  formState.roleScore = record.roleScore
-  formState.roleAuth = record.roleAuth
-  Object.assign(formDisabled, {
-    roleName: true,
-    roleScore: true,
-    roleAuth: false,
-  })
-  open.value = true
+  currentRole.value = record
+  addRoleOpen.value = true
 }
 
 // onMounted(() => {
@@ -298,15 +301,15 @@ function editRole(record: any) {
 <template>
   <page-container>
     <template #extra>
-      <a-button type="primary" @click="() => open = true">
+      <a-button type="primary" @click="() => addRoleOpen = true">
         <template #icon>
-          <PlusSquareOutlined />
+          <PlusOutlined />
         </template>
         新增角色
       </a-button>
     </template>
 
-    <a-card>
+    <a-card v-if="!addRoleOpen">
       <a-input-search
         v-model:value="searchParams.roleName" placeholder="请输入角色名称" enter-button="搜索"
         style="width: 350px;margin-bottom: 15px;" @search="() => console.log(searchParams)"
@@ -319,8 +322,8 @@ function editRole(record: any) {
           <template v-if="column.dataIndex === 'operation'">
             <div class="option">
               <div class="link-app">
-                <img src="@/assets/images/link.svg">
-                <span @click="editRole(record)">角色权限</span>
+                <FormOutlined />
+                <span @click="editRole(record)">编辑</span>
               </div>
 
               <span>删除</span>
@@ -335,7 +338,11 @@ function editRole(record: any) {
       </a-table>
     </a-card>
 
-    <a-modal
+    <a-card v-else>
+      <addRole :current="currentRole" @close="closeAddRole" />
+    </a-card>
+
+    <!-- <a-modal
       v-model:open="open" title="新增角色" style="top:10vh;width:50vw;" :mask-closable="false" @ok="handleOk"
       @cancel="handleCancel"
     >
@@ -370,7 +377,7 @@ function editRole(record: any) {
           确定
         </a-button>
       </template>
-    </a-modal>
+    </a-modal> -->
   </page-container>
 </template>
 
@@ -434,6 +441,7 @@ function editRole(record: any) {
       span {
         font-size: 14px;
         color: #4e46e5;
+         margin-inline-start: 5px;
       }
 
       img {

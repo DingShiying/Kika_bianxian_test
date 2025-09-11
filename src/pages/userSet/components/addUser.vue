@@ -2,7 +2,8 @@
 import { RollbackOutlined } from '@ant-design/icons-vue'
 import { reactive, ref } from 'vue'
 
-const emit = defineEmits(['close', 'reset'])
+const { current } = defineProps(['current'])
+const emit = defineEmits(['close'])
 
 interface FormState {
   userEmail: string
@@ -227,7 +228,7 @@ response.value.appList.forEach((item: any) => {
 business_apps_check.value = checkState
 
 const formRef = ref()// 表单引用
-const formState: FormState = reactive({
+const formState: FormState = reactive(current || {
   userEmail: '',
   business: [],
   role: undefined,
@@ -309,7 +310,7 @@ function selectThisApp(businessIndex: number, appIndex: number) {
         </template>
         返回
       </a-button>
-      <span>新增用户</span>
+      <span>{{ current ? '编辑用户' : '新增用户' }}</span>
     </div>
 
     <a-form ref="formRef" :model="formState" :rules="rules" layout="vertical">
@@ -322,6 +323,7 @@ function selectThisApp(businessIndex: number, appIndex: number) {
           v-model:value="formState.business" :options="response.businessList" mode="multiple"
           placeholder="请选择业务组"
         />
+        <span v-if="current" style="font-size:12px;color:grey;">更改业务组不会影响人员APP权限</span>
       </a-form-item>
 
       <a-form-item label="所属角色" name="role" style="width: 35vw;">
@@ -480,8 +482,8 @@ function selectThisApp(businessIndex: number, appIndex: number) {
                 margin-bottom: 10px;
 
                 img {
-                    height: 40px;
-                    width: 40px;
+                    height: 30px;
+                    width: 30px;
                     object-fit: contain;
                     margin-right: 15px;
                 }

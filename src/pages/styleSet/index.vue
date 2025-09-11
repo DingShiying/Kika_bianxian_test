@@ -27,7 +27,7 @@ const response = ref<ConfigListData>({
   data: [
     {
       style_id: '样式1',
-      styleType: '原生',
+      styleType: '基准',
       difference: '样式1的描述',
       preview: '/src/assets/images/style_preview.png',
       creator: '张三',
@@ -52,7 +52,7 @@ const response = ref<ConfigListData>({
     },
     {
       style_id: '样式3',
-      styleType: '原生',
+      styleType: '基准',
       difference: '样式3的描述',
       preview: '/src/assets/images/style_preview.png',
       creator: '钱七',

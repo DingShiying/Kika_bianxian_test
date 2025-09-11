@@ -1,0 +1,392 @@
+<script setup lang='ts' name='addApp'>
+import { computed, reactive, ref } from 'vue'
+import { message } from 'ant-design-vue'
+import { RollbackOutlined } from '@ant-design/icons-vue'
+
+interface FormState {
+  appName: string
+  package: string
+  firebaseID: string
+  business: string | undefined
+  users: string[]
+  system: string
+  platform: string[]
+  icon: string
+  copyAppID: string | undefined
+  copyConfig: string[]
+}// 表单数据类型
+
+const { current, copy } = defineProps(['current', 'copy'])
+const emit = defineEmits(['close'])
+
+const formRef = ref()// 表单引用
+const formState: FormState = reactive(current || {
+  appName: '',
+  package: '',
+  firebaseID: '',
+  business: undefined,
+  users: [],
+  system: 'iOS',
+  platform: [],
+  icon: '',
+  copyAppID: undefined,
+  copyConfig: [],
+})// 表单数据
+
+if (copy) {
+  Object.assign(formState, copy)
+  formState.appName = ''
+  formState.package = ''
+  formState.copyAppID = copy.appID
+}
+
+const copyDisabled = computed(() => {
+  if (current) {
+    if (current.copyAppID) {
+      return true
+    }
+    else {
+      return false
+    }
+  }
+  else {
+    return false
+  }
+})
+
+const rules: any = {
+  appName: [{ required: true, message: '应用名称不能为空', trigger: 'blur', type: 'string' }],
+  package: [{ required: true, message: '包名不能为空', trigger: 'blur', type: 'string' }],
+  firebaseID: [{ required: true, message: 'firebase关联ID不能为空', trigger: 'blur', type: 'string' }],
+  business: [{ required: true, message: '归属业务组不能为空', trigger: 'blur', type: 'string' }],
+  manager: [{ required: true, message: '请至少选择一名管理员', trigger: 'blur', type: 'array' }],
+  platform: [{ required: true, message: '请至少选择一个上架平台', trigger: 'blur', type: 'array' }],
+  // icon: [{ required: true, message: '请上传应用图标', trigger: 'blur', type: 'string' }],
+  copyConfig: [{ required: true, message: '请至少选择一个配置项', trigger: 'blur', type: 'array' }],
+}// 表单验证规则
+
+const appList = [
+  {
+    appID: 'app-1',
+    appName: 'APP1',
+    package: 'com.oaojsa.app1',
+    firebaseID: 'ajbbhj_jhkbjhb',
+    business: '电商业务组',
+    manager: ['张三', '李四'],
+    system: 'iOS',
+    platform: ['Google', 'Apple Store', 'xiaomi'],
+    icon: '/src/assets/images/icon1.png',
+    creator: '王五',
+    createTime: '2022-01-01',
+  },
+  {
+    appID: 'app-2',
+    appName: 'APP2',
+    package: 'com.oaojsa.app2',
+    firebaseID: 'ajbbhj_jhkbjhb',
+    business: '电商健康组',
+    manager: ['王五', '李四'],
+    system: 'Android',
+    platform: ['Google', 'Apple Store'],
+    icon: '/src/assets/images/icon2.png',
+    creator: '王五',
+    createTime: '2022-01-01',
+  },
+  {
+    appID: 'app-3',
+    appName: 'APP3',
+    package: 'com.oaojsa.app3',
+    firebaseID: 'ajbbhj_jhkbjhb',
+    business: '电商幸福组',
+    manager: ['张三', '王五'],
+    system: 'iOS',
+    platform: ['Apple Store', 'xiaomi'],
+    icon: '/src/assets/images/icon3.png',
+    creator: '王五',
+    createTime: '2022-01-01',
+  },
+]
+const businessList = [
+  {
+    label: '电商业务组',
+    value: '电商业务组',
+  },
+  {
+    label: '电商健康组',
+    value: '电商健康组',
+  },
+  {
+    label: '电商幸福组',
+    value: '电商幸福组',
+  },
+]
+const platformList = [
+  {
+    label: 'Google',
+    value: 'Google',
+  },
+  {
+    label: 'Apple Store',
+    value: 'Apple Store',
+  },
+  {
+    label: 'xiaomi',
+    value: 'xiaomi',
+  },
+]
+
+function handleOk() {
+  formRef.value.validate().then(() => {
+    console.log(formState)
+    message.success('新建加载策略成功！')
+    emit('close', false)
+  }).catch((err: any) => {
+    message.warning('请按要求填写表单！')
+    console.error(err)
+  })
+}// 表单提交
+function handleCancel() {
+  emit('close', false)
+}
+</script>
+
+<template>
+  <div class="add-app">
+    <div class="header">
+      <a-button type="primary" @click="handleCancel">
+        <template #icon>
+          <RollbackOutlined />
+        </template>
+        返回
+      </a-button>
+      <span>{{ current ? '编辑APP' : '新增APP' }}</span>
+    </div>
+    <a-form
+      ref="formRef" :model="formState" :rules="rules" :label-col="{ style: { width: '140px' } }"
+      class="form-part"
+    >
+      <a-form-item label="应用名称" name="appName" style="width: 35vw;">
+        <a-input v-model:value="formState.appName" placeholder="请输入应用名称" auto-complete="off" />
+      </a-form-item>
+
+      <a-form-item label="包名" name="package" style="width: 35vw;">
+        <a-input v-model:value="formState.package" placeholder="请输入包名" auto-complete="off" />
+        <span style="font-size: 12px;color:grey;">格式如:com.example.appname</span>
+      </a-form-item>
+
+      <a-form-item label="firebase关联ID" name="firebaseID" style="width: 35vw;">
+        <a-input v-model:value="formState.firebaseID" placeholder="请输入firebase关联ID" auto-complete="off" />
+      </a-form-item>
+
+      <a-form-item label="归属业务组" name="business" style="width: 35vw;">
+        <a-select
+          v-model:value="formState.business" placeholder="请选择归属业务组" :options="businessList"
+          show-search
+        />
+      </a-form-item>
+
+      <a-form-item label="发行端" name="system" style="width: 35vw;">
+        <a-radio-group v-model:value="formState.system" name="system" :disabled="copyDisabled">
+          <a-radio value="iOS">
+            iOS
+          </a-radio>
+          <a-radio value="Android">
+            Android
+          </a-radio>
+        </a-radio-group>
+      </a-form-item>
+
+      <a-form-item label="上架平台" name="platform" style="width: 35vw;">
+        <a-select
+          v-model:value="formState.platform" placeholder="请选择上架平台" :options="platformList" show-search
+          mode="multiple"
+        />
+      </a-form-item>
+
+      <a-form-item label="应用图标" name="icon">
+        <div class="upload-img">
+          <div v-if="!formState.icon" class="upload">
+            <img src="@/assets/images/upload.svg">
+            <span>上传icon</span>
+          </div>
+          <a-image v-else :src="formState.icon" :width="100" :height="100" />
+          <div v-if="!formState.icon" class="alert-text">
+            <span>支持jpg、png格式</span>
+            <span>建议尺寸&nbsp;512&nbsp;&times;&nbsp;512&nbsp;</span>
+            <span>大小不超过2M</span>
+          </div>
+        </div>
+      </a-form-item>
+
+      <a-form-item label="复用配置目标APP" name="copyApp" style="width: 40vw;">
+        <a-select
+          v-model:value="formState.copyAppID" placeholder="非必填项，但是选择并创建后无法更改" size="large" show-search
+          :allow-clear="true" :disabled="copyDisabled"
+        >
+          <a-select-option v-for="app in appList" :key="app.appID" :value="app.appID" :label="app.appName">
+            <div class="app-option">
+              <img :src="app.icon" class="app-option-icon">
+              <img :src="`/src/assets/images/${app.system}.svg`" class="app-system">
+              <div class="app-name">
+                {{ app.appName }}
+              </div>
+              <span class="app-package">
+                ({{ app.package }})
+              </span>
+            </div>
+          </a-select-option>
+        </a-select>
+        <span style="font-size: 12px;color:grey">复用后无法更改</span>
+      </a-form-item>
+
+      <a-form-item v-if="formState.copyAppID" label="复用配置" name="copyConfig">
+        <a-checkbox-group v-model:value="formState.copyConfig" :disabled="copyDisabled">
+          <a-checkbox value="OID管理">
+            OID管理
+          </a-checkbox>
+          <a-checkbox value="加载计划管理">
+            加载计划管理
+          </a-checkbox>
+          <a-checkbox value="样式管理">
+            样式管理
+          </a-checkbox>
+          <a-checkbox value="APP权限人员">
+            APP权限人员
+          </a-checkbox>
+        </a-checkbox-group>
+      </a-form-item>
+    </a-form>
+  </div>
+  <div class="footer">
+    <a-button type="primary" @click="handleOk">
+      确认创建
+    </a-button>
+    <a-button @click="handleCancel">
+      取消
+    </a-button>
+  </div>
+</template>
+
+<style scoped lang='scss'>
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+
+    span {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .ant-btn {
+        position: absolute;
+        left: 0px;
+    }
+}
+
+.form-part {
+    .upload-img {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+
+        .upload {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            border: 1px dashed #d1d5db;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            img {
+                width: 50px;
+                height: 50px;
+                object-fit: contain;
+            }
+
+            span {
+                font-size: 12px;
+                color: #9ca3af;
+            }
+        }
+
+        .alert-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            margin-left: 10px;
+
+            span {
+                font-size: 10px;
+                color: grey;
+                font-weight: 400;
+
+                &:nth-of-type(2) {
+                    display: block;
+                    margin: 5px 0;
+                }
+            }
+        }
+    }
+}
+
+.app-option {
+    display: flex;
+    align-items: center;
+
+    .app-option-icon {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+        margin-right: 5px;
+    }
+
+    .app-system {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+        margin-right: 5px;
+    }
+
+    .app-name {
+        font-size: 14px;
+        font-weight: 400;
+        margin-right: 10px;
+    }
+
+    .app-package {
+        font-size: 12px;
+        color: grey;
+    }
+}
+
+.footer {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: fixed;
+    left: 0px;
+    bottom: 0px;
+    margin: 0;
+    background-color: #fff;
+    border-top: 1px solid #e8e8e8;
+
+    .ant-btn {
+        &:nth-of-type(2) {
+            margin: 0 20px;
+        }
+
+        &:last-of-type {
+            margin-right: 50px;
+        }
+    }
+}
+</style>
