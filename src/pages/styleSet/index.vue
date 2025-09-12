@@ -11,15 +11,21 @@ interface SearchFormState {
 interface ConfigListData {
   data: Array<{
     style_id: string
-    styleType: string
+    type: string
     base_id?: number
-    difference: string
+    differences?: {
+      [key: string]: {
+        [key: string]: string | number
+      }
+    }
     preview: string
     creator: string
     createTime: string
     currentEditor: string
     editTime: string
-    [key: string]: string | number | undefined
+    json?: {
+      [key: string]: string | number
+    }
   }>
 }// 请求接口数据类型
 
@@ -27,8 +33,7 @@ const response = ref<ConfigListData>({
   data: [
     {
       style_id: '样式1',
-      styleType: '基准',
-      difference: '样式1的描述',
+      type: '基准',
       preview: '/src/assets/images/style_preview.png',
       creator: '张三',
       createTime: '2023-01-01',
@@ -38,22 +43,40 @@ const response = ref<ConfigListData>({
     {
       style_id: '样式2',
       base_id: 304,
-      styleType: '自定义',
-      difference: '样式2的描述',
+      type: '自定义',
+      differences: {
+        'bg_start_color': {
+          'base': '#f4f4f4',
+          'current': '#f5f5f5',
+        },
+        'bg_end_color': {
+          'base': '#f4f4f4',
+          'current': '#f5f5f5',
+        },
+        'info_bg_color': {
+          'base': '#f4f4f4',
+          'current': '#f5f5f5',
+        },
+        'info_bg_radius': {
+          'base': '8px',
+          'current': '10px',
+        },
+      },
       preview: '/src/assets/images/style_preview.png',
       creator: '王五',
       createTime: '2023-01-03',
       currentEditor: '赵六',
       editTime: '2023-01-04',
-      bg_start_color: '#fffff',
-      bg_end_color: '#eeeeee',
-      info_bg_color: '#ffffff',
-      info_bg_radius: '10',
+      json: {
+        bg_start_color: '#fffff',
+        bg_end_color: '#eeeeee',
+        info_bg_color: '#ffffff',
+        info_bg_radius: '10',
+      },
     },
     {
       style_id: '样式3',
-      styleType: '基准',
-      difference: '样式3的描述',
+      type: '基准',
       preview: '/src/assets/images/style_preview.png',
       creator: '钱七',
       createTime: '2023-01-05',
@@ -72,13 +95,13 @@ const columns: any = [
   },
   {
     title: '样式类型',
-    dataIndex: 'styleType',
-    key: 'styleType',
+    dataIndex: 'type',
+    key: 'type',
     align: 'center',
   },
   {
     title: '与基准差异',
-    dataIndex: 'difference',
+    dataIndex: 'differences',
     key: 'difference',
     align: 'center',
   },
@@ -122,6 +145,8 @@ const columns: any = [
 
 const loading = ref(false) // 表格加载状态
 const addStyleOpen = ref(false)// 新增样式弹窗状态
+const differencesOpen = ref(false)// 差异弹窗状态
+const differences = ref()// 差异弹窗数据
 
 const pagination = ref({
   current: 1,
@@ -176,18 +201,22 @@ function closeAddStyle(value: boolean) {
 }
 
 function handleEdit(record: any) {
-  if (record.styleType === '自定义') {
+  if (record.type === '自定义') {
     currentStyle.value = record
     addStyleOpen.value = true
   }
 }
 
 function handleCopy(record: any) {
-  if (record.styleType === '自定义') {
+  if (record.type === '自定义') {
     currentStyle.value = JSON.parse(JSON.stringify(record))
     currentStyle.value.style_id = ''
     addStyleOpen.value = true
   }
+}
+function showDifferences(record: Array<string>) {
+  differences.value = record
+  differencesOpen.value = true
 }
 
 // onMounted(() => {
@@ -237,6 +266,10 @@ function handleCopy(record: any) {
         class="table-part" @change="handleTableChange($event)"
       >
         <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'differences'">
+            <span v-if="record.type === '基准'">无差异</span>
+            <span v-else style="cursor:pointer" @click="showDifferences(record.differences)">{{ Object.keys(record.differences).length }} 个差异</span>
+          </template>
           <template v-if="column.dataIndex === 'preview'">
             <a-image :src="record.preview" :height="20" />
           </template>
@@ -264,6 +297,17 @@ function handleCopy(record: any) {
     <a-card v-else style="margin-bottom: 30px;">
       <AddStyle :current="currentStyle" @close="closeAddStyle" />
     </a-card>
+
+    <a-modal v-model:visible="differencesOpen" title="与基准样式的差异" :footer="null">
+      <div v-for="item in Object.keys(differences)" :key="item" class="diff">
+        <div class="diff-title">
+          {{ item }}&nbsp;:
+        </div>
+        <a-tag>{{ differences[item].base }}</a-tag>
+        <span>&nbsp;->&nbsp;</span>
+        <a-tag>{{ differences[item].current }}</a-tag>
+      </div>
+    </a-modal>
   </page-container>
 </template>
 
@@ -604,41 +648,6 @@ function handleCopy(record: any) {
   }
 }
 
-// .form-part {
-//   max-height: 60vh;
-//   overflow: auto;
-//   overflow-x: hidden;
-
-//   /* 设置滚动条的宽度 */
-//   &::-webkit-scrollbar {
-//     width: 3px;
-//     /* 水平滚动条的宽度 */
-//     height: 3px;
-//     /* 垂直滚动条的高度 */
-//   }
-
-//   /* 设置滚动条轨道的样式 */
-//   &::-webkit-scrollbar-track {
-//     background: transparent;
-//     /* 轨道背景颜色 */
-//     border-radius: 10px;
-//     /* 轨道的圆角 */
-//   }
-
-//   /* 设置滚动条滑块的样式 */
-//   &::-webkit-scrollbar-thumb {
-//     background: #888;
-//     /* 滑块颜色 */
-//     border-radius: 10px;
-//     /* 滑块的圆角 */
-//   }
-
-//   /* 设置滚动条滑块在悬停时的样式 */
-//   &::-webkit-scrollbar-thumb:hover {
-//     background: #555;
-//     /* 悬停时的滑块颜色 */
-//   }
-// }
 .form-part {
   justify-content: space-between;
 
@@ -859,6 +868,26 @@ function handleCopy(record: any) {
         cursor: pointer;
       }
     }
+  }
+}
+
+.diff{
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  &:last-of-type{
+    margin-bottom: 0;
+  }
+   .diff-title{
+    font-size:16px;
+    margin-right:10px;
+    min-width:120px;
+  }
+  .ant-tag{
+    min-width:100px;
+    text-align:center;
+    font-size: 15px;
+    margin:0 10px;
   }
 }
 </style>

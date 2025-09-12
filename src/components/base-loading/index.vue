@@ -59,7 +59,7 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .loading-container {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 9999;
 

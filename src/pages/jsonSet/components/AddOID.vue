@@ -5,6 +5,7 @@ import { CaretDownOutlined, CloseCircleOutlined, PlusOutlined, RollbackOutlined 
 import selectOID from './selectOID.vue'
 import shareOID from './shareOID.vue'
 import Loading from '@/components/base-loading/index.vue'
+import { getJsonData } from '~@/api/json/getJson'
 
 interface FormState {
   configName: string
@@ -34,7 +35,11 @@ interface FormState {
     ad_positions: Array<any>
   }
 }// 表单数据类型
+interface Params {
+  configName: string
+}
 
+const { current, copy } = defineProps(['current', 'copy'])
 const emit = defineEmits(['close'])
 
 const formRef = ref()// 表单引用
@@ -64,19 +69,20 @@ const formState: FormState = reactive({
 const copyJSON = ref('')// 复制配置
 const visible = ref(false)
 const loading = ref(false)
+const editLoading = ref(false)
 const searchOid = ref('')
 
-const rules: any = {
-  configName: [
-    { required: true, message: '配置名不能为空', trigger: 'blur', type: 'string' },
-  ],
-  json: {
-    version: [{ required: true, message: '版本号不能为空', trigger: 'blur', type: 'string' }],
-    plan_id: [{ required: true, message: '请选择一个广告计划', trigger: 'blur', type: 'string' }],
-    ad_id: [{ required: true, message: '请选择一个广告源', trigger: 'blur', type: 'string' }],
-    style_id: [{ required: false, message: '请选择一个广告样式', trigger: 'blur', type: 'string' }],
-  },
-}// 表单验证规则
+// const rules: any = {
+//   configName: [
+//     { required: true, message: '配置名不能为空', trigger: 'blur', type: 'string' },
+//   ],
+//   json: {
+//     version: [{ required: true, message: '版本号不能为空', trigger: 'blur', type: 'string' }],
+//     plan_id: [{ required: true, message: '请选择一个广告计划', trigger: 'blur', type: 'string' }],
+//     ad_id: [{ required: true, message: '请选择一个广告源', trigger: 'blur', type: 'string' }],
+//     style_id: [{ required: false, message: '请选择一个广告样式', trigger: 'blur', type: 'string' }],
+//   },
+// }// 表单验证规则
 
 const typeOptions = computed(() => {
   return [
@@ -237,30 +243,13 @@ const formatOptions = [
     value: 11,
   },
 ]
-
-interface OIDConfig {
-  oid: string
-  format: number
-  isCopy?: boolean
-  plan_id?: string
-  ad_id?: string
-  style_id?: string
-  share?: {
-    share_type: string
-    share_list: string | Array<string>
-  }
-}
-const OIDList = ref<OIDConfig[]>([])
-function delOID(index: number) {
-  OIDList.value.splice(index, 1)
-}
 function changeType(index: number) {
   if (formState.condition[index].type === 'user') {
     formState.condition[index].value = 20
     formState.condition[index].symbol = undefined
   }
   else if (formState.condition[index].type === 'area') {
-    formState.condition[index].value = new Set()
+    formState.condition[index].value = []
     formState.condition[index].symbol = 'include'
   }
   else {
@@ -286,10 +275,23 @@ const shareOIDModal = ref(false)
 const currentOID = ref<string>('')
 const ad_positions = ref<any[]>([])
 
-function openShareModal(oid: string) {
-  shareOIDModal.value = true
-  currentOID.value = oid
-}// OID共享弹窗打开
+interface OIDConfig {
+  oid: string
+  format: number
+  isCopy?: boolean
+  plan_id?: string
+  ad_id?: string
+  style_id?: string
+  share?: {
+    share_type: string
+    share_list: string | Array<string>
+  }
+}
+const OIDList = ref<OIDConfig[]>([])
+function delOID(index: number) {
+  OIDList.value.splice(index, 1)
+}
+
 function closeSelectModal(value: boolean) {
   selectOIDModal.value = value
 }
@@ -298,7 +300,9 @@ function closeShareModal(value: boolean) {
   const target = OIDList.value.find(item => item.oid === currentOID.value)
   // @ts-expect-error:...
   target.isCopy = false
-  ad_positions.value.push(target)
+  if (isFullPosition(currentOID.value)) {
+    ad_positions.value.push(target)
+  }
 }
 function handleOkShare(value: any) {
   // @ts-expect-error:...
@@ -317,7 +321,6 @@ function pushToOIDList(arr: Array<any>) {
           share_list: '',
         },
       })
-      ad_positions.value.push(OIDList.value[OIDList.value.length - 1])
     }
   })
   selectOIDModal.value = false
@@ -328,10 +331,16 @@ function selectArea(e: any, label: string) {
     if (item.label === label) {
       item.checked = e.target.checked
       if (item.checked) {
-        formState.condition.find(item => item.type === 'area')?.value.add(label)
+        const cur = formState.condition.find(item => item.type === 'area')?.value
+        if (!cur.includes(label)) {
+          cur.push(label)
+        }
       }
       else {
-        formState.condition.find(item => item.type === 'area')?.value.delete(label)
+        const cur = formState.condition.find(item => item.type === 'area')?.value
+        if (cur.includes(label)) {
+          cur.splice(cur.indexOf(label), 1)
+        }
       }
     }
     if (item.checked)
@@ -343,15 +352,17 @@ function selectArea(e: any, label: string) {
 }
 function selectAll(e: any) {
   if (e.target.checked) {
+    const cur = formState.condition.find(i => i.type === 'area')?.value
     areaOptions.value.options.forEach((item) => {
       item.checked = true
-      // @ts-expect-error:忽略
-      formState.condition.find(i => i.type === 'area').value.add(item.label)
+      if (!cur.includes(item.label)) {
+        cur.push(item.label)
+      }
     })
   }
   else {
     // @ts-expect-error:忽略
-    formState.condition.find(i => i.type === 'area').value.clear()
+    formState.condition.find(i => i.type === 'area').value = []
     areaOptions.value.options.forEach((item) => {
       item.checked = false
     })
@@ -368,7 +379,7 @@ watch(searchValue, (newValue) => {
   })
 })
 
-const plans = reactive([
+const plans = [
   {
     'id': 'inter_default',
     'count': 1,
@@ -433,8 +444,8 @@ const plans = reactive([
     'refill': 1,
     'load_strategy': 21,
   },
-])
-const styles = reactive([
+]
+const styles = [
   {
     'id': '312_coin',
     'base_id': 312,
@@ -540,8 +551,8 @@ const styles = reactive([
     'cta_radius': 24,
     'choice_location': 1,
   },
-])
-const ids = reactive([
+]
+const ids = [
   {
     'id': 'tm_unlock_rw_id',
     'ads': [
@@ -1851,7 +1862,7 @@ const ids = reactive([
       ],
     ],
   },
-])
+]
 // const positions = reactive([
 //   {
 //     'oid': 'tm_unlock_rw',
@@ -2332,79 +2343,210 @@ const ids = reactive([
 //   },
 // ])
 
+function resolver(jsonValue: any) {
+  if (typeof jsonValue === 'string') {
+    if (jsonValue) {
+      const jsonData = JSON.parse(jsonValue)
+      formState.json.version = jsonData.version
+      formState.json.describe = jsonData.describe
+
+      OIDList.value = []
+      Object.assign(plans, jsonData.plans)
+      Object.assign(styles, jsonData.styles)
+      Object.assign(ids, jsonData.ids)
+      // Object.assign(positions, jsonData.ad_positions)
+      ad_positions.value = jsonData.ad_positions
+
+      jsonData.ad_positions.forEach((item: any) => {
+        OIDList.value.push({
+          oid: item.oid,
+          format: item.format,
+          isCopy: false,
+          plan_id: item.plan_id,
+          ad_id: item.ad_id,
+          style_id: item.style_id,
+          share: {
+            share_type: 'ad_shares',
+            share_list: '',
+          },
+        })
+      })
+      for (const key in jsonData.ad_shares) {
+        OIDList.value.push({
+          oid: key,
+          format: 100,
+          isCopy: true,
+          share: {
+            share_type: 'ad_shares',
+            share_list: jsonData.ad_shares[key],
+          },
+        })
+      }
+      for (const key in jsonData.ad_strong_shares) {
+        OIDList.value.push({
+          oid: key,
+          format: 100,
+          isCopy: true,
+          share: {
+            share_type: 'ad_strong_shares',
+            share_list: jsonData.ad_strong_shares[key],
+          },
+        })
+      }
+      for (const key in jsonData.ad_chains_v2) {
+        OIDList.value.push({
+          oid: key,
+          format: 100,
+          isCopy: true,
+          share: {
+            share_type: 'ad_chains_v2',
+            share_list: jsonData.ad_chains_v2[key],
+          },
+        })
+      }
+      message.success('JSON解析成功')
+    }
+    else {
+      message.warning('请输入JSON文本！')
+    }
+  }
+  else {
+    formState.json.version = jsonValue.version
+    formState.json.describe = jsonValue.describe
+
+    OIDList.value = []
+    Object.assign(plans, jsonValue.plans)
+    Object.assign(styles, jsonValue.styles)
+    Object.assign(ids, jsonValue.ids)
+    // Object.assign(positions, jsonData.ad_positions)
+    ad_positions.value = jsonValue.ad_positions
+
+    jsonValue.ad_positions.forEach((item: any) => {
+      OIDList.value.push({
+        oid: item.oid,
+        format: item.format,
+        isCopy: false,
+        plan_id: item.plan_id,
+        ad_id: item.ad_id,
+        style_id: item.style_id,
+        share: {
+          share_type: 'ad_shares',
+          share_list: '',
+        },
+      })
+    })
+    for (const key in jsonValue.ad_shares) {
+      OIDList.value.push({
+        oid: key,
+        format: 100,
+        isCopy: true,
+        share: {
+          share_type: 'ad_shares',
+          share_list: jsonValue.ad_shares[key],
+        },
+      })
+    }
+    for (const key in jsonValue.ad_strong_shares) {
+      OIDList.value.push({
+        oid: key,
+        format: 100,
+        isCopy: true,
+        share: {
+          share_type: 'ad_strong_shares',
+          share_list: jsonValue.ad_strong_shares[key],
+        },
+      })
+    }
+    for (const key in jsonValue.ad_chains_v2) {
+      OIDList.value.push({
+        oid: key,
+        format: 100,
+        isCopy: true,
+        share: {
+          share_type: 'ad_chains_v2',
+          share_list: jsonValue.ad_chains_v2[key],
+        },
+      })
+    }
+  }
+}
+
 function parseJson() {
   loading.value = true
   setTimeout(() => {
     try {
-      if (copyJSON.value) {
-        const jsonData = JSON.parse(copyJSON.value)
-        formState.json.version = jsonData.version
-        formState.json.describe = jsonData.describe
+      // if (copyJSON.value) {
+      //   const jsonData = JSON.parse(copyJSON.value)
+      //   formState.json.version = jsonData.version
+      //   formState.json.describe = jsonData.describe
 
-        OIDList.value = []
-        Object.assign(plans, jsonData.plans)
-        Object.assign(styles, jsonData.styles)
-        Object.assign(ids, jsonData.ids)
-        // Object.assign(positions, jsonData.ad_positions)
-        ad_positions.value = jsonData.ad_positions
+      //   OIDList.value = []
+      //   Object.assign(plans, jsonData.plans)
+      //   Object.assign(styles, jsonData.styles)
+      //   Object.assign(ids, jsonData.ids)
+      //   // Object.assign(positions, jsonData.ad_positions)
+      //   ad_positions.value = jsonData.ad_positions
 
-        jsonData.ad_positions.forEach((item: any) => {
-          OIDList.value.push({
-            oid: item.oid,
-            format: item.format,
-            isCopy: false,
-            plan_id: item.plan_id,
-            ad_id: item.ad_id,
-            style_id: item.style_id,
-            share: {
-              share_type: 'ad_shares',
-              share_list: '',
-            },
-          })
-        })
-        for (const key in jsonData.ad_shares) {
-          OIDList.value.push({
-            oid: key,
-            format: 100,
-            isCopy: true,
-            share: {
-              share_type: 'ad_shares',
-              share_list: jsonData.ad_shares[key],
-            },
-          })
-        }
-        for (const key in jsonData.ad_strong_shares) {
-          OIDList.value.push({
-            oid: key,
-            format: 100,
-            isCopy: true,
-            share: {
-              share_type: 'ad_strong_shares',
-              share_list: jsonData.ad_strong_shares[key],
-            },
-          })
-        }
-        for (const key in jsonData.ad_chains_v2) {
-          OIDList.value.push({
-            oid: key,
-            format: 100,
-            isCopy: true,
-            share: {
-              share_type: 'ad_chains_v2',
-              share_list: jsonData.ad_chains_v2[key],
-            },
-          })
-        }
-        message.success('JSON解析成功')
-      }
-      else {
-        throw new Error('请输入自定义样式的JSON文本')
-      }
+      //   jsonData.ad_positions.forEach((item: any) => {
+      //     OIDList.value.push({
+      //       oid: item.oid,
+      //       format: item.format,
+      //       isCopy: false,
+      //       plan_id: item.plan_id,
+      //       ad_id: item.ad_id,
+      //       style_id: item.style_id,
+      //       share: {
+      //         share_type: 'ad_shares',
+      //         share_list: '',
+      //       },
+      //     })
+      //   })
+      //   for (const key in jsonData.ad_shares) {
+      //     OIDList.value.push({
+      //       oid: key,
+      //       format: 100,
+      //       isCopy: true,
+      //       share: {
+      //         share_type: 'ad_shares',
+      //         share_list: jsonData.ad_shares[key],
+      //       },
+      //     })
+      //   }
+      //   for (const key in jsonData.ad_strong_shares) {
+      //     OIDList.value.push({
+      //       oid: key,
+      //       format: 100,
+      //       isCopy: true,
+      //       share: {
+      //         share_type: 'ad_strong_shares',
+      //         share_list: jsonData.ad_strong_shares[key],
+      //       },
+      //     })
+      //   }
+      //   for (const key in jsonData.ad_chains_v2) {
+      //     OIDList.value.push({
+      //       oid: key,
+      //       format: 100,
+      //       isCopy: true,
+      //       share: {
+      //         share_type: 'ad_chains_v2',
+      //         share_list: jsonData.ad_chains_v2[key],
+      //       },
+      //     })
+      //   }
+      //   copyJSON.value = ''
+      //   message.success('JSON解析成功')
+      // }
+      // else {
+      //   throw new Error('请输入JSON文本！')
+      // }
+      resolver(copyJSON.value)
     }
     catch (err: any) {
       message.warning(err.message)
     }
     finally {
+      copyJSON.value = ''
       loading.value = false
     }
   }, 1000)
@@ -2637,297 +2779,403 @@ function submitJSON() {
 }
 function isPosition(event: any, index: number) {
   if (event.target.value) {
-    const arr = ad_positions.value.filter((item: any) => item.oid !== OIDList.value[index].oid)
+    const arr: any = []
+    OIDList.value.forEach((item: any) => {
+      if (isFullPosition(item.oid)) {
+        if (item.oid !== OIDList.value[index].oid && item.format === OIDList.value[index].format) {
+          arr.push(item)
+        }
+      }
+    })
     ad_positions.value = arr
-    openShareModal(OIDList.value[index].oid)
+    shareOIDModal.value = true
+    currentOID.value = OIDList.value[index].oid
   }
   else {
-    ad_positions.value.push(OIDList.value[index])
+    if (isFullPosition(OIDList.value[index].oid)) {
+      ad_positions.value.push(OIDList.value[index])
+    }
   }
 }
 function onSearch() {
   console.log(searchOid)
+  console.log(formState.condition)
+}
+function isFullPosition(oid: string) {
+  const current = OIDList.value.find((item: any) => item.oid === oid)
+  if (current) {
+    if (current.ad_id && current.plan_id) {
+      return true
+    }
+    else {
+      return false
+    }
+  }
+  else {
+    return false
+  }
+}
+function addToPosition(_: any, index: number) {
+  if (isFullPosition(OIDList.value[index].oid)) {
+    ad_positions.value.push(OIDList.value[index])
+  }
+}
+async function getData(params: string) {
+  try {
+    const res = await getJsonData({ configName: params })
+    if (res.code === 200) {
+      // @ts-expect-error:...
+      resolver(res.data?.json)
+      // @ts-expect-error:...
+      formState.configName = res.data?.configName
+      // @ts-expect-error:...
+      formState.condition = res.data?.condition
+      // @ts-expect-error:....
+      formState.user_describe = res.data?.user_describe
+      const cur = formState.condition.find(i => i.type === 'area')?.value
+      if (cur) {
+        areaOptions.value.options.forEach((item) => {
+          item.checked = true
+          if (!cur.includes(item.label)) {
+            cur.push(item.label)
+          }
+        })
+      }
+    }
+    else {
+      throw new Error(res.msg)
+    }
+  }
+  catch (err: any) {
+    console.error(err)
+    message.error(err)
+  }
+  finally {
+    editLoading.value = false
+  }
+}
+
+const fullCount = computed(() => {
+  let count = 0
+
+  OIDList.value.forEach((item: any) => {
+    if (isFullPosition(item.oid)) {
+      count++
+    }
+  })
+  return count
+},
+)
+async function copyConfigChange(target: any) {
+  if (target !== 'noCopy' && target !== 'jsonCopy') {
+    editLoading.value = true
+    await getData(target)
+    formState.configName = ''
+    formState.user_describe = ''
+    formState.json.describe = ''
+  }
+}
+if (current) {
+  editLoading.value = true
+  getData(current)
+}
+if (copy) {
+  formState.copyConfig = copy
+  copyConfigChange(copy)
 }
 </script>
 
 <template>
   <div class="add-OID">
-    <div class="header">
-      <span>新建JSON配置</span>
-      <a-button type="primary" class="back-but" @click="emit('close', false)">
-        <template #icon>
-          <RollbackOutlined />
-        </template>
-        返回
-      </a-button>
-    </div>
+    <a-spin :spinning="editLoading" tip="正在加载中..." size="large">
+      <div class="header">
+        <span v-if="current">编辑JSON配置</span>
+        <span v-else>新建JSON配置</span>
+        <a-button type="primary" class="back-but" @click="emit('close', false)">
+          <template #icon>
+            <RollbackOutlined />
+          </template>
+          返回
+        </a-button>
+      </div>
 
-    <div class="containner">
-      <Loading v-if="loading" />
-      <a-form
-        ref="formRef" :model="formState" :label-col="{ style: { width: '80px' } }" layout="inline"
-        class="form-part"
-      >
-        <a-space class="top">
-          <a-form-item label="配置名称" name="configName">
-            <a-input v-model:value="formState.configName" placeholder="请输入配置名称" />
-          </a-form-item>
+      <div class="containner">
+        <Loading v-if="loading" />
+        <a-form
+          ref="formRef" :model="formState" :label-col="{ style: { width: '80px' } }" layout="inline"
+          class="form-part"
+        >
+          <a-space class="top">
+            <a-form-item label="配置名称" name="configName">
+              <a-input v-model:value="formState.configName" placeholder="请输入配置名称" />
+            </a-form-item>
 
-          <a-form-item label="描述" name="describe">
-            <a-tooltip trigger="click">
-              <template #title>
-                {{ formState.json.describe }}
-              </template>
-              <a-input v-model:value="formState.json.describe" placeholder="请输入配置描述" />
-            </a-tooltip>
-          </a-form-item>
+            <a-form-item label="描述describe" name="describe">
+              <a-tooltip trigger="click">
+                <template #title>
+                  {{ formState.json.describe }}
+                </template>
+                <a-input v-model:value="formState.json.describe" placeholder="请输入配置描述" />
+              </a-tooltip>
+            </a-form-item>
 
-          <a-form-item label="备注" name="user_describe">
-            <a-input v-model:value="formState.user_describe" placeholder="请输入配置备注" />
-          </a-form-item>
+            <a-form-item label="备注" name="user_describe">
+              <a-input v-model:value="formState.user_describe" placeholder="请输入配置备注" />
+            </a-form-item>
 
-          <a-form-item label="版本" name="version">
-            <a-input v-model:value="formState.json.version" placeholder="请输入配置版本" type="number" />
-          </a-form-item>
+            <a-form-item label="版本" name="version">
+              <a-input v-model:value="formState.json.version" placeholder="请输入配置版本" type="number" />
+            </a-form-item>
 
-          <a-form-item label="复用配置" name="copyConfig">
-            <a-select v-model:value="formState.copyConfig" placeholder="请选择复用配置">
-              <a-select-option value="noCopy">
-                不使用
-              </a-select-option>
-              <a-select-option value="jsonCopy">
-                适用JSON填写
-              </a-select-option>
-              <a-select-opt-group label="复用平台现存配置">
-                <a-select-option value="基础配置">
-                  基础配置
+            <a-form-item label="复用配置" name="copyConfig">
+              <a-select
+                v-model:value="formState.copyConfig" placeholder="请选择复用配置" show-search
+                @change="copyConfigChange"
+              >
+                <a-select-option value="noCopy">
+                  不使用
                 </a-select-option>
-                <a-select-option value="分地区测试">
-                  分地区测试
+                <a-select-option value="jsonCopy">
+                  适用JSON填写
                 </a-select-option>
-                <a-select-option value="呵呵测试">
-                  呵呵测试
-                </a-select-option>
-              </a-select-opt-group>
-            </a-select>
-          </a-form-item>
-        </a-space>
+                <a-select-opt-group label="复用平台现存配置">
+                  <a-select-option value="高级配置">
+                    高级配置
+                  </a-select-option>
+                  <a-select-option value="中级配置">
+                    中级配置
+                  </a-select-option>
+                  <a-select-option value="低级测试">
+                    低级测试
+                  </a-select-option>
+                </a-select-opt-group>
+              </a-select>
+            </a-form-item>
+          </a-space>
 
-        <div v-if="formState.copyConfig === 'jsonCopy'" class="copy-json">
-          <a-textarea v-model:value="copyJSON" placeholder="请输入复用JSON" :rows="4" />
-          <a-button type="primary" @click="parseJson">
-            解析JSON
-          </a-button>
-        </div>
-
-        <a-space class="condition">
-          <div class="label">
-            适用条件:
+          <div v-if="formState.copyConfig === 'jsonCopy'" class="copy-json">
+            <a-textarea v-model:value="copyJSON" placeholder="请输入复用JSON" :rows="4" />
+            <a-button type="primary" @click="parseJson">
+              解析JSON
+            </a-button>
           </div>
-          <div v-for="(item, index) in formState.condition" :key="index" class="level-select">
-            <CloseCircleOutlined class="condition-delete" @click="delCondition(index)" />
-            <a-select
-              v-model:value="item.type" style="width:25%; text-align: center;" :options="typeOptions"
-              :bordered="false" placeholder="请选择条件类型" @change="changeType(index)"
-            >
-              <template #suffixIcon>
-                <CaretDownOutlined />
-              </template>
-            </a-select>
-            <div v-show="item.type" class="sub-select">
+
+          <a-space class="condition">
+            <div class="label">
+              适用条件:
+            </div>
+            <div v-for="(item, index) in formState.condition" :key="index" class="level-select">
+              <CloseCircleOutlined class="condition-delete" @click="delCondition(index)" />
               <a-select
-                v-show="item.type === 'BuildID' || item.type === 'area'" v-model:value="item.symbol"
-                :disabled="item.type === 'area'"
-                style="width:45%;border-left:1px solid #d9d9d9;border-right:1px solid #d9d9d9;text-align: center;"
-                :options="symbolOptions" :bordered="false" placeholder="请选择运算符"
+                v-model:value="item.type" style="width:25%; text-align: center;" :options="typeOptions"
+                :bordered="false" placeholder="请选择条件类型" @change="changeType(index)"
               >
                 <template #suffixIcon>
                   <CaretDownOutlined />
                 </template>
               </a-select>
-              <a-select
-                v-show="item.type === 'BuildID'" v-model:value="item.value"
-                style="width:45%;text-align: center;" :options="versionOptions" :bordered="false" placeholder="请选择版本号"
-                show-search
-              >
-                <template #suffixIcon>
-                  <CaretDownOutlined />
-                </template>
-              </a-select>
-              <template v-if="item.type === 'area'">
-                <a-dropdown v-model:open="visible">
-                  <span class="area-select">
-                    {{ item.value.size > 0
-                      ? `已选择 ${item.value.size} 个国家/地区`
-                      : '请选择国家/地区' }}
-                  </span>
-                  <template #overlay>
-                    <a-menu>
-                      <a-menu-item>
-                        <a-input-search v-model:value="searchValue" placeholder="搜索其他选项" allow-clear />
-                      </a-menu-item>
-                      <a-menu-item>
-                        <a-checkbox v-model:checked="areaOptions.checkAll" @change="selectAll">
-                          已选择&nbsp;{{ item.value.size }}&nbsp;个
-                        </a-checkbox>
-                      </a-menu-item>
-                      <template v-for="label in areaOptions.options" :key="label.label">
-                        <a-menu-item v-if="label.showed">
-                          <a-checkbox v-model:checked="label.checked" @change="selectArea($event, label.label)">
-                            {{ label.label }}
+              <div v-show="item.type" class="sub-select">
+                <a-select
+                  v-show="item.type === 'BuildID' || item.type === 'area'" v-model:value="item.symbol"
+                  :disabled="item.type === 'area'"
+                  style="width:45%;border-left:1px solid #d9d9d9;border-right:1px solid #d9d9d9;text-align: center;"
+                  :options="symbolOptions" :bordered="false" placeholder="请选择运算符"
+                >
+                  <template #suffixIcon>
+                    <CaretDownOutlined />
+                  </template>
+                </a-select>
+                <a-select
+                  v-show="item.type === 'BuildID'" v-model:value="item.value"
+                  style="width:45%;text-align: center;" :options="versionOptions" :bordered="false" placeholder="请选择版本号"
+                  show-search
+                >
+                  <template #suffixIcon>
+                    <CaretDownOutlined />
+                  </template>
+                </a-select>
+                <template v-if="item.type === 'area'">
+                  <a-dropdown v-model:open="visible">
+                    <span class="area-select">
+                      {{ item.value.length > 0
+                        ? `已选择 ${item.value.length} 个国家/地区`
+                        : '请选择国家/地区' }}
+                    </span>
+                    <template #overlay>
+                      <a-menu>
+                        <a-menu-item>
+                          <a-input-search v-model:value="searchValue" placeholder="搜索其他选项" allow-clear />
+                        </a-menu-item>
+                        <a-menu-item>
+                          <a-checkbox v-model:checked="areaOptions.checkAll" @change="selectAll">
+                            已选择&nbsp;{{ item.value.length }}&nbsp;个
                           </a-checkbox>
                         </a-menu-item>
-                      </template>
-                    </a-menu>
-                  </template>
-                </a-dropdown>
-              </template>
-              <div v-show="item.type === 'user'" class="rate">
-                <a-button>0</a-button>
-                <a-slider v-model:value="item.value" :min="0" :max="100" />
-                <a-button>{{ item.value }}</a-button>
-              </div>
-              <div class="add-condition" @click="addCondition">
-                和
+                        <template v-for="label in areaOptions.options" :key="label.label">
+                          <a-menu-item v-if="label.showed">
+                            <a-checkbox v-model:checked="label.checked" @change="selectArea($event, label.label)">
+                              {{ label.label }}
+                            </a-checkbox>
+                          </a-menu-item>
+                        </template>
+                      </a-menu>
+                    </template>
+                  </a-dropdown>
+                </template>
+                <div v-show="item.type === 'user'" class="rate">
+                  <a-button>0</a-button>
+                  <a-slider v-model:value="item.value" :min="0" :max="100" />
+                  <a-button>{{ item.value }}</a-button>
+                </div>
+                <div class="add-condition" @click="addCondition">
+                  和
+                </div>
               </div>
             </div>
-          </div>
-        </a-space>
+          </a-space>
 
-        <a-space class="OID-add">
-          <div class="header1">
-            <a-button type="primary" @click="() => selectOIDModal = true">
-              <template #icon>
-                <PlusOutlined />
-              </template>
-              添加OID并配置
-            </a-button>
-            <a-input-search
-              v-model:value="searchOid" placeholder="输入oid查询对应的广告位" enter-button style="width: 250px"
-              @search="onSearch"
-            />
-            <span>当前有&nbsp;&nbsp;{{ ad_positions.length }}&nbsp;&nbsp;个OID</span>
-          </div>
-          <div class="OID-content">
-            <div v-for="(item, index) in OIDList" :key="index" class="OID">
-              <CloseCircleOutlined class="OID-delete" @click="delOID(index)" />
-              <a-tooltip trigger="click" placement="topLeft">
-                <template #title>
-                  {{ item.oid }}
+          <a-space class="OID-add">
+            <div class="header1">
+              <a-button type="primary" @click="() => selectOIDModal = true">
+                <template #icon>
+                  <PlusOutlined />
                 </template>
-                <div class="name">
-                  {{ item.oid }}
+                添加OID并配置
+              </a-button>
+              <a-input-search
+                v-model:value="searchOid" placeholder="输入oid查询对应的广告位" enter-button style="width: 250px"
+                @search="onSearch"
+              />
+              <span>当前有&nbsp;&nbsp;{{ OIDList.length }}&nbsp;&nbsp;个OID，&nbsp;&nbsp;已配置
+                &nbsp;&nbsp;{{ fullCount }}&nbsp;&nbsp;个广告位</span>
+            </div>
+            <div class="OID-content">
+              <div v-for="(item, index) in OIDList" :key="index" class="OID">
+                <CloseCircleOutlined class="OID-delete" @click="delOID(index)" />
+                <a-tooltip trigger="click" placement="topLeft">
+                  <template #title>
+                    {{ item.oid }}
+                  </template>
+                  <div class="name">
+                    {{ item.oid }}
+                  </div>
+                </a-tooltip>
+                <div class="format">
+                  <span>广告类型:&nbsp;&nbsp;</span>
+                  <a-tag color="blue" style="font-size: 14px;">
+                    {{ formatOptions.find((i) => i.value === item.format)?.label.toLowerCase() }}
+                  </a-tag>
                 </div>
-              </a-tooltip>
-              <div class="format">
-                <span>广告类型:&nbsp;&nbsp;</span>
-                <a-tag color="blue" style="font-size: 14px;">
-                  {{ formatOptions.find((i) => i.value === item.format)?.label.toLowerCase() }}
-                </a-tag>
-              </div>
-              <div class="copy-other">
-                <span>是否共享其他OID配置</span>
-                <a-radio-group v-model:value="item.isCopy" @change="isPosition($event, index)">
-                  <a-radio :value="true">
-                    是
-                  </a-radio>
-                  <a-radio :value="false">
-                    否
-                  </a-radio>
-                </a-radio-group>
-              </div>
-              <div v-if="!item.isCopy" class="nocopy">
-                <div class="ads">
-                  <div>广告源ads</div>
-                  <a-form-item>
-                    <a-select v-model:value="item.ad_id" style="text-align: center;" placeholder="请选择广告源" show-search>
-                      <template v-for="ads in getAds(item.format)" :key="ads.value">
-                        <a-select-option :value="ads.value">
+                <div class="copy-other">
+                  <span>是否共享其他OID配置</span>
+                  <a-radio-group v-model:value="item.isCopy" @change="isPosition($event, index)">
+                    <a-radio :value="true">
+                      是
+                    </a-radio>
+                    <a-radio :value="false">
+                      否
+                    </a-radio>
+                  </a-radio-group>
+                </div>
+                <div v-if="!item.isCopy" class="nocopy">
+                  <div class="ads">
+                    <div>广告源ads</div>
+                    <a-form-item>
+                      <a-select
+                        v-model:value="item.ad_id" style="text-align: center;"
+                        placeholder="请选择广告源" show-search @change="addToPosition($event, index)"
+                      >
+                        <template v-for="ads in getAds(item.format)" :key="ads.value">
+                          <a-select-option :value="ads.value">
+                            <a-tooltip placement="left">
+                              <template #title>
+                                {{ ads.value }}
+                              </template>
+                              {{ ads.value }}
+                            </a-tooltip>
+                          </a-select-option>
+                        </template>
+                      </a-select>
+                    </a-form-item>
+                  </div>
+                  <div class="adplan">
+                    <div>广告计划</div>
+                    <a-select
+                      v-model:value="item.plan_id" style="text-align: center;"
+                      placeholder="请选择广告计划" show-search @change="addToPosition($event, index)"
+                    >
+                      <template v-for="plan in getPlans(item.format)" :key="plan.value">
+                        <a-select-option :value="plan.value">
                           <a-tooltip placement="left">
                             <template #title>
-                              {{ ads.value }}
+                              {{ plan.value }}
                             </template>
-                            {{ ads.value }}
+                            {{ plan.value }}
                           </a-tooltip>
                         </a-select-option>
                       </template>
                     </a-select>
-                  </a-form-item>
-                </div>
-                <div class="adplan">
-                  <div>广告计划</div>
-                  <a-select v-model:value="item.plan_id" style="text-align: center;" placeholder="请选择广告计划" show-search>
-                    <template v-for="plan in getPlans(item.format)" :key="plan.value">
-                      <a-select-option :value="plan.value">
-                        <a-tooltip placement="left">
-                          <template #title>
-                            {{ plan.value }}
-                          </template>
-                          {{ plan.value }}
-                        </a-tooltip>
-                      </a-select-option>
-                    </template>
-                  </a-select>
-                </div>
-                <div class="adstyle">
-                  <div>广告样式</div>
-                  <a-select v-model:value="item.style_id" style="text-align: center;" placeholder="请选择广告样式" show-search>
-                    <template v-for="style in getStyles()" :key="style.value">
-                      <a-select-option :value="style.value">
-                        <a-tooltip placement="left">
-                          <template #title>
+                  </div>
+                  <div class="adstyle">
+                    <div>广告样式</div>
+                    <a-select v-model:value="item.style_id" style="text-align: center;" placeholder="请选择广告样式" show-search>
+                      <template v-for="style in getStyles()" :key="style.value">
+                        <a-select-option :value="style.value">
+                          <a-tooltip placement="left">
+                            <template #title>
+                              {{ style.value }}
+                            </template>
                             {{ style.value }}
-                          </template>
-                          {{ style.value }}
-                        </a-tooltip>
-                      </a-select-option>
+                          </a-tooltip>
+                        </a-select-option>
+                      </template>
+                    </a-select>
+                  </div>
+                </div>
+                <div v-else class="withcopy">
+                  <div class="copy-header">
+                    <a-tag
+                      :color="item.share?.share_type === 'ad_shares' ? '#daeafe' : item.share?.share_type === 'ad_strong_shares' ? '#84fcba' : '#cbec36'"
+                    >
+                      {{ item.share?.share_type }}
+                    </a-tag>
+                    <span>选择&nbsp;{{ item.share?.share_type === 'ad_shares' ? 1 : item.share?.share_list?.length
+                    }}&nbsp;个目标OID</span>
+                  </div>
+                  <div class="copyOID">
+                    <template v-if="item.share?.share_type === 'ad_shares'">
+                      <a-tag color="success">
+                        {{ item.share?.share_list }}
+                      </a-tag>
                     </template>
-                  </a-select>
-                </div>
-              </div>
-              <div v-else class="withcopy">
-                <div class="copy-header">
-                  <a-tag
-                    :color="item.share?.share_type === 'ad_shares' ? '#daeafe' : item.share?.share_type === 'ad_strong_shares' ? '#84fcba' : '#cbec36'"
-                  >
-                    {{ item.share?.share_type }}
-                  </a-tag>
-                  <span>选择&nbsp;{{ item.share?.share_type === 'ad_shares' ? 1 : item.share?.share_list?.length
-                  }}&nbsp;个目标OID</span>
-                </div>
-                <div class="copyOID">
-                  <template v-if="item.share?.share_type === 'ad_shares'">
-                    <a-tag color="success">
-                      {{ item.share?.share_list }}
-                    </a-tag>
-                  </template>
-                  <template v-else>
-                    <a-tag v-for="tag in item.share?.share_list" :key="tag" color="success">
-                      {{ tag }}
-                    </a-tag>
-                  </template>
+                    <template v-else>
+                      <a-tag v-for="tag in item.share?.share_list" :key="tag" color="success">
+                        {{ tag }}
+                      </a-tag>
+                    </template>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </a-space>
-      </a-form>
-    </div>
-    <a-space v-if="selectOIDModal">
-      <selectOID @close="closeSelectModal" @select="pushToOIDList" />
-    </a-space>
-    <a-space v-if="shareOIDModal">
-      <shareOID :positions="ad_positions" @close="closeShareModal" @share="handleOkShare" />
-    </a-space>
+          </a-space>
+        </a-form>
+      </div>
+      <a-space v-if="selectOIDModal">
+        <selectOID @close="closeSelectModal" @select="pushToOIDList" />
+      </a-space>
+      <a-space v-if="shareOIDModal">
+        <shareOID :positions="ad_positions" @close="closeShareModal" @share="handleOkShare" />
+      </a-space>
 
-    <div class="footer">
-      <a-button @click="emit('close', false)">
-        取消
-      </a-button>
-      <a-button type="primary" @click="submitJSON">
-        确定
-      </a-button>
-    </div>
+      <div class="footer">
+        <a-button @click="emit('close', false)">
+          取消
+        </a-button>
+        <a-button type="primary" @click="submitJSON">
+          确定
+        </a-button>
+      </div>
+    </a-spin>
   </div>
 </template>
 

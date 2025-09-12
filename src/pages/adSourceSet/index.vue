@@ -252,48 +252,39 @@ const currentAds = ref()// 当前广告源
 
 const formatOptions = [
   {
-    // label: 'INTERSTITIAL',
-    label: '插屏广告',
+    label: '插屏广告-INTERSTITIAL',
     value: 0,
   },
   {
-    // label: 'REWARDED_VIDEO',
-    label: '激励视频广告',
+    label: '激励视频广告-REWARDED_VIDEO',
     value: 1,
   },
   {
-    // label: 'APP_OPEN',
-    label: '开屏广告',
+    label: '开屏广告-APP_OPEN',
     value: 2,
   },
   {
-    // label: 'REWARDED_INTERSTITIAL',
-    label: '激励插屏广告',
+    label: '激励插屏广告-REWARDED_INTERSTITIAL',
     value: 3,
   },
   {
-    // label: 'NATIVE',
-    label: '原生广告',
+    label: '原生广告-NATIVE',
     value: 4,
   },
   {
-    // label: 'NATIVE_INTER',
-    label: '原生插屏广告',
+    label: '原生插屏广告-NATIVE_INTER',
     value: 5,
   },
   {
-    // label: 'BANNER',
-    label: '横幅广告',
+    label: '横幅广告-BANNER',
     value: 6,
   },
   {
-    // label: 'MEDIUM',
-    label: '中等矩形横幅广告',
+    label: '中等矩形横幅广告-MEDIUM',
     value: 7,
   },
   {
-    // label: 'INLINE_BANNER',
-    label: '内联横幅广告',
+    label: '内联横幅广告-INLINE_BANNER',
     value: 8,
   },
 ]

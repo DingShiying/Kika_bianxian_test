@@ -118,7 +118,7 @@ export const configRouter: RouteRecordRaw[] = [
     component: () => import('~/pages/OIDSet/index.vue'),
     meta: {
       title: 'OID管理',
-      icon: 'ApartmentOutlined',
+      icon: 'AlertOutlined',
     },
   },
 ]

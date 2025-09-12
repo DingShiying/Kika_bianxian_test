@@ -186,7 +186,7 @@ function handleCancel() {
       </a-form-item>
 
       <a-form-item label="发行端" name="system" style="width: 35vw;">
-        <a-radio-group v-model:value="formState.system" name="system" :disabled="copyDisabled">
+        <a-radio-group v-model:value="formState.system" name="system">
           <a-radio value="iOS">
             iOS
           </a-radio>

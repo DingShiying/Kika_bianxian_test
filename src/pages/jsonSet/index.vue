@@ -1,8 +1,10 @@
 <script setup lang="ts" name="jsonSet">
 import { onMounted, reactive, ref } from 'vue'
 import { CaretDownOutlined, CloseCircleOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
 import compareConfig from './components/compareConfig.vue'
 import AddOID from './components/addOID.vue'
+import { getJsonData } from '~@/api/json/getJson'
 
 interface SearchFormState {
   configName: string
@@ -1518,7 +1520,7 @@ const response = ref<ConfigListData>({
   ],
 })// 请求接口数据
 
-const columns = [
+const columns: any = [
   {
     title: 'ID',
     dataIndex: 'configID',
@@ -1528,40 +1530,49 @@ const columns = [
     title: '配置名称',
     dataIndex: 'configName',
     key: 'configName',
+    align: 'center',
   },
   {
     title: '描述',
     dataIndex: 'describe',
     key: 'describe',
+    align: 'center',
   },
   {
     title: '条件',
     dataIndex: 'condition',
     key: 'condition',
+    align: 'center',
   },
   {
     title: '版本',
     dataIndex: 'version',
     key: 'version',
+    align: 'center',
   },
   {
     title: '创建人',
     dataIndex: 'creator',
     key: 'creator',
+    align: 'center',
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
     key: 'createTime',
+    align: 'center',
   },
   {
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
+    align: 'center',
   },
 ]// 表格列头
 
 const loading = ref(false) // 表格加载状态
+const currentJson = ref()// 当前json
+const copyConfig = ref()// 复制配置新建
 
 const pagination = ref({
   current: 1,
@@ -1736,6 +1747,8 @@ function closeCompare(value: boolean) {
 }
 function closeAddOID(value: boolean) {
   addOIDOpen.value = value
+  currentJson.value = null
+  copyConfig.value = null
 }
 function changeType(index: number) {
   if (searchFormState.condition[index].type === 'user') {
@@ -1766,6 +1779,31 @@ function delCondition(index: number) {
 function controlHighSearch() {
   highSearchOpen.value = !highSearchOpen.value
   resetSearch()
+}
+function editJson(configName: string) {
+  currentJson.value = configName
+  addOIDOpen.value = true
+}
+function copyCreate(configName: string) {
+  copyConfig.value = configName
+  addOIDOpen.value = true
+}
+async function copyToClipborad(config_name: string) {
+  try {
+    const res = await getJsonData({ configName: config_name })
+    if (res.code === 200) {
+      // @ts-expect-error:...
+      navigator.clipboard.writeText(JSON.stringify(res.data?.json))
+      message.success('已复制JSON到剪贴板')
+    }
+    else {
+      throw new Error(res.msg)
+    }
+  }
+  catch (err: any) {
+    console.error(`复制失败: ${err}`)
+    message.error(`复制失败: ${err}`)
+  }
 }
 // onMounted(() => {
 //   getData(searchParams.value)
@@ -1909,11 +1947,21 @@ function controlHighSearch() {
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <div class="option">
-              <span>编辑</span>
-              <span @click="toCompare(record)">对比</span>
-              <span>复用配置新建</span>
-              <span>复制JSON</span>
-              <span>删除</span>
+              <a-button type="link" @click="editJson(record.configName)">
+                编辑
+              </a-button>
+              <a-button type="link" @click="toCompare(record)">
+                对比
+              </a-button>
+              <a-button type="link" @click="copyCreate(record.configName)">
+                复用配置新建
+              </a-button>
+              <a-button type="link" @click="copyToClipborad(record.configName)">
+                复制JSON
+              </a-button>
+              <a-button type="link">
+                删除
+              </a-button>
             </div>
           </template>
         </template>
@@ -1926,7 +1974,7 @@ function controlHighSearch() {
     </a-card>
 
     <compareConfig v-if="compareOpen" :config="currentConfig" @close="closeCompare" />
-    <AddOID v-if="addOIDOpen" @close="closeAddOID" />
+    <AddOID v-if="addOIDOpen" :current="currentJson" :copy="copyConfig" @close="closeAddOID" />
   </page-container>
 </template>
 
@@ -2077,13 +2125,7 @@ function controlHighSearch() {
   }
 
   .option {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    font-size: 14px;
-
-    span {
-      cursor: pointer;
+    .ant-btn {
       color: #4e46e5;
 
       &:last-of-type {

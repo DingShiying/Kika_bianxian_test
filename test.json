@@ -1,237 +1,607 @@
 {
-  "version": 96,
-  "describe": "detailpage_compare_standard_0807",
+  "ad_positions": [
+    {
+      "ad_id": "tm_unlock_rw_id",
+      "format": 1,
+      "oid": "tm_unlock_rw",
+      "plan_id": "reward_default"
+    },
+    {
+      "ad_id": "kb_detail_enter_i_id",
+      "format": 0,
+      "oid": "kb_detail_enter_i",
+      "plan_id": "inter_default"
+    },
+    {
+      "ad_id": "tm_unlock_ba_id",
+      "format": 6,
+      "oid": "tm_unlock_ba",
+      "plan_id": "bannerr_default"
+    },
+    {
+      "ad_id": "splash_id",
+      "format": 2,
+      "oid": "splash",
+      "plan_id": "splash_default"
+    },
+    {
+      "ad_id": "wp_feed_na_id",
+      "format": 4,
+      "oid": "wp_feed_na",
+      "plan_id": "native_default",
+      "style_id": "203"
+    },
+    {
+      "ad_id": "kb_detail_nab_id",
+      "format": 4,
+      "oid": "kb_detail_nab",
+      "plan_id": "native_default",
+      "style_id": "200"
+    },
+    {
+      "ad_id": "kb_setup_na_id",
+      "format": 4,
+      "oid": "kb_setup_na",
+      "plan_id": "native_default",
+      "style_id": "302"
+    },
+    {
+      "ad_id": "kb_setup_nab_id",
+      "format": 4,
+      "oid": "kb_setup_nab",
+      "plan_id": "native_compare",
+      "style_id": "207"
+    },
+    {
+      "ad_id": "kb_unlock_na_id",
+      "format": 4,
+      "oid": "kb_unlock_na",
+      "plan_id": "native_default",
+      "style_id": "302"
+    },
+    {
+      "ad_id": "kb_unlock_nab_test1_id",
+      "format": 4,
+      "oid": "kb_unlock_nab_test1",
+      "plan_id": "native_default",
+      "style_id": "206"
+    },
+    {
+      "ad_id": "kb_unlock_nab_test2_id",
+      "format": 4,
+      "oid": "kb_unlock_nab_test2",
+      "plan_id": "native_default",
+      "style_id": "206"
+    },
+    {
+      "ad_id": "kb_download_nab_test2_id",
+      "format": 4,
+      "oid": "kb_download_nab_test2",
+      "plan_id": "native_default",
+      "style_id": "216"
+    },
+    {
+      "ad_id": "wp_set_na_id",
+      "format": 4,
+      "oid": "wp_set_na",
+      "plan_id": "native_default",
+      "style_id": "304"
+    },
+    {
+      "ad_id": "wp_detail_nab_id",
+      "format": 4,
+      "oid": "wp_detail_nab",
+      "plan_id": "native_default",
+      "style_id": "210"
+    },
+    {
+      "ad_id": "st_detail_na_id",
+      "format": 4,
+      "oid": "st_detail_na",
+      "plan_id": "native_default",
+      "style_id": "304"
+    },
+    {
+      "ad_id": "mine_tm_na_id",
+      "format": 4,
+      "oid": "mine_tm_na",
+      "plan_id": "native_default",
+      "style_id": "304"
+    },
+    {
+      "ad_id": "st_feed_nab_id",
+      "format": 4,
+      "oid": "st_feed_nab",
+      "plan_id": "native_default",
+      "style_id": "203"
+    },
+    {
+      "ad_id": "st_preview_nab_id",
+      "format": 4,
+      "oid": "st_preview_nab",
+      "plan_id": "native_default",
+      "style_id": "200"
+    },
+    {
+      "ad_id": "wp_unlock_success_nab_id",
+      "format": 4,
+      "oid": "wp_unlock_success_nab",
+      "plan_id": "native_default",
+      "style_id": "206"
+    },
+    {
+      "ad_id": "wp_edit_bo_nab_id",
+      "format": 4,
+      "oid": "wp_edit_bo_nab",
+      "plan_id": "native_default",
+      "style_id": "209"
+    },
+    {
+      "ad_id": "super_detail_nab_id",
+      "format": 4,
+      "oid": "super_detail_nab",
+      "plan_id": "native_default",
+      "style_id": "206"
+    },
+    {
+      "ad_id": "ai_generating_nab_id",
+      "format": 4,
+      "oid": "ai_generating_nab",
+      "plan_id": "native_default",
+      "style_id": "213"
+    },
+    {
+      "ad_id": "ai_finish_nab_id",
+      "format": 4,
+      "oid": "ai_finish_nab",
+      "plan_id": "native_default",
+      "style_id": "214"
+    },
+    {
+      "ad_id": "ai_style_ba_id",
+      "format": 6,
+      "oid": "ai_style_ba",
+      "plan_id": "banner_default_2"
+    },
+    {
+      "ad_id": "super_preview_nab_id",
+      "format": 4,
+      "oid": "super_preview_nab",
+      "plan_id": "native_default",
+      "style_id": "200"
+    },
+    {
+      "ad_id": "wp_preview_nab_id",
+      "format": 4,
+      "oid": "wp_preview_nab",
+      "plan_id": "native_default",
+      "style_id": "200"
+    },
+    {
+      "ad_id": "diy_set_nab_id",
+      "format": 4,
+      "oid": "diy_set_nab",
+      "plan_id": "native_default",
+      "style_id": "208"
+    },
+    {
+      "ad_id": "kb_detailpage_nab_id",
+      "format": 4,
+      "oid": "kb_detailpage_nab",
+      "plan_id": "native_compare",
+      "style_id": "234_coin"
+    },
+    {
+      "ad_id": "kb_detailpage_na_id",
+      "format": 4,
+      "oid": "kb_detailpage_na",
+      "plan_id": "native_default",
+      "style_id": "309"
+    },
+    {
+      "ad_id": "control_center_preview_nab_id",
+      "format": 4,
+      "oid": "control_center_preview_nab",
+      "plan_id": "native_default",
+      "style_id": "234_coin"
+    },
+    {
+      "ad_id": "control_function_nab_id",
+      "format": 4,
+      "oid": "control_function_nab",
+      "plan_id": "native_default",
+      "style_id": "234_coin"
+    },
+    {
+      "ad_id": "control_center_permission_nab_id",
+      "format": 4,
+      "oid": "control_center_permission_nab",
+      "plan_id": "native_default",
+      "style_id": "234_coin"
+    },
+    {
+      "ad_id": "kb_unlockpage_na_test3_id",
+      "format": 4,
+      "oid": "kb_unlockpage_na_test3",
+      "plan_id": "native_default",
+      "style_id": "313_coin"
+    },
+    {
+      "ad_id": "kb_unlock_nab_test4_id",
+      "format": 4,
+      "oid": "kb_unlock_nab_test4",
+      "plan_id": "native_default",
+      "style_id": "206"
+    },
+    {
+      "ad_id": "discover_category_nab_id",
+      "format": 4,
+      "oid": "discover_category_nab",
+      "plan_id": "native_default",
+      "style_id": "208"
+    },
+    {
+      "ad_id": "category_detail_nab_id",
+      "format": 4,
+      "oid": "category_detail_nab",
+      "plan_id": "native_default",
+      "style_id": "208"
+    },
+    {
+      "ad_id": "super_detail_na_style2_id",
+      "format": 4,
+      "oid": "super_detail_na_style2",
+      "plan_id": "native_default",
+      "style_id": "206_coin"
+    },
+    {
+      "ad_id": "super_detail_na_style5_id",
+      "format": 4,
+      "oid": "super_detail_na_style5",
+      "plan_id": "native_default",
+      "style_id": "320_super_detail"
+    },
+    {
+      "ad_id": "super_preview_nab_style4_id",
+      "format": 4,
+      "oid": "super_preview_nab_style4",
+      "plan_id": "native_default",
+      "style_id": "234_coin"
+    },
+    {
+      "ad_id": "kb_detailpage_nab_test_id",
+      "format": 4,
+      "oid": "kb_detailpage_nab_test",
+      "plan_id": "native_default",
+      "style_id": "234_coin"
+    },
+    {
+      "ad_id": "super_apply_na_id",
+      "format": 4,
+      "oid": "super_apply_na",
+      "plan_id": "native_default",
+      "style_id": "320_super_detail"
+    },
+    {
+      "ad_id": "kb_unlockpage_na_test4_id",
+      "format": 4,
+      "oid": "kb_unlockpage_na_test4",
+      "plan_id": "native_default",
+      "style_id": "313_coin"
+    },
+    {
+      "ad_id": "kb_detailpage_nab_test2_id",
+      "format": 4,
+      "oid": "kb_detailpage_nab_test2",
+      "plan_id": "native_default",
+      "style_id": "234_coin"
+    },
+    {
+      "ad_id": "push_kb_detailpage_nab_id",
+      "format": 4,
+      "oid": "push_kb_detailpage_nab",
+      "plan_id": "native_default",
+      "style_id": "234_coin"
+    },
+    {
+      "ad_id": "kb_detailpage_nab_test_id",
+      "format": 4,
+      "oid": "kb_detailpage_nab_test",
+      "plan_id": "native_default",
+      "style_id": "234_coin"
+    },
+    {
+      "ad_id": "push_kb_detailpage_nab_test2_id",
+      "format": 4,
+      "oid": "push_kb_detailpage_nab_test2",
+      "plan_id": "native_default",
+      "style_id": "234_coin"
+    },
+    {
+      "ad_id": "kb_detailpage_nab_test3_id",
+      "format": 4,
+      "oid": "kb_detailpage_nab_test3",
+      "plan_id": "native_default",
+      "style_id": "236_coin"
+    },
+    {
+      "ad_id": "kb_detailpage_popup_nab_id",
+      "format": 4,
+      "oid": "kb_detailpage_popup_nab",
+      "plan_id": "native_default",
+      "style_id": "236_coin"
+    },
+    {
+      "ad_id": "push_kb_unlockpage_na_test3_id",
+      "format": 4,
+      "oid": "push_kb_unlockpage_na_test3",
+      "plan_id": "native_default",
+      "style_id": "313_coin"
+    },
+    {
+      "ad_id": "super_preview_nab_style5_id",
+      "format": 4,
+      "oid": "super_preview_nab_style5",
+      "plan_id": "native_default",
+      "style_id": "234_coin"
+    },
+    {
+      "ad_id": "super_detail_na_style6_id",
+      "format": 4,
+      "oid": "super_detail_na_style6",
+      "plan_id": "native_default",
+      "style_id": "310_super_detail"
+    },
+    {
+      "ad_id": "super_detail_na_style7_id",
+      "format": 4,
+      "oid": "super_detail_na_style7",
+      "plan_id": "native_default",
+      "style_id": "310_super_detail"
+    },
+    {
+      "ad_id": "super_detail_na_style8_id",
+      "format": 4,
+      "oid": "super_detail_na_style8",
+      "plan_id": "native_default",
+      "style_id": "310_super_detail"
+    },
+    {
+      "ad_id": "super_unlock_popup_nab7_id",
+      "format": 4,
+      "oid": "super_unlock_popup_nab7",
+      "plan_id": "native_default",
+      "style_id": "206_coin"
+    },
+    {
+      "ad_id": "super_unlock_popup_nab8_id",
+      "format": 4,
+      "oid": "super_unlock_popup_nab8",
+      "plan_id": "native_default",
+      "style_id": "206_coin"
+    },
+    {
+      "ad_id": "super_apply_nab_id",
+      "format": 4,
+      "oid": "super_apply_nab",
+      "plan_id": "native_default",
+      "style_id": "234_coin"
+    },
+    {
+      "ad_id": "collapsible_ba_id",
+      "format": 6,
+      "oid": "collapsible_ba",
+      "plan_id": "banner_default_2"
+    },
+    {
+      "ad_id": "kb_unlockpage_na_test5_id",
+      "format": 4,
+      "oid": "kb_unlockpage_na_test5",
+      "plan_id": "native_default",
+      "style_id": "313_coin"
+    },
+    {
+      "ad_id": "kb_unlockpage_na_test6_id",
+      "format": 4,
+      "oid": "kb_unlockpage_na_test6",
+      "plan_id": "native_default",
+      "style_id": "313_coin"
+    },
+    {
+      "ad_id": "super_preview_na_style6_id",
+      "format": 4,
+      "oid": "super_preview_na_style6",
+      "plan_id": "native_default",
+      "style_id": "321"
+    },
+    {
+      "ad_id": "super_preview_na_style7_id",
+      "format": 4,
+      "oid": "super_preview_na_style7",
+      "plan_id": "native_default",
+      "style_id": "310_super_detail"
+    },
+    {
+      "ad_id": "super_preview_na_style8_id",
+      "format": 4,
+      "oid": "super_preview_na_style8",
+      "plan_id": "native_default",
+      "style_id": "320_super_detail"
+    },
+    {
+      "ad_id": "super_preview_nab_style9_id",
+      "format": 4,
+      "oid": "super_preview_nab_style9",
+      "plan_id": "native_default",
+      "style_id": "236_coin"
+    },
+    {
+      "ad_id": "super_preview_nab_style10_id",
+      "format": 4,
+      "oid": "super_preview_nab_style10",
+      "plan_id": "native_default",
+      "style_id": "234_coin"
+    },
+    {
+      "ad_id": "super_preview_nab_style11_id",
+      "format": 4,
+      "oid": "super_preview_nab_style11",
+      "plan_id": "native_default",
+      "style_id": "236_coin"
+    },
+    {
+      "ad_id": "st_detail_nab_id",
+      "format": 4,
+      "oid": "st_detail_nab",
+      "plan_id": "native_default",
+      "style_id": "206_coin"
+    },
+    {
+      "ad_id": "wp_preview_nab_style2_id",
+      "format": 4,
+      "oid": "wp_preview_nab_style2",
+      "plan_id": "native_default",
+      "style_id": "200"
+    },
+    {
+      "ad_id": "wp_detail_nab_style2_id",
+      "format": 4,
+      "oid": "wp_detail_nab_style2",
+      "plan_id": "native_default",
+      "style_id": "236_coin"
+    },
+    {
+      "ad_id": "wp_unlock_nab_style2_id",
+      "format": 4,
+      "oid": "wp_unlock_nab_style2",
+      "plan_id": "native_default",
+      "style_id": "206_coin"
+    }
+  ],
   "ad_shares": {
+    "ai_edit_enter_i": "kb_detail_enter_i",
+    "ai_style_enter_i": "kb_detail_enter_i",
+    "ai_unlock_rw": "tm_unlock_rw",
+    "ai_watermark_rw": "tm_unlock_rw",
+    "ai_watermark_unlock_na": "kb_unlock_na",
+    "apply_coolfont_rw": "tm_unlock_rw",
+    "apply_keyboard_rw": "tm_unlock_rw",
+    "apply_sticker_rw": "tm_unlock_rw",
+    "apply_wallpaper_rw": "tm_unlock_rw",
+    "cf_apply_ba": "tm_unlock_ba",
+    "cf_apply_enter_i": "kb_detail_enter_i",
+    "cf_apply_exit_i": "kb_detail_enter_i",
+    "cf_detail_enter_i": "kb_detail_enter_i",
+    "cf_detail_exit_i": "kb_detail_enter_i",
+    "cf_detail_na": "st_detail_na",
+    "cf_feed_nab": "wp_feed_na",
+    "cf_letter_enter_i": "kb_detail_enter_i",
+    "cf_letter_exit_i": "kb_detail_enter_i",
+    "cf_letter_na": "st_detail_na",
+    "cf_unlock_na": "kb_unlock_na",
+    "cf_unlock_rw": "tm_unlock_rw",
+    "coin_lack_rw": "tm_unlock_rw",
+    "continuous_coin_rw": "tm_unlock_rw",
+    "control_center_feed_na": "wp_feed_na",
+    "control_center_preview_rw": "tm_unlock_rw",
+    "diy_ai_style_nab": "wp_edit_bo_nab",
+    "diy_ai_unlock_nab": "wp_unlock_success_nab",
+    "diy_ai_unlock_rw": "tm_unlock_rw",
+    "diy_apply_enter_i": "kb_detail_enter_i",
+    "diy_apply_exit_i": "kb_detail_enter_i",
+    "diy_detail_enter_i": "kb_detail_enter_i",
+    "diy_detail_na": "st_detail_na",
+    "diy_page_enter_i": "kb_detail_enter_i",
+    "diy_page_exit_i": "kb_detail_enter_i",
+    "diy_preview_na": "st_detail_na",
+    "diy_set_ba": "tm_unlock_ba",
+    "diy_set_enter_i": "kb_detail_enter_i",
+    "diy_set_exit_i": "kb_detail_enter_i",
+    "diy_unlock_na": "st_detail_na",
+    "diy_unlock_rw": "tm_unlock_rw",
+    "first_enter_rw": "tm_unlock_rw",
+    "guide_popup_rw": "tm_unlock_rw",
+    "kb_apply_enter_i": "kb_detail_enter_i",
     "kb_apply_exit_i": "kb_detail_enter_i",
     "kb_detail_exit_i": "kb_detail_enter_i",
     "kb_download_na": "kb_unlock_na",
-    "kb_apply_enter_i": "kb_detail_enter_i",
-    "wp_apply_na": "wp_detail_na",
-    "wp_apply_feed_na": "wp_feed_na",
-    "wp_apply_exit_i": "kb_detail_enter_i",
-    "tm_list_rw": "tm_unlock_rw",
-    "tm_unlock_enter_i": "kb_detail_enter_i",
-    "tm_apply_enter_i": "kb_detail_enter_i",
-    "tm_unlock_exit_i": "kb_detail_enter_i",
-    "st_detail_enter_i": "kb_detail_enter_i",
-    "st_detail_exit_i": "kb_detail_enter_i",
-    "st_apply_enter_i": "kb_detail_enter_i",
-    "st_apply_exit_i": "kb_detail_enter_i",
-    "st_unlock_na": "kb_unlock_na",
-    "st_unlock_rw": "tm_unlock_rw",
-    "cf_detail_enter_i": "kb_detail_enter_i",
-    "cf_detail_na": "st_detail_na",
-    "cf_detail_exit_i": "kb_detail_enter_i",
-    "cf_apply_enter_i": "kb_detail_enter_i",
-    "cf_apply_ba": "tm_unlock_ba",
-    "cf_apply_exit_i": "kb_detail_enter_i",
+    "kb_popup_rw": "tm_unlock_rw",
+    "mine_cf_na": "mine_tm_na",
+    "mine_cus_na": "mine_tm_na",
+    "mine_sd_na": "mine_tm_na",
+    "mine_st_na": "mine_tm_na",
+    "mine_ta_na": "mine_tm_na",
+    "mine_tf_na": "mine_tm_na",
+    "mine_wp_na": "mine_tm_na",
+    "push_coin_lack_rw": "tm_unlock_rw",
+    "push_continuous_coin_rw": "tm_unlock_rw",
+    "push_kb_apply_enter_i": "kb_detail_enter_i",
+    "push_kb_apply_exit_i": "kb_detail_enter_i",
+    "push_kb_detail_exit_i": "kb_detail_enter_i",
+    "push_kb_unlock_enter_i": "kb_detail_enter_i",
+    "push_kb_unlock_exit_i": "kb_detail_enter_i",
+    "push_retain_popup_rw": "tm_unlock_rw",
+    "push_task_checkin_rw": "tm_unlock_rw",
+    "push_task_video_rw": "tm_unlock_rw",
+    "push_tm_keyboard_rw": "tm_unlock_rw",
+    "push_tm_unlock_rw": "tm_unlock_rw",
+    "retain_na": "kb_feed_na",
+    "retain_popup_rw": "tm_unlock_rw",
+    "sd_apply_ba": "tm_unlock_ba",
     "sd_apply_enter_i": "kb_detail_enter_i",
     "sd_apply_exit_i": "kb_detail_enter_i",
-    "sd_detail_exit_i": "kb_detail_enter_i",
     "sd_detail_enter_i": "kb_detail_enter_i",
+    "sd_detail_exit_i": "kb_detail_enter_i",
     "sd_detail_na": "st_detail_na",
-    "sd_apply_ba": "tm_unlock_ba",
-    "tf_detail_enter_i": "kb_detail_enter_i",
-    "tf_detail_na": "st_detail_na",
-    "tf_detail_exit_i": "kb_detail_enter_i",
-    "tf_apply_enter_i": "kb_detail_enter_i",
-    "tf_apply_exit_i": "kb_detail_enter_i",
-    "diy_detail_enter_i": "kb_detail_enter_i",
-    "diy_set_enter_i": "kb_detail_enter_i",
-    "diy_set_exit_i": "kb_detail_enter_i",
-    "diy_set_ba": "tm_unlock_ba",
-    "diy_unlock_na": "st_detail_na",
-    "diy_preview_na": "st_detail_na",
-    "diy_detail_na": "st_detail_na",
-    "diy_unlock_rw": "tm_unlock_rw",
-    "diy_apply_enter_i": "kb_detail_enter_i",
-    "diy_apply_exit_i": "kb_detail_enter_i",
-    "diy_page_enter_i": "kb_detail_enter_i",
-    "diy_page_exit_i": "kb_detail_enter_i",
-    "mine_wp_na": "mine_tm_na",
-    "mine_cus_na": "mine_tm_na",
-    "mine_st_na": "mine_tm_na",
-    "mine_cf_na": "mine_tm_na",
-    "mine_sd_na": "mine_tm_na",
-    "mine_tf_na": "mine_tm_na",
-    "mine_ta_na": "mine_tm_na",
-    "retain_na": "kb_feed_na",
-    "ta_detail_enter_i": "kb_detail_enter_i",
-    "ta_detail_exit_i": "kb_detail_enter_i",
+    "sd_feed_nab": "st_feed_nab",
+    "st_apply_enter_i": "kb_detail_enter_i",
+    "st_apply_exit_i": "kb_detail_enter_i",
+    "st_detail_enter_i": "kb_detail_enter_i",
+    "st_detail_exit_i": "kb_detail_enter_i",
+    "st_popup_nw": "tm_unlock_rw",
+    "st_unlock_na": "kb_unlock_na",
+    "st_unlock_rw": "tm_unlock_rw",
+    "super_apply_enter_i": "kb_detail_enter_i",
+    "super_apply_exit_i": "kb_detail_enter_i",
+    "super_applypop_nab": "wp_unlock_success_nab",
+    "super_detail_enter_i": "kb_detail_enter_i",
+    "super_detail_exit_i": "kb_detail_enter_i",
+    "super_feed_na": "kb_feed_na",
+    "super_preview_enter_i": "kb_detail_enter_i",
+    "super_preview_exit_i": "kb_detail_enter_i",
+    "super_unlock_rw": "tm_unlock_rw",
     "ta_apply_enter_i": "kb_detail_enter_i",
     "ta_apply_exit_i": "kb_detail_enter_i",
+    "ta_detail_enter_i": "kb_detail_enter_i",
+    "ta_detail_exit_i": "kb_detail_enter_i",
     "ta_feed_na": "st_feed_nab",
     "ta_preview_nab": "st_preview_nab",
     "ta_unlock_na": "kb_unlock_na",
     "ta_unlock_rw": "tm_unlock_rw",
-    "cf_unlock_na": "kb_unlock_na",
-    "cf_feed_nab": "wp_feed_na",
-    "cf_unlock_rw": "tm_unlock_rw",
-    "cf_letter_na": "st_detail_na",
-    "cf_letter_enter_i": "kb_detail_enter_i",
-    "cf_letter_exit_i": "kb_detail_enter_i",
-    "super_feed_na": "kb_feed_na",
-    "super_detail_enter_i": "kb_detail_enter_i",
-    "super_detail_exit_i": "kb_detail_enter_i",
-    "super_apply_enter_i": "kb_detail_enter_i",
-    "super_apply_exit_i": "kb_detail_enter_i",
-    "super_unlock_rw": "tm_unlock_rw",
-    "super_applypop_nab": "wp_unlock_success_nab",
-    "sd_feed_nab": "st_feed_nab",
-    "tf_feed_nab": "st_feed_nab",
-    "wp_auto_detail_nab": "wp_edit_bo_nab",
-    "wp_auto_set_nab": "wp_unlock_success_nab",
-    "wp_auto_select_nab": "wp_unlock_success_nab",
-    "diy_ai_style_nab": "wp_edit_bo_nab",
-    "diy_ai_unlock_nab": "wp_unlock_success_nab",
-    "diy_ai_unlock_rw": "tm_unlock_rw",
-    "ai_style_enter_i": "kb_detail_enter_i",
-    "ai_edit_enter_i": "kb_detail_enter_i",
-    "ai_unlock_rw": "tm_unlock_rw",
-    "ai_watermark_rw": "tm_unlock_rw",
-    "ai_watermark_unlock_na": "kb_unlock_na",
-    "super_preview_enter_i": "kb_detail_enter_i",
-    "super_preview_exit_i": "kb_detail_enter_i",
-    "wp_preview_enter_i": "kb_detail_enter_i",
-    "control_center_preview_rw": "tm_unlock_rw",
-    "control_center_feed_na": "wp_feed_na",
-    "continuous_coin_rw": "tm_unlock_rw",
-    "first_enter_rw": "tm_unlock_rw",
-    "guide_popup_rw": "tm_unlock_rw",
-    "task_video_rw": "tm_unlock_rw",
     "task_checkin_rw": "tm_unlock_rw",
-    "retain_popup_rw": "tm_unlock_rw",
-    "coin_lack_rw": "tm_unlock_rw",
-    "wp_unlock_rw": "tm_unlock_rw",
-    "apply_keyboard_rw": "tm_unlock_rw",
-    "push_kb_detail_exit_i": "kb_detail_enter_i",
-    "push_kb_unlock_enter_i": "kb_detail_enter_i",
-    "push_kb_unlock_exit_i": "kb_detail_enter_i",
-    "push_kb_apply_enter_i": "kb_detail_enter_i",
-    "push_kb_apply_exit_i": "kb_detail_enter_i",
-    "push_tm_unlock_rw": "tm_unlock_rw",
-    "push_task_video_rw": "tm_unlock_rw",
-    "push_task_checkin_rw": "tm_unlock_rw",
-    "push_retain_popup_rw": "tm_unlock_rw",
-    "push_coin_lack_rw": "tm_unlock_rw",
-    "push_continuous_coin_rw": "tm_unlock_rw",
-    "push_tm_keyboard_rw": "tm_unlock_rw",
-    "apply_sticker_rw": "tm_unlock_rw",
-    "apply_wallpaper_rw": "tm_unlock_rw",
-    "apply_coolfont_rw": "tm_unlock_rw",
-    "kb_popup_rw": "tm_unlock_rw",
-    "st_popup_nw": "tm_unlock_rw"
+    "task_video_rw": "tm_unlock_rw",
+    "tf_apply_enter_i": "kb_detail_enter_i",
+    "tf_apply_exit_i": "kb_detail_enter_i",
+    "tf_detail_enter_i": "kb_detail_enter_i",
+    "tf_detail_exit_i": "kb_detail_enter_i",
+    "tf_detail_na": "st_detail_na",
+    "tf_feed_nab": "st_feed_nab",
+    "tm_apply_enter_i": "kb_detail_enter_i",
+    "tm_list_rw": "tm_unlock_rw",
+    "tm_unlock_enter_i": "kb_detail_enter_i",
+    "tm_unlock_exit_i": "kb_detail_enter_i",
+    "wp_apply_exit_i": "kb_detail_enter_i",
+    "wp_apply_feed_na": "wp_feed_na",
+    "wp_apply_na": "wp_detail_na",
+    "wp_auto_detail_nab": "wp_edit_bo_nab",
+    "wp_auto_select_nab": "wp_unlock_success_nab",
+    "wp_auto_set_nab": "wp_unlock_success_nab",
+    "wp_preview_enter_i": "kb_detail_enter_i",
+    "wp_unlock_rw": "tm_unlock_rw"
   },
-  "ad_strong_shares": {},
-  "ad_chains_v2": {},
-  "styles": [
-    {
-      "id": "234_coin",
-      "base_id": 234,
-      "cta_text_color": "#333333",
-      "cta_text": "Download",
-      "cta_angle": 270,
-      "cta_start_color": "#46EB72",
-      "cta_end_color": "#7FFA49",
-      "cta_radius": 20
-    },
-    {
-      "id": "313_coin",
-      "base_id": 313,
-      "cta_text_color": "#000000",
-      "cta_angle": 270,
-      "cta_start_color": "#46EB72",
-      "cta_end_color": "#7FFA49",
-      "cta_radius": 24
-    },
-    {
-      "id": "206_coin",
-      "base_id": 206,
-      "cta_text_color": "#000000",
-      "cta_angle": 270,
-      "cta_start_color": "#46EB72",
-      "cta_end_color": "#7FFA49",
-      "info_bg_color": "#212121",
-      "title_color": "#FFFFFF",
-      "bg_color": "#353535",
-      "cta_radius": 20,
-      "info_bg_radius": 10
-    },
-    {
-      "id": "320_super_detail",
-      "base_id": 320,
-      "cta_text_color": "#333333",
-      "cta_text": "Install",
-      "cta_angle": 270,
-      "cta_start_color": "#46EB72",
-      "cta_end_color": "#7FFA49",
-      "cta_radius": 20,
-      "choice_location": 1
-    },
-    {
-      "id": "236_coin",
-      "base_id": 236,
-      "cta_text_color": "#333333",
-      "cta_text": "Download",
-      "cta_angle": 270,
-      "cta_start_color": "#46EB72",
-      "cta_end_color": "#7FFA49",
-      "cta_radius": 24
-    },
-    {
-      "id": "310_super_detail",
-      "base_id": 310,
-      "cta_text_color": "#333333",
-      "cta_text": "Install",
-      "cta_angle": 270,
-      "cta_start_color": "#46EB72",
-      "cta_end_color": "#7FFA49",
-      "cta_radius": 24,
-      "choice_location": 1
-    }
-  ],
-  "plans": [
-    {
-      "id": "reward_default",
-      "count": 1,
-      "refill": 1
-    },
-    {
-      "id": "inter_default",
-      "count": 1,
-      "refill": 1,
-      "prob": 30
-    },
-    {
-      "id": "bannerr_default",
-      "count": 1,
-      "refill": 1
-    },
-    {
-      "id": "splash_default",
-      "count": 1,
-      "refill": 0
-    },
-    {
-      "id": "native_default",
-      "count": 1,
-      "refill": 1
-    },
-    {
-      "id": "native_compare",
-      "count": 1,
-      "refill": 1,
-      "load_strategy": 21
-    },
-    {
-      "id": "banner_default_2",
-      "count": 1,
-      "refill": 0
-    }
-  ],
+  "describe": "detailpage_compare_standard_0807",
   "ids": [
     {
-      "id": "tm_unlock_rw_id",
       "ads": [
         [
           {
@@ -246,10 +616,10 @@
             "value": "ca-app-pub-6350683154336052/7533401279"
           }
         ]
-      ]
+      ],
+      "id": "tm_unlock_rw_id"
     },
     {
-      "id": "kb_detail_enter_i_id",
       "ads": [
         [
           {
@@ -264,10 +634,10 @@
             "value": "ca-app-pub-6350683154336052/9932317997"
           }
         ]
-      ]
+      ],
+      "id": "kb_detail_enter_i_id"
     },
     {
-      "id": "tm_unlock_ba_id",
       "ads": [
         [
           {
@@ -282,10 +652,10 @@
             "value": "8162a215852d5b1b"
           }
         ]
-      ]
+      ],
+      "id": "tm_unlock_ba_id"
     },
     {
-      "id": "splash_id",
       "ads": [
         [
           {
@@ -293,10 +663,10 @@
             "value": "ca-app-pub-6350683154336052/4847385034"
           }
         ]
-      ]
+      ],
+      "id": "splash_id"
     },
     {
-      "id": "wp_feed_na_id",
       "ads": [
         [
           {
@@ -311,10 +681,10 @@
             "value": "7f90411561338ba6"
           }
         ]
-      ]
+      ],
+      "id": "wp_feed_na_id"
     },
     {
-      "id": "kb_detail_nab_id",
       "ads": [
         [
           {
@@ -329,10 +699,10 @@
             "value": "7802c0c94d4f3e25"
           }
         ]
-      ]
+      ],
+      "id": "kb_detail_nab_id"
     },
     {
-      "id": "kb_setup_na_id",
       "ads": [
         [
           {
@@ -347,10 +717,10 @@
             "value": "f95a6c95c0303eee"
           }
         ]
-      ]
+      ],
+      "id": "kb_setup_na_id"
     },
     {
-      "id": "kb_setup_nab_id",
       "ads": [
         [
           {
@@ -403,10 +773,10 @@
             "value": "1039996"
           }
         ]
-      ]
+      ],
+      "id": "kb_setup_nab_id"
     },
     {
-      "id": "kb_unlock_na_id",
       "ads": [
         [
           {
@@ -421,10 +791,10 @@
             "value": "7a95b976763733bd"
           }
         ]
-      ]
+      ],
+      "id": "kb_unlock_na_id"
     },
     {
-      "id": "kb_unlock_nab_test1_id",
       "ads": [
         [
           {
@@ -439,10 +809,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "kb_unlock_nab_test1_id"
     },
     {
-      "id": "kb_unlock_nab_test2_id",
       "ads": [
         [
           {
@@ -457,10 +827,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "kb_unlock_nab_test2_id"
     },
     {
-      "id": "kb_download_nab_test2_id",
       "ads": [
         [
           {
@@ -475,10 +845,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "kb_download_nab_test2_id"
     },
     {
-      "id": "wp_set_na_id",
       "ads": [
         [
           {
@@ -493,10 +863,10 @@
             "value": "f95a6c95c0303eee"
           }
         ]
-      ]
+      ],
+      "id": "wp_set_na_id"
     },
     {
-      "id": "wp_detail_nab_id",
       "ads": [
         [
           {
@@ -511,10 +881,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "wp_detail_nab_id"
     },
     {
-      "id": "st_detail_na_id",
       "ads": [
         [
           {
@@ -529,10 +899,10 @@
             "value": "f95a6c95c0303eee"
           }
         ]
-      ]
+      ],
+      "id": "st_detail_na_id"
     },
     {
-      "id": "mine_tm_na_id",
       "ads": [
         [
           {
@@ -547,10 +917,10 @@
             "value": "f95a6c95c0303eee"
           }
         ]
-      ]
+      ],
+      "id": "mine_tm_na_id"
     },
     {
-      "id": "st_feed_nab_id",
       "ads": [
         [
           {
@@ -565,10 +935,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "st_feed_nab_id"
     },
     {
-      "id": "st_preview_nab_id",
       "ads": [
         [
           {
@@ -583,10 +953,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "st_preview_nab_id"
     },
     {
-      "id": "wp_unlock_success_nab_id",
       "ads": [
         [
           {
@@ -601,10 +971,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "wp_unlock_success_nab_id"
     },
     {
-      "id": "wp_edit_bo_nab_id",
       "ads": [
         [
           {
@@ -619,10 +989,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "wp_edit_bo_nab_id"
     },
     {
-      "id": "super_detail_nab_id",
       "ads": [
         [
           {
@@ -637,10 +1007,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "super_detail_nab_id"
     },
     {
-      "id": "ai_generating_nab_id",
       "ads": [
         [
           {
@@ -655,10 +1025,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "ai_generating_nab_id"
     },
     {
-      "id": "ai_finish_nab_id",
       "ads": [
         [
           {
@@ -673,19 +1043,19 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "ai_finish_nab_id"
     },
     {
-      "id": "ai_style_ba_id",
       "ads": [
         [
           {
-            "priority": 3,
-            "value": "ca-app-pub-6350683154336052/5724733536",
             "banner_extra": {
               "banner_type": 1,
               "orientation": 2
-            }
+            },
+            "priority": 3,
+            "value": "ca-app-pub-6350683154336052/5724733536"
           }
         ],
         [
@@ -695,10 +1065,10 @@
             "value": "8162a215852d5b1b"
           }
         ]
-      ]
+      ],
+      "id": "ai_style_ba_id"
     },
     {
-      "id": "super_preview_nab_id",
       "ads": [
         [
           {
@@ -713,10 +1083,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "super_preview_nab_id"
     },
     {
-      "id": "wp_preview_nab_id",
       "ads": [
         [
           {
@@ -731,30 +1101,30 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "wp_preview_nab_id"
     },
     {
-      "id": "diy_set_nab_id",
       "ads": [
         [
           {
-            "priority": 3,
             "format": 4,
+            "priority": 3,
             "value": "ca-app-pub-6350683154336052/2836322729"
           }
         ],
         [
           {
+            "format": 4,
             "priority": 1,
             "source": "MAX",
-            "format": 4,
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "diy_set_nab_id"
     },
     {
-      "id": "kb_detailpage_nab_id",
       "ads": [
         [
           {
@@ -788,10 +1158,10 @@
             "value": "1039840"
           }
         ]
-      ]
+      ],
+      "id": "kb_detailpage_nab_id"
     },
     {
-      "id": "kb_detailpage_na_id",
       "ads": [
         [
           {
@@ -806,10 +1176,10 @@
             "value": "7802c0c94d4f3e25"
           }
         ]
-      ]
+      ],
+      "id": "kb_detailpage_na_id"
     },
     {
-      "id": "control_center_preview_nab_id",
       "ads": [
         [
           {
@@ -824,10 +1194,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "control_center_preview_nab_id"
     },
     {
-      "id": "control_function_nab_id",
       "ads": [
         [
           {
@@ -842,10 +1212,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "control_function_nab_id"
     },
     {
-      "id": "control_center_permission_nab_id",
       "ads": [
         [
           {
@@ -860,10 +1230,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "control_center_permission_nab_id"
     },
     {
-      "id": "kb_unlockpage_na_test3_id",
       "ads": [
         [
           {
@@ -878,10 +1248,10 @@
             "value": "7a95b976763733bd"
           }
         ]
-      ]
+      ],
+      "id": "kb_unlockpage_na_test3_id"
     },
     {
-      "id": "kb_unlock_nab_test4_id",
       "ads": [
         [
           {
@@ -896,10 +1266,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "kb_unlock_nab_test4_id"
     },
     {
-      "id": "discover_category_nab_id",
       "ads": [
         [
           {
@@ -914,10 +1284,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "discover_category_nab_id"
     },
     {
-      "id": "category_detail_nab_id",
       "ads": [
         [
           {
@@ -932,10 +1302,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "category_detail_nab_id"
     },
     {
-      "id": "super_detail_na_style2_id",
       "ads": [
         [
           {
@@ -950,10 +1320,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "super_detail_na_style2_id"
     },
     {
-      "id": "super_detail_na_style5_id",
       "ads": [
         [
           {
@@ -968,10 +1338,10 @@
             "value": "f95a6c95c0303eee"
           }
         ]
-      ]
+      ],
+      "id": "super_detail_na_style5_id"
     },
     {
-      "id": "super_preview_nab_style4_id",
       "ads": [
         [
           {
@@ -986,10 +1356,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "super_preview_nab_style4_id"
     },
     {
-      "id": "kb_detailpage_nab_test_id",
       "ads": [
         [
           {
@@ -1004,10 +1374,10 @@
             "value": "7802c0c94d4f3e25"
           }
         ]
-      ]
+      ],
+      "id": "kb_detailpage_nab_test_id"
     },
     {
-      "id": "super_apply_na_id",
       "ads": [
         [
           {
@@ -1022,28 +1392,10 @@
             "value": "f95a6c95c0303eee"
           }
         ]
-      ]
+      ],
+      "id": "super_apply_na_id"
     },
     {
-      "id": "kb_unlockpage_na_test4_id",
-      "ads": [
-        [
-          {
-            "priority": 4,
-            "value": "ca-app-pub-6350683154336052/8428407864"
-          }
-        ],
-        [
-          {
-            "priority": 2,
-            "source": "MAX",
-            "value": "7a95b976763733bd"
-          }
-        ]
-      ]
-    },
-    {
-      "id": "kb_detailpage_nab_test2_id",
       "ads": [
         [
           {
@@ -1058,10 +1410,28 @@
             "value": "7802c0c94d4f3e25"
           }
         ]
-      ]
+      ],
+      "id": "kb_detailpage_nab_test2_id"
     },
     {
-      "id": "push_kb_detailpage_nab_id",
+      "ads": [
+        [
+          {
+            "priority": 4,
+            "value": "ca-app-pub-6350683154336052/8428407864"
+          }
+        ],
+        [
+          {
+            "priority": 2,
+            "source": "MAX",
+            "value": "7a95b976763733bd"
+          }
+        ]
+      ],
+      "id": "kb_unlockpage_na_test4_id"
+    },
+    {
       "ads": [
         [
           {
@@ -1076,10 +1446,28 @@
             "value": "7802c0c94d4f3e25"
           }
         ]
-      ]
+      ],
+      "id": "push_kb_detailpage_nab_id"
     },
     {
-      "id": "push_kb_detailpage_nab_test2_id",
+      "ads": [
+        [
+          {
+            "priority": 3,
+            "value": "ca-app-pub-6350683154336052/2381008298"
+          }
+        ],
+        [
+          {
+            "priority": 2,
+            "source": "MAX",
+            "value": "7802c0c94d4f3e25"
+          }
+        ]
+      ],
+      "id": "push_kb_detailpage_nab_test_id"
+    },
+    {
       "ads": [
         [
           {
@@ -1094,46 +1482,10 @@
             "value": "7802c0c94d4f3e25"
           }
         ]
-      ]
+      ],
+      "id": "push_kb_detailpage_nab_test2_id"
     },
     {
-      "id": "kb_detailpage_nab_test3_id",
-      "ads": [
-        [
-          {
-            "priority": 3,
-            "value": "ca-app-pub-6350683154336052/4812181198"
-          }
-        ],
-        [
-          {
-            "priority": 2,
-            "source": "MAX",
-            "value": "7802c0c94d4f3e25"
-          }
-        ]
-      ]
-    },
-    {
-      "id": "kb_detailpage_popup_nab_id",
-      "ads": [
-        [
-          {
-            "priority": 3,
-            "value": "ca-app-pub-6350683154336052/6162304777"
-          }
-        ],
-        [
-          {
-            "priority": 2,
-            "source": "MAX",
-            "value": "7802c0c94d4f3e25"
-          }
-        ]
-      ]
-    },
-    {
-      "id": "push_kb_unlockpage_na_test3_id",
       "ads": [
         [
           {
@@ -1148,10 +1500,10 @@
             "value": "7a95b976763733bd"
           }
         ]
-      ]
+      ],
+      "id": "push_kb_unlockpage_na_test3_id"
     },
     {
-      "id": "super_preview_nab_style5_id",
       "ads": [
         [
           {
@@ -1166,10 +1518,10 @@
             "value": "7802c0c94d4f3e25"
           }
         ]
-      ]
+      ],
+      "id": "super_preview_nab_style5_id"
     },
     {
-      "id": "super_detail_na_style6_id",
       "ads": [
         [
           {
@@ -1184,10 +1536,10 @@
             "value": "7a95b976763733bd"
           }
         ]
-      ]
+      ],
+      "id": "super_detail_na_style6_id"
     },
     {
-      "id": "super_detail_na_style7_id",
       "ads": [
         [
           {
@@ -1202,10 +1554,10 @@
             "value": "7a95b976763733bd"
           }
         ]
-      ]
+      ],
+      "id": "super_detail_na_style7_id"
     },
     {
-      "id": "super_detail_na_style8_id",
       "ads": [
         [
           {
@@ -1220,10 +1572,10 @@
             "value": "7a95b976763733bd"
           }
         ]
-      ]
+      ],
+      "id": "super_detail_na_style8_id"
     },
     {
-      "id": "super_unlock_popup_nab7_id",
       "ads": [
         [
           {
@@ -1238,10 +1590,10 @@
             "value": "7802c0c94d4f3e25"
           }
         ]
-      ]
+      ],
+      "id": "super_unlock_popup_nab7_id"
     },
     {
-      "id": "super_unlock_popup_nab8_id",
       "ads": [
         [
           {
@@ -1256,10 +1608,10 @@
             "value": "7802c0c94d4f3e25"
           }
         ]
-      ]
+      ],
+      "id": "super_unlock_popup_nab8_id"
     },
     {
-      "id": "super_apply_nab_id",
       "ads": [
         [
           {
@@ -1274,18 +1626,18 @@
             "value": "7802c0c94d4f3e25"
           }
         ]
-      ]
+      ],
+      "id": "super_apply_nab_id"
     },
     {
-      "id": "collapsible_ba_id",
       "ads": [
         [
           {
-            "priority": 3,
-            "value": "ca-app-pub-6350683154336052/5045037952",
             "banner_extra": {
               "type": 1
-            }
+            },
+            "priority": 3,
+            "value": "ca-app-pub-6350683154336052/5045037952"
           }
         ],
         [
@@ -1295,10 +1647,46 @@
             "value": "8162a215852d5b1b"
           }
         ]
-      ]
+      ],
+      "id": "collapsible_ba_id"
     },
     {
-      "id": "kb_unlockpage_na_test5_id",
+      "ads": [
+        [
+          {
+            "priority": 3,
+            "value": "ca-app-pub-6350683154336052/4812181198"
+          }
+        ],
+        [
+          {
+            "priority": 2,
+            "source": "MAX",
+            "value": "7802c0c94d4f3e25"
+          }
+        ]
+      ],
+      "id": "kb_detailpage_nab_test3_id"
+    },
+    {
+      "ads": [
+        [
+          {
+            "priority": 3,
+            "value": "ca-app-pub-6350683154336052/6162304777"
+          }
+        ],
+        [
+          {
+            "priority": 2,
+            "source": "MAX",
+            "value": "7802c0c94d4f3e25"
+          }
+        ]
+      ],
+      "id": "kb_detailpage_popup_nab_id"
+    },
+    {
       "ads": [
         [
           {
@@ -1313,10 +1701,10 @@
             "value": "7a95b976763733bd"
           }
         ]
-      ]
+      ],
+      "id": "kb_unlockpage_na_test5_id"
     },
     {
-      "id": "kb_unlockpage_na_test6_id",
       "ads": [
         [
           {
@@ -1331,10 +1719,10 @@
             "value": "7a95b976763733bd"
           }
         ]
-      ]
+      ],
+      "id": "kb_unlockpage_na_test6_id"
     },
     {
-      "id": "super_preview_na_style6_id",
       "ads": [
         [
           {
@@ -1349,10 +1737,10 @@
             "value": "7a95b976763733bd"
           }
         ]
-      ]
+      ],
+      "id": "super_preview_na_style6_id"
     },
     {
-      "id": "super_preview_na_style7_id",
       "ads": [
         [
           {
@@ -1367,10 +1755,10 @@
             "value": "7a95b976763733bd"
           }
         ]
-      ]
+      ],
+      "id": "super_preview_na_style7_id"
     },
     {
-      "id": "super_preview_na_style8_id",
       "ads": [
         [
           {
@@ -1385,10 +1773,10 @@
             "value": "7a95b976763733bd"
           }
         ]
-      ]
+      ],
+      "id": "super_preview_na_style8_id"
     },
     {
-      "id": "super_preview_nab_style9_id",
       "ads": [
         [
           {
@@ -1403,10 +1791,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "super_preview_nab_style9_id"
     },
     {
-      "id": "super_preview_nab_style10_id",
       "ads": [
         [
           {
@@ -1421,10 +1809,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "super_preview_nab_style10_id"
     },
     {
-      "id": "super_preview_nab_style11_id",
       "ads": [
         [
           {
@@ -1439,10 +1827,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "super_preview_nab_style11_id"
     },
     {
-      "id": "st_detail_nab_id",
       "ads": [
         [
           {
@@ -1457,10 +1845,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "st_detail_nab_id"
     },
     {
-      "id": "wp_preview_nab_style2_id",
       "ads": [
         [
           {
@@ -1475,10 +1863,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "wp_preview_nab_style2_id"
     },
     {
-      "id": "wp_detail_nab_style2_id",
       "ads": [
         [
           {
@@ -1493,10 +1881,10 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "wp_detail_nab_style2_id"
     },
     {
-      "id": "wp_unlock_nab_style2_id",
       "ads": [
         [
           {
@@ -1511,486 +1899,181 @@
             "value": "4b011c41b3136785"
           }
         ]
-      ]
+      ],
+      "id": "wp_unlock_nab_style2_id"
     }
   ],
-  "ad_positions": [
+  "plans": [
     {
-      "oid": "tm_unlock_rw",
-      "format": 1,
-      "plan_id": "reward_default",
-      "ad_id": "tm_unlock_rw_id"
+      "count": 1,
+      "id": "inter_default",
+      "prob": 30,
+      "refill": 1
     },
     {
-      "oid": "kb_detail_enter_i",
-      "format": 0,
-      "plan_id": "inter_default",
-      "ad_id": "kb_detail_enter_i_id"
+      "count": 1,
+      "id": "reward_default",
+      "refill": 1
     },
     {
-      "oid": "tm_unlock_ba",
-      "format": 6,
-      "plan_id": "bannerr_default",
-      "ad_id": "tm_unlock_ba_id"
+      "count": 1,
+      "id": "native_default",
+      "refill": 1
     },
     {
-      "oid": "splash",
-      "format": 2,
-      "plan_id": "splash_default",
-      "ad_id": "splash_id"
+      "count": 1,
+      "id": "bannerr_default",
+      "refill": 1
     },
     {
-      "oid": "wp_feed_na",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "wp_feed_na_id",
-      "style_id": "203"
+      "count": 1,
+      "id": "banner_default_2",
+      "refill": 0
     },
     {
-      "oid": "kb_detail_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_detail_nab_id",
-      "style_id": "200"
+      "count": 1,
+      "id": "splash_default",
+      "refill": 0
     },
     {
-      "oid": "kb_setup_na",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_setup_na_id",
-      "style_id": "302"
+      "count": 1,
+      "id": "native_user_level",
+      "load_strategy": 4,
+      "refill": 1
+    },
+    {
+      "count": 1,
+      "id": "inter_user_level",
+      "load_strategy": 4,
+      "refill": 1
     },
     {
-      "oid": "kb_setup_nab",
-      "format": 4,
-      "plan_id": "native_compare",
-      "ad_id": "kb_setup_nab_id",
-      "style_id": "207"
-    },
-    {
-      "oid": "kb_unlock_na",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_unlock_na_id",
-      "style_id": "302"
-    },
-    {
-      "oid": "kb_unlock_nab_test1",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_unlock_nab_test1_id",
-      "style_id": "206"
-    },
-    {
-      "oid": "kb_unlock_nab_test2",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_unlock_nab_test2_id",
-      "style_id": "206"
-    },
-    {
-      "oid": "kb_download_nab_test2",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_download_nab_test2_id",
-      "style_id": "216"
-    },
-    {
-      "oid": "wp_set_na",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "wp_set_na_id",
-      "style_id": "304"
-    },
-    {
-      "oid": "wp_detail_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "wp_detail_nab_id",
-      "style_id": "210"
-    },
-    {
-      "oid": "st_detail_na",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "st_detail_na_id",
-      "style_id": "304"
-    },
-    {
-      "oid": "mine_tm_na",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "mine_tm_na_id",
-      "style_id": "304"
-    },
-    {
-      "oid": "st_feed_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "st_feed_nab_id",
-      "style_id": "203"
-    },
-    {
-      "oid": "st_preview_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "st_preview_nab_id",
-      "style_id": "200"
-    },
-    {
-      "oid": "wp_unlock_success_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "wp_unlock_success_nab_id",
-      "style_id": "206"
-    },
-    {
-      "oid": "wp_edit_bo_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "wp_edit_bo_nab_id",
-      "style_id": "209"
-    },
-    {
-      "oid": "super_detail_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_detail_nab_id",
-      "style_id": "206"
-    },
-    {
-      "oid": "ai_generating_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "ai_generating_nab_id",
-      "style_id": "213"
-    },
-    {
-      "oid": "ai_finish_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "ai_finish_nab_id",
-      "style_id": "214"
-    },
-    {
-      "oid": "ai_style_ba",
-      "format": 6,
-      "plan_id": "banner_default_2",
-      "ad_id": "ai_style_ba_id"
-    },
-    {
-      "oid": "super_preview_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_preview_nab_id",
-      "style_id": "200"
-    },
-    {
-      "oid": "wp_preview_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "wp_preview_nab_id",
-      "style_id": "200"
-    },
-    {
-      "oid": "diy_set_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "diy_set_nab_id",
-      "style_id": "208"
-    },
-    {
-      "oid": "kb_detailpage_nab",
-      "format": 4,
-      "plan_id": "native_compare",
-      "ad_id": "kb_detailpage_nab_id",
-      "style_id": "234_coin"
-    },
-    {
-      "oid": "kb_detailpage_na",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_detailpage_na_id",
-      "style_id": "309"
-    },
-    {
-      "oid": "control_center_preview_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "control_center_preview_nab_id",
-      "style_id": "234_coin"
-    },
-    {
-      "oid": "control_function_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "control_function_nab_id",
-      "style_id": "234_coin"
-    },
-    {
-      "oid": "control_center_permission_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "control_center_permission_nab_id",
-      "style_id": "234_coin"
-    },
-    {
-      "oid": "kb_unlockpage_na_test3",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_unlockpage_na_test3_id",
-      "style_id": "313_coin"
-    },
-    {
-      "oid": "kb_unlock_nab_test4",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_unlock_nab_test4_id",
-      "style_id": "206"
-    },
-    {
-      "oid": "discover_category_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "discover_category_nab_id",
-      "style_id": "208"
-    },
-    {
-      "oid": "category_detail_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "category_detail_nab_id",
-      "style_id": "208"
-    },
-    {
-      "oid": "super_detail_na_style2",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_detail_na_style2_id",
-      "style_id": "206_coin"
-    },
-    {
-      "oid": "super_detail_na_style5",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_detail_na_style5_id",
-      "style_id": "320_super_detail"
-    },
-    {
-      "oid": "super_preview_nab_style4",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_preview_nab_style4_id",
-      "style_id": "234_coin"
-    },
-    {
-      "oid": "kb_detailpage_nab_test",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_detailpage_nab_test_id",
-      "style_id": "234_coin"
-    },
-    {
-      "oid": "super_apply_na",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_apply_na_id",
-      "style_id": "320_super_detail"
-    },
-    {
-      "oid": "kb_unlockpage_na_test4",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_unlockpage_na_test4_id",
-      "style_id": "313_coin"
-    },
-    {
-      "oid": "kb_detailpage_nab_test2",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_detailpage_nab_test2_id",
-      "style_id": "234_coin"
-    },
-    {
-      "oid": "push_kb_detailpage_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "push_kb_detailpage_nab_id",
-      "style_id": "234_coin"
-    },
-    {
-      "oid": "kb_detailpage_nab_test",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_detailpage_nab_test_id",
-      "style_id": "234_coin"
-    },
-    {
-      "oid": "push_kb_detailpage_nab_test2",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "push_kb_detailpage_nab_test2_id",
-      "style_id": "234_coin"
-    },
-    {
-      "oid": "kb_detailpage_nab_test3",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_detailpage_nab_test3_id",
-      "style_id": "236_coin"
-    },
-    {
-      "oid": "kb_detailpage_popup_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_detailpage_popup_nab_id",
-      "style_id": "236_coin"
-    },
-    {
-      "oid": "push_kb_unlockpage_na_test3",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "push_kb_unlockpage_na_test3_id",
-      "style_id": "313_coin"
-    },
-    {
-      "oid": "super_preview_nab_style5",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_preview_nab_style5_id",
-      "style_id": "234_coin"
-    },
-    {
-      "oid": "super_detail_na_style6",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_detail_na_style6_id",
-      "style_id": "310_super_detail"
-    },
-    {
-      "oid": "super_detail_na_style7",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_detail_na_style7_id",
-      "style_id": "310_super_detail"
-    },
-    {
-      "oid": "super_detail_na_style8",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_detail_na_style8_id",
-      "style_id": "310_super_detail"
-    },
-    {
-      "oid": "super_unlock_popup_nab7",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_unlock_popup_nab7_id",
-      "style_id": "206_coin"
-    },
-    {
-      "oid": "super_unlock_popup_nab8",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_unlock_popup_nab8_id",
-      "style_id": "206_coin"
-    },
-    {
-      "oid": "super_apply_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_apply_nab_id",
-      "style_id": "234_coin"
-    },
-    {
-      "oid": "collapsible_ba",
-      "format": 6,
-      "plan_id": "banner_default_2",
-      "ad_id": "collapsible_ba_id"
-    },
-    {
-      "oid": "kb_unlockpage_na_test5",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_unlockpage_na_test5_id",
-      "style_id": "313_coin"
-    },
-    {
-      "oid": "kb_unlockpage_na_test6",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "kb_unlockpage_na_test6_id",
-      "style_id": "313_coin"
-    },
-    {
-      "oid": "super_preview_na_style6",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_preview_na_style6_id",
-      "style_id": "321"
-    },
-    {
-      "oid": "super_preview_na_style7",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_preview_na_style7_id",
-      "style_id": "310_super_detail"
-    },
-    {
-      "oid": "super_preview_na_style8",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_preview_na_style8_id",
-      "style_id": "320_super_detail"
-    },
-    {
-      "oid": "super_preview_nab_style9",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_preview_nab_style9_id",
-      "style_id": "236_coin"
-    },
-    {
-      "oid": "super_preview_nab_style10",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_preview_nab_style10_id",
-      "style_id": "234_coin"
-    },
-    {
-      "oid": "super_preview_nab_style11",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "super_preview_nab_style11_id",
-      "style_id": "236_coin"
-    },
-    {
-      "oid": "st_detail_nab",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "st_detail_nab_id",
-      "style_id": "206_coin"
-    },
-    {
-      "oid": "wp_preview_nab_style2",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "wp_preview_nab_style2_id",
-      "style_id": "200"
-    },
-    {
-      "oid": "wp_detail_nab_style2",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "wp_detail_nab_style2_id",
-      "style_id": "236_coin"
-    },
+      "count": 1,
+      "id": "inter_default_test",
+      "load_strategy": 4,
+      "prob": 70,
+      "refill": 0
+    },
     {
-      "oid": "wp_unlock_nab_style2",
-      "format": 4,
-      "plan_id": "native_default",
-      "ad_id": "wp_unlock_nab_style2_id",
-      "style_id": "206_coin"
+      "count": 1,
+      "id": "top_inter_default_test",
+      "load_strategy": 4,
+      "offset": 1,
+      "prob": 30,
+      "refill": 0
+    },
+    {
+      "count": 1,
+      "id": "native_compare",
+      "load_strategy": 21,
+      "refill": 1
+    }
+  ],
+  "styles": [
+    {
+      "base_id": 312,
+      "cta_angle": 270,
+      "cta_end_color": "#7FFA49",
+      "cta_radius": 24,
+      "cta_start_color": "#46EB72",
+      "cta_text_color": "#000000",
+      "id": "312_coin"
+    },
+    {
+      "base_id": 206,
+      "bg_color": "#353535",
+      "cta_angle": 270,
+      "cta_end_color": "#7FFA49",
+      "cta_radius": 20,
+      "cta_start_color": "#46EB72",
+      "cta_text_color": "#000000",
+      "id": "206_coin",
+      "info_bg_color": "#212121",
+      "info_bg_radius": 10,
+      "title_color": "#FFFFFF"
+    },
+    {
+      "base_id": 318,
+      "choice_location": 1,
+      "cta_angle": 270,
+      "cta_end_color": "#7FFA49",
+      "cta_radius": 20,
+      "cta_start_color": "#46EB72",
+      "cta_text": "Install",
+      "cta_text_color": "#333333",
+      "id": "318_super_detail"
+    },
+    {
+      "base_id": 233,
+      "cta_angle": 270,
+      "cta_end_color": "#7FFA49",
+      "cta_radius": 20,
+      "cta_start_color": "#46EB72",
+      "cta_text": "Download",
+      "cta_text_color": "#333333",
+      "id": "233_super_preview"
+    },
+    {
+      "base_id": 234,
+      "cta_angle": 270,
+      "cta_end_color": "#7FFA49",
+      "cta_radius": 20,
+      "cta_start_color": "#46EB72",
+      "cta_text": "Download",
+      "cta_text_color": "#333333",
+      "id": "234_coin"
+    },
+    {
+      "base_id": 313,
+      "cta_angle": 270,
+      "cta_end_color": "#7FFA49",
+      "cta_radius": 24,
+      "cta_start_color": "#46EB72",
+      "cta_text_color": "#000000",
+      "id": "313_coin"
+    },
+    {
+      "base_id": 320,
+      "choice_location": 1,
+      "cta_angle": 270,
+      "cta_end_color": "#7FFA49",
+      "cta_radius": 20,
+      "cta_start_color": "#46EB72",
+      "cta_text": "Install",
+      "cta_text_color": "#333333",
+      "id": "320_super_detail"
+    },
+    {
+      "base_id": 236,
+      "cta_angle": 270,
+      "cta_end_color": "#7FFA49",
+      "cta_radius": 24,
+      "cta_start_color": "#46EB72",
+      "cta_text": "Download",
+      "cta_text_color": "#333333",
+      "id": "236_coin"
+    },
+    {
+      "base_id": 310,
+      "choice_location": 1,
+      "cta_angle": 270,
+      "cta_end_color": "#7FFA49",
+      "cta_radius": 24,
+      "cta_start_color": "#46EB72",
+      "cta_text": "Install",
+      "cta_text_color": "#333333",
+      "id": "310_super_detail"
+    },
+    {
+      "base_id": 321,
+      "choice_location": 1,
+      "cta_angle": 270,
+      "cta_end_color": "#7FFA49",
+      "cta_radius": 24,
+      "cta_start_color": "#46EB72",
+      "cta_text": "Install",
+      "cta_text_color": "#333333",
+      "id": "321_super_detail"
     }
   ]
 }
