@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue'
 import { FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import addRole from './components/addRole.vue'
+import operateTrue from '~@/components/base-loading/operateTrue.vue'
+import operateFalse from '~@/components/base-loading/operateFalse.vue'
 
 // interface FormState {
 //   roleName: string
@@ -27,6 +29,9 @@ interface RoleListData {
 interface Params {
   roleName: string
 }// 查询参数类型
+// 事件反馈相关变量
+const operationYes = ref(false) // 操作成功
+const operationNo = ref(false) // 操作失败
 
 const addRoleOpen = ref(false)// 新增角色弹窗
 
@@ -284,7 +289,10 @@ function handleTableChange(event: any) {
 //   return result
 // }
 function closeAddRole(value: boolean) {
-  addRoleOpen.value = value
+  if (value) {
+    operationYes.value = true
+  }
+  addRoleOpen.value = false
   currentRole.value = null
 }
 
@@ -292,7 +300,15 @@ function editRole(record: any) {
   currentRole.value = record
   addRoleOpen.value = true
 }
-
+function deleteRole(record: any) {
+  currentRole.value = record
+  console.log(currentRole.value)
+  // deleteCard.value = false
+  setTimeout(() => {
+    operationYes.value = true
+  }, 1000)
+  currentRole.value = null
+}// 删除用户
 // onMounted(() => {
 //   getData(searchParams.value)
 // })
@@ -326,7 +342,15 @@ function editRole(record: any) {
                 <span @click="editRole(record)">编辑</span>
               </div>
 
-              <span>删除</span>
+              <a-popconfirm
+                title="你确定要删除此角色?"
+                ok-text="确定"
+                cancel-text="取消"
+                placement="left"
+                @confirm="deleteRole(record)"
+              >
+                <span>删除</span>
+              </a-popconfirm>
             </div>
           </template>
         </template>
@@ -342,6 +366,8 @@ function editRole(record: any) {
       <addRole :current="currentRole" @close="closeAddRole" />
     </a-card>
 
+    <operateTrue v-model="operationYes" />
+    <operateFalse v-model="operationNo" />
     <!-- <a-modal
       v-model:open="open" title="新增角色" style="top:10vh;width:50vw;" :mask-closable="false" @ok="handleOk"
       @cancel="handleCancel"

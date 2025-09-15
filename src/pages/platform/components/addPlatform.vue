@@ -24,8 +24,8 @@ const rules: any = {
 function handleOk() {
   formRef.value.validate().then(() => {
     console.log(formState)
-    message.success('新建用户成功！')
-    emit('close', false)
+    // message.success('新建用户成功！')
+    emit('close', true)
   }).catch((err: any) => {
     console.error(err)
     message.warning('请按照要求填写表单！')

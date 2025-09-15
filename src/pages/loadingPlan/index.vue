@@ -2,6 +2,8 @@
 import { onMounted, reactive, ref } from 'vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import AddPlan from './components/addPlan.vue'
+import operateTrue from '~@/components/base-loading/operateTrue.vue'
+import operateFalse from '~@/components/base-loading/operateFalse.vue'
 
 interface SearchFormState {
   planID: string
@@ -26,6 +28,10 @@ interface ConfigListData {
     editTime: string
   }>
 }// 请求接口数据类型
+
+// 事件反馈相关变量
+const operationYes = ref(false) // 操作成功
+const operationNo = ref(false) // 操作失败
 
 const response = ref<ConfigListData>({
   data: [
@@ -202,7 +208,10 @@ function resetSearch() {
 }
 
 function closeAddPlan(value: boolean) {
-  addPlanOpen.value = value
+  if (value) {
+    operationYes.value = true
+  }
+  addPlanOpen.value = false
   currentPlan.value = null
 }
 
@@ -229,6 +238,16 @@ function handleEdit(record: any) {
   delete currentPlan.value.chaping_ad
   addPlanOpen.value = true
 }
+
+function deletePlan(record: any) {
+  currentPlan.value = record
+  console.log(currentPlan.value)
+  // deleteCard.value = false
+  setTimeout(() => {
+    operationYes.value = true
+  }, 1000)
+  currentPlan.value = null
+}// 删除用户
 // onMounted(() => {
 //   getData(searchParams.value)
 // })
@@ -297,20 +316,32 @@ function handleEdit(record: any) {
             <div class="option">
               <span @click="handleCopy(record)">复用配置新建</span>
               <span @click="handleEdit(record)">编辑</span>
-              <span>删除</span>
+
+              <a-popconfirm
+                title="你确定要删除此广告计划?"
+                ok-text="确定"
+                cancel-text="取消"
+                placement="left"
+                @confirm="deletePlan(record)"
+              >
+                <span>删除</span>
+              </a-popconfirm>
             </div>
           </template>
         </template>
-        <template #footer>
+        <!-- <template #footer>
           显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
           {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
             * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
-        </template>
+        </template> -->
       </a-table>
     </a-card>
     <a-card v-else style="margin-bottom: 30px;">
       <AddPlan :current="currentPlan" @close="closeAddPlan" />
     </a-card>
+
+    <operateTrue v-model="operationYes" />
+    <operateFalse v-model="operationNo" />
   </page-container>
 </template>
 

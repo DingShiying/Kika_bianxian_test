@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue'
 import { FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import addLoading from './components/addLoading.vue'
+import operateTrue from '~@/components/base-loading/operateTrue.vue'
+import operateFalse from '~@/components/base-loading/operateFalse.vue'
 
 interface PlatformListData {
   data: Array<{
@@ -20,6 +22,10 @@ interface Params {
 const searchParams = ref<Params>({
   load_strategy: '',
 })// 查询参数
+
+// 事件反馈相关变量
+const operationYes = ref(false) // 操作成功
+const operationNo = ref(false) // 操作失败
 
 const response = ref<PlatformListData>({
   data: [
@@ -141,9 +147,21 @@ function editStratgy(record: any) {
   addLoadingOpen.value = true
 }
 function closeAddStrategy(value: boolean) {
-  addLoadingOpen.value = value
+  if (value) {
+    operationYes.value = true
+  }
+  addLoadingOpen.value = false
   currentStrategy.value = null
 }
+function deleteStrategy(record: any) {
+  currentStrategy.value = record
+  console.log(currentStrategy.value)
+  // deleteCard.value = false
+  setTimeout(() => {
+    operationYes.value = true
+  }, 1000)
+  currentStrategy.value = null
+}// 删除用户
 
 // onMounted(() => {
 //   getData(searchParams.value)
@@ -181,20 +199,31 @@ function closeAddStrategy(value: boolean) {
                 <span @click="editStratgy(record)">编辑</span>
               </div>
 
-              <span>删除</span>
+              <a-popconfirm
+                title="你确定要删除此加载计划?"
+                ok-text="确定"
+                cancel-text="取消"
+                placement="left"
+                @confirm="deleteStrategy(record)"
+              >
+                <span>删除</span>
+              </a-popconfirm>
             </div>
           </template>
         </template>
-        <template #footer>
+        <!-- <template #footer>
           显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
           {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
             * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
-        </template>
+        </template> -->
       </a-table>
     </a-card>
     <a-card v-else>
       <addLoading :current="currentStrategy" @close="closeAddStrategy" />
     </a-card>
+
+    <operateTrue v-model="operationYes" />
+    <operateFalse v-model="operationNo" />
   </page-container>
 </template>
 

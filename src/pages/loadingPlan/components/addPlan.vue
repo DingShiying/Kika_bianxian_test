@@ -249,8 +249,8 @@ function handleOk() {
         }
       }
       console.log(style)
-      message.success('加载计划创建成功')
-      emit('close', false)
+      // message.success('加载计划创建成功')
+      emit('close', true)
       // console.log(formState)
     })
     .catch((error: any) => {

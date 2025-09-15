@@ -93,8 +93,8 @@ function findChild(treeData: TreeDataItem[]) {
 function handleOk() {
   formRef.value.validate().then(() => {
     console.log(formState)
-    message.success('新建用户成功！')
-    emit('close', false)
+    // message.success('新建用户成功！')
+    emit('close', true)
   }).catch((err: any) => {
     message.warning('请按要求填写表单！')
     console.error(err)

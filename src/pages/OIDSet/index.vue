@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import addOID from './components/addOID.vue'
+import operateTrue from '~@/components/base-loading/operateTrue.vue'
+import operateFalse from '~@/components/base-loading/operateFalse.vue'
 
 interface FormState {
   oid: string
@@ -22,6 +24,10 @@ interface OIDListData {
     value: number
   }>
 }// 请求接口数据类型
+
+// 事件反馈相关变量
+const operationYes = ref(false) // 操作成功
+const operationNo = ref(false) // 操作失败
 
 const response = ref<OIDListData>({
   data: [
@@ -233,7 +239,10 @@ function editOID(record: any) {
   addOIDOpen.value = true
 }
 function closeAddOID(value: boolean) {
-  addOIDOpen.value = value
+  if (value) {
+    operationYes.value = true
+  }
+  addOIDOpen.value = false
   currentOID.value = null
 }
 
@@ -247,6 +256,16 @@ function resetSearch() {
     creator: '',
   })
 }
+
+function deleteOID(record: any) {
+  currentOID.value = record
+  console.log(currentOID.value)
+  // deleteCard.value = false
+  setTimeout(() => {
+    operationYes.value = true
+  }, 1000)
+  currentOID.value = null
+}// 删除用户
 </script>
 
 <template>
@@ -296,23 +315,34 @@ function resetSearch() {
               <a-button type="link" @click="editOID(record)">
                 编辑
               </a-button>
-              <a-button type="link">
-                删除
-              </a-button>
+              <a-popconfirm
+                title="你确定要删除此OID?"
+                ok-text="确定"
+                cancel-text="取消"
+                placement="left"
+                @confirm="deleteOID(record)"
+              >
+                <a-button type="link">
+                  删除
+                </a-button>
+              </a-popconfirm>
             </div>
           </template>
         </template>
-        <template #footer>
+        <!-- <template #footer>
           显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
           {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
             * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
-        </template>
+        </template> -->
       </a-table>
     </a-card>
 
     <a-card v-else>
       <addOID :current="currentOID" @close="closeAddOID" />
     </a-card>
+
+    <operateTrue v-model="operationYes" />
+    <operateFalse v-model="operationNo" />
   </page-container>
 </template>
 

@@ -20,14 +20,14 @@ const formState: FormState = reactive(current || {
 })// 表单数据
 const rules: any = {
   strategyName: [{ required: true, message: '加载策略值名称不能为空', trigger: 'blur', type: 'string' }],
-  load_strategy: [{ required: true, message: '加载策略值不能为空', trigger: 'blur', type: 'number' }],
+  // load_strategy: [{ required: true, message: '加载策略值不能为空', trigger: 'blur', type: 'number' }],
 }// 表单验证规则
 
 function handleOk() {
   formRef.value.validate().then(() => {
     console.log(formState)
-    message.success('新建加载策略成功！')
-    emit('close', false)
+    // message.success('新建加载策略成功！')
+    emit('close', true)
   }).catch((err: any) => {
     message.warning('请按要求填写表单！')
     console.error(err)

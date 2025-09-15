@@ -571,8 +571,8 @@ function handleBaseOk() {
     .validate()
     .then(() => {
       console.log(formState1)
-      message.success('样式创建成功')
-      emit('close', false)
+      // message.success('样式创建成功')
+      emit('close', true)
     })
     .catch((error: any) => {
       console.log('error', error)

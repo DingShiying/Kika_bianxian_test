@@ -68,8 +68,8 @@ const rules: any = {
 function handleOk() {
   formRef.value.validate().then(() => {
     console.log(formState)
-    message.success('新建广告单元成功！')
-    emit('close', false)
+    // message.success('新建广告单元成功！')
+    emit('close', true)
   }).catch((err: any) => {
     message.warning('请按要求填写表单！')
     console.error(err)
