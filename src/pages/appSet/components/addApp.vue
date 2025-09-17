@@ -2,7 +2,39 @@
 import { computed, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
+import Select from '~@/components/form/Select.vue'
 
+// 父组件传值
+const { current, copy } = defineProps(['current', 'copy'])
+const emit = defineEmits(['close'])
+
+// 数据类型声明
+interface APPData {
+  appID: string
+  appName: string
+  package: string
+  firebaseID: string
+  business: string
+  manager: string[]
+  system: string
+  platform: string[]
+  icon: string
+  creator: string
+  createTime: string
+  copyAppID?: string | undefined
+  copyConfig?: string[]
+}// 请求接口数据类型
+interface BusinessData {
+  business: string
+  creator: string
+  createTime: string
+}// 请求接口数据类型
+interface PlatformData {
+  platformName: string
+  creator: string
+  createTime: string
+  status: boolean
+}// 请求接口数据类型
 interface FormState {
   appName: string
   package: string
@@ -16,56 +48,8 @@ interface FormState {
   copyConfig: string[]
 }// 表单数据类型
 
-const { current, copy } = defineProps(['current', 'copy'])
-const emit = defineEmits(['close'])
-
-const formRef = ref()// 表单引用
-const formState: FormState = reactive(current || {
-  appName: '',
-  package: '',
-  firebaseID: '',
-  business: undefined,
-  users: [],
-  system: 'iOS',
-  platform: [],
-  icon: '',
-  copyAppID: undefined,
-  copyConfig: [],
-})// 表单数据
-
-if (copy) {
-  Object.assign(formState, copy)
-  formState.appName = ''
-  formState.package = ''
-  formState.copyAppID = copy.appID
-}
-
-const copyDisabled = computed(() => {
-  if (current) {
-    if (current.copyAppID) {
-      return true
-    }
-    else {
-      return false
-    }
-  }
-  else {
-    return false
-  }
-})
-
-const rules: any = {
-  appName: [{ required: true, message: '应用名称不能为空', trigger: 'blur', type: 'string' }],
-  package: [{ required: true, message: '包名不能为空', trigger: 'blur', type: 'string' }],
-  firebaseID: [{ required: true, message: 'firebase关联ID不能为空', trigger: 'blur', type: 'string' }],
-  business: [{ required: true, message: '归属业务组不能为空', trigger: 'blur', type: 'string' }],
-  manager: [{ required: true, message: '请至少选择一名管理员', trigger: 'blur', type: 'array' }],
-  platform: [{ required: true, message: '请至少选择一个上架平台', trigger: 'blur', type: 'array' }],
-  // icon: [{ required: true, message: '请上传应用图标', trigger: 'blur', type: 'string' }],
-  copyConfig: [{ required: true, message: '请至少选择一个配置项', trigger: 'blur', type: 'array' }],
-}// 表单验证规则
-
-const appList = [
+// 请求响应数据
+const appList = ref<APPData[]>([
   {
     appID: 'app-1',
     appName: 'APP1',
@@ -105,41 +89,81 @@ const appList = [
     creator: '王五',
     createTime: '2022-01-01',
   },
-]
-const businessList = [
+])
+const businessList = ref<BusinessData[]>([
   {
-    label: '电商业务组',
-    value: '电商业务组',
+    business: '电商业务组',
+    creator: '张三',
+    createTime: '2023-01-01',
   },
   {
-    label: '电商健康组',
-    value: '电商健康组',
+    business: '金融业务组',
+    creator: '王五',
+    createTime: '2023-01-02',
   },
   {
-    label: '电商幸福组',
-    value: '电商幸福组',
+    business: '物流业务组',
+    creator: '钱七',
+    createTime: '2023-01-03',
   },
-]
-const platformList = [
+])// 请求接口数据
+const platformList = ref<PlatformData[]>([
   {
-    label: 'Google',
-    value: 'Google',
+    platformName: 'Google',
+    creator: '张三',
+    createTime: '2023-01-01',
+    status: true,
   },
   {
-    label: 'Apple Store',
-    value: 'Apple Store',
+    platformName: 'Facebook',
+    creator: '李四',
+    createTime: '2023-01-01',
+    status: false,
   },
   {
-    label: 'xiaomi',
-    value: 'xiaomi',
+    platformName: 'Amazon',
+    creator: '王五',
+    createTime: '2023-01-01',
+    status: true,
   },
-]
+])// 请求接口数据
 
+// 表单相关变量
+const formRef = ref()// 表单引用
+const formState: FormState = reactive(current || {
+  appName: '',
+  package: '',
+  firebaseID: '',
+  business: undefined,
+  users: [],
+  system: 'iOS',
+  platform: [],
+  icon: '',
+  copyAppID: undefined,
+  copyConfig: [],
+})// 表单数据
+if (copy) {
+  Object.assign(formState, copy)
+  formState.appName = ''
+  formState.package = ''
+  formState.copyAppID = copy.appID
+}// 是否是复制新建
+const rules: any = {
+  appName: [{ required: true, message: '应用名称不能为空', trigger: 'blur', type: 'string' }],
+  package: [{ required: true, message: '包名不能为空', trigger: 'blur', type: 'string' }],
+  firebaseID: [{ required: true, message: 'firebase关联ID不能为空', trigger: 'blur', type: 'string' }],
+  business: [{ required: true, message: '归属业务组不能为空', trigger: 'blur', type: 'string' }],
+  manager: [{ required: true, message: '请至少选择一名管理员', trigger: 'blur', type: 'array' }],
+  platform: [{ required: true, message: '请至少选择一个上架平台', trigger: 'change', type: 'array' }],
+  // icon: [{ required: true, message: '请上传应用图标', trigger: 'blur', type: 'string' }],
+  copyConfig: [{ required: true, message: '请至少选择一个配置项', trigger: 'blur', type: 'array' }],
+}// 表单验证规则
+
+// 表单相关函数
 function handleOk() {
   formRef.value.validate().then(() => {
     console.log(formState)
-    message.success('新建加载策略成功！')
-    emit('close', false)
+    emit('close', true)
   }).catch((err: any) => {
     message.warning('请按要求填写表单！')
     console.error(err)
@@ -148,6 +172,21 @@ function handleOk() {
 function handleCancel() {
   emit('close', false)
 }
+
+// 复用APP是否禁用
+const copyDisabled = computed(() => {
+  if (current) {
+    if (current.copyAppID) {
+      return true
+    }
+    else {
+      return false
+    }
+  }
+  else {
+    return false
+  }
+})
 </script>
 
 <template>
@@ -178,11 +217,15 @@ function handleCancel() {
         <a-input v-model:value="formState.firebaseID" placeholder="请输入firebase关联ID" auto-complete="off" />
       </a-form-item>
 
-      <a-form-item label="归属业务组" name="business" style="width: 35vw;">
+      <a-form-item label="归属业务组" name="business" style="width: 35vw;text-align: center;">
         <a-select
-          v-model:value="formState.business" placeholder="请选择归属业务组" :options="businessList"
+          v-model:value="formState.business" placeholder="请选择归属业务组"
           show-search
-        />
+        >
+          <a-select-option v-for="option in businessList" :key="option.business" :value="option.business">
+            {{ option.business }}
+          </a-select-option>
+        </a-select>
       </a-form-item>
 
       <a-form-item label="发行端" name="system" style="width: 35vw;">
@@ -197,10 +240,9 @@ function handleCancel() {
       </a-form-item>
 
       <a-form-item label="上架平台" name="platform" style="width: 35vw;">
-        <a-select
-          v-model:value="formState.platform" placeholder="请选择上架平台" :options="platformList" show-search
-          mode="multiple"
-        />
+        <div class="select">
+          <Select v-model="formState.platform" :options="platformList.map(item => item.platformName)" />
+        </div>
       </a-form-item>
 
       <a-form-item label="应用图标" name="icon">
@@ -259,7 +301,7 @@ function handleCancel() {
   </div>
   <div class="footer">
     <a-button type="primary" @click="handleOk">
-      确认创建
+      确认
     </a-button>
     <a-button @click="handleCancel">
       取消
@@ -364,6 +406,20 @@ function handleCancel() {
         font-size: 12px;
         color: grey;
     }
+}
+
+.select {
+  width: 100%;
+  border: 1px solid #d9d9d9;
+  padding: 5px 11px;
+  border-radius: 6px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    border-color: #40a9ff;
+  }
 }
 
 .footer {

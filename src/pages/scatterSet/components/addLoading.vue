@@ -3,30 +3,33 @@ import { onMounted, reactive, ref } from 'vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 
-interface FormState {
-  strategyName: string
-  load_strategy: number | undefined
-  status: boolean
-} // 表单数据类型
-
+// 父组件传值
 const { current } = defineProps(['current'])
 const emit = defineEmits(['close'])
 
+// 数据类型声明
+interface FormState {
+  strategyName: string
+  scatter_loading: number | undefined
+  status: boolean
+} // 表单数据类型
+
+// 表单相关数据
 const formRef = ref()// 表单引用
 const formState: FormState = reactive(current || {
   strategyName: '',
-  load_strategy: undefined,
+  scatter_loading: undefined,
   status: true,
 })// 表单数据
 const rules: any = {
   strategyName: [{ required: true, message: '加载策略值名称不能为空', trigger: 'blur', type: 'string' }],
-  // load_strategy: [{ required: true, message: '加载策略值不能为空', trigger: 'blur', type: 'number' }],
+  scatter_loading: [{ required: true, message: '加载策略值不能为空', trigger: 'blur', type: 'string' }],
 }// 表单验证规则
 
+// 表单相关函数
 function handleOk() {
   formRef.value.validate().then(() => {
     console.log(formState)
-    // message.success('新建加载策略成功！')
     emit('close', true)
   }).catch((err: any) => {
     message.warning('请按要求填写表单！')
@@ -57,9 +60,9 @@ function handleCancel() {
         <a-input v-model:value="formState.strategyName" placeholder="请输入加载策略名称" />
       </a-form-item>
 
-      <a-form-item label="加载策略值" name="load_strategy" style="width: 35vw;">
+      <a-form-item label="加载策略值" name="scatter_loading" style="width: 35vw;">
         <a-input
-          v-model:value="formState.load_strategy" placeholder="请输入加载策略值" type="number"
+          v-model:value="formState.scatter_loading" placeholder="请输入加载策略值" type="number"
         />
       </a-form-item>
 

@@ -1,68 +1,45 @@
 <script setup lang="ts" name="platform">
 import { onMounted, ref } from 'vue'
 import { FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { notification } from 'ant-design-vue'
 import addPlatform from './components/addPlatform.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
 
-// interface FormState {
-//   platformName: string
-//   strategyName: string
-//   strategeScore: string
-// }// 表单数据类型
-
-interface PlatformListData {
-  data: Array<{
-    platformName: string
-    creator: string
-    createTime: string
-    status: boolean
-    strategyName: string
-    strategeScore: string
-  }>
+// 数据类型声明
+interface PlatformData {
+  platformName: string
+  creator: string
+  createTime: string
+  status: boolean
 }// 请求接口数据类型
-
 interface Params {
   platformName: string
 }// 查询参数类型
 
-const searchParams = ref<Params>({
-  platformName: '',
-})// 查询参数
+// 请求响应数据
+const response = ref<PlatformData[]>([
+  {
+    platformName: 'Google',
+    creator: '张三',
+    createTime: '2023-01-01',
+    status: true,
+  },
+  {
+    platformName: 'Facebook',
+    creator: '李四',
+    createTime: '2023-01-01',
+    status: false,
+  },
+  {
+    platformName: 'Amazon',
+    creator: '王五',
+    createTime: '2023-01-01',
+    status: true,
+  },
+])// 请求接口数据
 
-// 事件反馈相关变量
-const operationYes = ref(false) // 操作成功
-const operationNo = ref(false) // 操作失败
-
-const response = ref<PlatformListData>({
-  data: [
-    {
-      platformName: 'Google',
-      creator: '张三',
-      createTime: '2023-01-01',
-      status: true,
-      strategyName: '策略1',
-      strategeScore: '90',
-    },
-    {
-      platformName: 'Facebook',
-      creator: '李四',
-      createTime: '2023-01-01',
-      status: false,
-      strategyName: '策略2',
-      strategeScore: '80',
-    },
-    {
-      platformName: 'Amazon',
-      creator: '王五',
-      createTime: '2023-01-01',
-      status: true,
-      strategyName: '策略3',
-      strategeScore: '70',
-    },
-  ],
-})// 请求接口数据
-
+// 表格相关变量
 const columns: any = [
   {
     title: '上架平台',
@@ -94,114 +71,64 @@ const columns: any = [
     align: 'center',
   },
 ]// 表格列头
-
+const addPlatformOpen = ref(false)// 新增弹窗状态
 const loading = ref(false) // 表格加载状态
 const currentPlatform = ref() // 当前选中平台
-
 const pagination = ref({
   current: 1,
   pageSize: 10,
-  total: response.value.data.length,
+  total: response.value.length,
 })// 表格分页
+const searchParams = ref<Params>({
+  platformName: '',
+})// 查询参数
 
-// const open = ref(false)// 表单弹窗状态
-const addPlatformOpen = ref(false)// 新增弹窗状态
+// 事件反馈相关变量
+const operationYes = ref(false) // 操作成功
+const operationNo = ref(false) // 操作失败
 
-// const formRef = ref()// 表单引用
-// const formState: FormState = reactive({
-//   platformName: '',
-//   strategyName: '',
-//   strategeScore: '',
-// })// 表单数据
-
-// const rules: any = {
-//   platformName: [{ required: true, message: '上架平台名称不能为空', trigger: 'blur', type: 'string' }],
-//   strategyName: [{ required: true, message: '策略名称不能为空', trigger: 'blur', type: 'string' }],
-//   strategeScore: [{ required: true, message: '策略值不能为空', trigger: 'blur', type: 'string' }],
-// }// 表单验证规则
-
-// async function getData(searchParams: Params) {
-//   try {
-//     const res = await getUserListData(searchParams)
-//     if (res.code === 200) {
-//       // @ts-expect-error:忽略
-//       response.value = res.data
-//       pagination.value.total = response.value.data.length
-//       // @ts-expect-error:忽略
-//       const checkState = []
-//       response.value.appList.forEach((item: any) => {
-//         const currentState = {
-//           checkAll: false,
-//           extend: false,
-//           checkList: [],
-//         }
-//         item.apps.forEach(() => {
-//           // @ts-expect-error:忽略
-//           currentState.checkList.push(false)
-//         })
-//         checkState.push(currentState)
-//       })
-//       // @ts-expect-error:忽略
-//       business_apps_check.value = checkState
-//     }
-//     else {
-//       message.error(res.msg)
-//     }
-//   }
-//   catch (error: any) {
-//     message.error(error.msg)
-//   }
-//   finally {
-//     loading.value = false
-//   }
-// }
-
+// 表格相关函数
 function handleTableChange(event: any) {
   pagination.value = event
 }// 表格分页改变
-
-// function handleOk() {
-//   formRef.value.validate().then(() => {
-//     console.log(formState)
-//     open.value = false
-//     Modal.destroyAll()
-//     formRef.value.resetFields()
-//     message.success('新建用户成功！')
-//   })
-// }// 表单提交
-// function handleCancel() {
-//   open.value = false
-//   Modal.destroyAll()
-//   Object.assign(formState, {
-//     platformName: '',
-//     strategyName: '',
-//     strategeScore: '',
-//   })
-// }// 表单取消
-
 function editPlatform(record: any) {
   currentPlatform.value = record
   addPlatformOpen.value = true
-}
+}// 编辑平台
 function closeAddPlatform(value: boolean) {
   if (value) {
     operationYes.value = true
   }
   addPlatformOpen.value = false
   currentPlatform.value = null
-}
+}// 关闭新增弹窗
 function deletePlatform(record: any) {
   currentPlatform.value = record
   console.log(currentPlatform.value)
-  // deleteCard.value = false
   setTimeout(() => {
     operationYes.value = true
   }, 1000)
   currentPlatform.value = null
-}// 删除用户
-// onMounted(() => {
-//   getData(searchParams.value)
-// })
+}// 删除平台
+
+// 请求函数
+async function getPlatformList() {
+  try {
+    loading.value = true
+    await setTimeout(() => {
+      loading.value = false
+      console.log(response.value)
+    }, 1000)
+  }
+  catch (error: any) {
+    loading.value = false
+    console.error(error)
+    notification.open({
+      message: '获取数据失败',
+      description: error,
+    })
+  }
+}
 </script>
 
 <template>
@@ -218,10 +145,10 @@ function deletePlatform(record: any) {
     <a-card v-if="!addPlatformOpen">
       <a-input-search
         v-model:value="searchParams.platformName" placeholder="请输入平台名称" enter-button="搜索"
-        style="width: 350px;margin-bottom: 15px;" @search="() => console.log(searchParams)"
+        style="width: 350px;margin-bottom: 15px;" @search="getPlatformList"
       />
       <a-table
-        :columns="columns" :data-source="response.data" :loading="loading" :pagination="pagination"
+        :columns="columns" :data-source="response" :loading="loading" :pagination="pagination"
         class="table-part" @change="handleTableChange($event)"
       >
         <template #bodyCell="{ column, record }">
@@ -258,45 +185,6 @@ function deletePlatform(record: any) {
       <addPlatform :current="currentPlatform" @close="closeAddPlatform" />
     </a-card>
 
-    <!-- <a-modal
-      v-model:open="open" title="新增平台" style="top:20vh;width:50vw;" :mask-closable="false" @ok="handleOk"
-      @cancel="handleCancel"
-    >
-      <a-form
-        ref="formRef" :model="formState" :rules="rules" :label-col="{ style: { width: '100px' } }"
-        class="form-part"
-      >
-        <a-form-item label="上架平台" name="platformName" style="width: 35vw;">
-          <a-input
-            v-model:value="formState.platformName" placeholder="请输入业务组名称"
-            auto-complete="off"
-          />
-        </a-form-item>
-
-        <a-form-item label="策略名称" name="strategyName" style="width: 35vw;">
-          <a-input
-            v-model:value="formState.strategyName" placeholder="请输入策略名称"
-            auto-complete="off"
-          />
-        </a-form-item>
-
-        <a-form-item label="策略值" name="strategeScore" style="width: 35vw;">
-          <a-input
-            v-model:value="formState.strategeScore" placeholder="请输入策略值"
-            auto-complete="off"
-          />
-        </a-form-item>
-      </a-form>
-
-      <template #footer>
-        <a-button key="back" @click="handleCancel">
-          取消
-        </a-button>
-        <a-button key="submit" type="primary" :loading="loading" @click="handleOk">
-          确定
-        </a-button>
-      </template>
-    </a-modal> -->
     <operateTrue v-model="operationYes" />
     <operateFalse v-model="operationNo" />
   </page-container>
@@ -371,228 +259,6 @@ function deletePlatform(record: any) {
         margin-right: 5px;
       }
     }
-  }
-}
-
-.select_app {
-  width: 100%;
-  padding: 0 10px;
-  display: flex;
-
-  .left {
-    width: 50%;
-    max-height: 35vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: auto;
-    overflow-x: hidden;
-
-    .business-apps {
-      width: 100%;
-      margin-bottom: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-
-      .checkbox {
-        width: 20vw;
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-
-        img {
-          height: 40px;
-          width: 40px;
-          object-fit: contain;
-          margin-right: 15px;
-        }
-
-        .text {
-          display: flex;
-          flex-direction: column;
-
-          .name {
-            font-size: 18px;
-            font-weight: bold;
-          }
-
-          span {
-            font-size: 12px;
-            color: grey;
-          }
-        }
-      }
-
-      .extend {
-        margin-right: 20px;
-        padding-left: 10px;
-        border-left: 1px solid #ccc;
-        color: #4689d4;
-        cursor: pointer;
-      }
-
-      .inner-apps {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        padding-left: 30px;
-
-        .inner-app-details {
-          width: 20vw;
-          display: flex;
-          align-items: center;
-          margin-bottom: 10px;
-
-          img {
-            height: 30px;
-            width: 30px;
-            object-fit: contain;
-            margin-right: 10px;
-          }
-
-          .text {
-            display: flex;
-            flex-direction: column;
-
-            .name {
-              font-size: 14px;
-              font-weight: bold;
-
-              img {
-                width: 15px;
-                height: 15px;
-                margin-left: 5px;
-                vertical-align: top;
-              }
-            }
-
-            span {
-              font-size: 12px;
-              color: grey;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .right {
-    width: 50%;
-    max-height: 35vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: auto;
-    overflow-x: hidden;
-
-    /* 设置滚动条的宽度 */
-    &::-webkit-scrollbar {
-      width: 3px;
-      /* 水平滚动条的宽度 */
-      height: 3px;
-      /* 垂直滚动条的高度 */
-    }
-
-    /* 设置滚动条轨道的样式 */
-    &::-webkit-scrollbar-track {
-      background: transparent;
-      /* 轨道背景颜色 */
-      border-radius: 10px;
-      /* 轨道的圆角 */
-    }
-
-    /* 设置滚动条滑块的样式 */
-    &::-webkit-scrollbar-thumb {
-      background: #888;
-      /* 滑块颜色 */
-      border-radius: 10px;
-      /* 滑块的圆角 */
-    }
-
-    /* 设置滚动条滑块在悬停时的样式 */
-    &::-webkit-scrollbar-thumb:hover {
-      background: #555;
-      /* 悬停时的滑块颜色 */
-    }
-
-    .title {
-      color: grey;
-      margin-bottom: 10px;
-    }
-
-    .check-app {
-      width: 20vw;
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-
-      img {
-        height: 30px;
-        width: 30px;
-        object-fit: contain;
-        margin-right: 10px;
-      }
-
-      .text {
-        display: flex;
-        flex-direction: column;
-
-        .name {
-          font-size: 14px;
-          font-weight: bold;
-
-          img {
-            width: 15px;
-            height: 15px;
-            margin-left: 5px;
-            vertical-align: top;
-          }
-        }
-
-        span {
-          font-size: 12px;
-          color: grey;
-        }
-      }
-    }
-  }
-}
-
-.form-part {
-  max-height: 60vh;
-  overflow: auto;
-  overflow-x: hidden;
-
-  /* 设置滚动条的宽度 */
-  &::-webkit-scrollbar {
-    width: 3px;
-    /* 水平滚动条的宽度 */
-    height: 3px;
-    /* 垂直滚动条的高度 */
-  }
-
-  /* 设置滚动条轨道的样式 */
-  &::-webkit-scrollbar-track {
-    background: transparent;
-    /* 轨道背景颜色 */
-    border-radius: 10px;
-    /* 轨道的圆角 */
-  }
-
-  /* 设置滚动条滑块的样式 */
-  &::-webkit-scrollbar-thumb {
-    background: #888;
-    /* 滑块颜色 */
-    border-radius: 10px;
-    /* 滑块的圆角 */
-  }
-
-  /* 设置滚动条滑块在悬停时的样式 */
-  &::-webkit-scrollbar-thumb:hover {
-    background: #555;
-    /* 悬停时的滑块颜色 */
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup lang='ts' name='compareConfig'>
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
 
 const { config } = defineProps(['config'])
@@ -1562,6 +1562,7 @@ const noCompare = computed(() => {
     return true
   }
 })
+
 const currentJson: any = computed(() => {
   const current = JSON.parse(JSON.stringify(jsonList.find(item => item.configID === currentConfig.value)))
   const adshare = []
@@ -1640,6 +1641,33 @@ function changeEnd1() {
   setTimeout(() => {
     currentLoading.value = false
   }, 500)
+}
+
+function compareThem() {
+  const compare_left = []
+  const compare_right = []
+  for (const key of ['ad_shares', 'ad_strong_shares', 'ad_chains_v2', 'ad_positions']) {
+    if (key !== 'ad_positions') {
+      compareJson.value[key].forEach((item: any) => {
+        compare_left.push({
+          oid: item.oid,
+          share: true,
+          target: item.target,
+        })
+      })
+    }
+    else {
+      compareJson.value[key].forEach((item: any) => {
+        compare_left.push({
+          oid: item.oid,
+          share: false,
+          plan_id: item.plan_id,
+          ad_id: item.ad_id,
+          style_id: item.style_id,
+        })
+      })
+    }
+  }
 }
 </script>
 

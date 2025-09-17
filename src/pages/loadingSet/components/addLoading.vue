@@ -3,15 +3,18 @@ import { onMounted, reactive, ref } from 'vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 
+// 父组件传值
+const { current } = defineProps(['current'])
+const emit = defineEmits(['close'])
+
+// 数据类型声明
 interface FormState {
   strategyName: string
   load_strategy: number | undefined
   status: boolean
 } // 表单数据类型
 
-const { current } = defineProps(['current'])
-const emit = defineEmits(['close'])
-
+// 表单相关数据
 const formRef = ref()// 表单引用
 const formState: FormState = reactive(current || {
   strategyName: '',
@@ -20,14 +23,14 @@ const formState: FormState = reactive(current || {
 })// 表单数据
 const rules: any = {
   strategyName: [{ required: true, message: '加载策略值名称不能为空', trigger: 'blur', type: 'string' }],
-  // load_strategy: [{ required: true, message: '加载策略值不能为空', trigger: 'blur', type: 'number' }],
+  load_strategy: [{ required: true, message: '加载策略值不能为空', trigger: 'blur', type: 'string' }],
 }// 表单验证规则
 
+// 表单相关函数
 function handleOk() {
   formRef.value.validate().then(() => {
     console.log(formState)
-    message.success('新建加载策略成功！')
-    emit('close', false)
+    emit('close', true)
   }).catch((err: any) => {
     message.warning('请按要求填写表单！')
     console.error(err)
@@ -70,7 +73,7 @@ function handleCancel() {
   </div>
   <div class="footer">
     <a-button type="primary" @click="handleOk">
-      确认创建
+      确认
     </a-button>
     <a-button @click="handleCancel">
       取消
@@ -95,222 +98,6 @@ function handleCancel() {
     .ant-btn {
         position: absolute;
         left: 0px;
-    }
-}
-
-.select_app {
-    width: 100%;
-    padding: 0 10px;
-    display: flex;
-
-    .left {
-        width: 50%;
-        max-height: 40vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        overflow: auto;
-        overflow-x: hidden;
-
-        /* 设置滚动条的宽度 */
-        &::-webkit-scrollbar {
-            width: 3px;
-            /* 水平滚动条的宽度 */
-            height: 3px;
-            /* 垂直滚动条的高度 */
-        }
-
-        /* 设置滚动条轨道的样式 */
-        &::-webkit-scrollbar-track {
-            background: transparent;
-            /* 轨道背景颜色 */
-            border-radius: 10px;
-            /* 轨道的圆角 */
-        }
-
-        /* 设置滚动条滑块的样式 */
-        &::-webkit-scrollbar-thumb {
-            background: #888;
-            /* 滑块颜色 */
-            border-radius: 10px;
-            /* 滑块的圆角 */
-        }
-
-        /* 设置滚动条滑块在悬停时的样式 */
-        &::-webkit-scrollbar-thumb:hover {
-            background: #555;
-            /* 悬停时的滑块颜色 */
-        }
-
-        .business-apps {
-            width: 100%;
-            margin-bottom: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-
-            .checkbox {
-                width: 20vw;
-                display: flex;
-                align-items: center;
-                margin-bottom: 10px;
-
-                img {
-                    height: 30px;
-                    width: 30px;
-                    object-fit: contain;
-                    margin-right: 15px;
-                }
-
-                .text {
-                    display: flex;
-                    flex-direction: column;
-
-                    .name {
-                        font-size: 18px;
-                        font-weight: bold;
-                    }
-
-                    span {
-                        font-size: 12px;
-                        color: grey;
-                    }
-                }
-            }
-
-            .extend {
-                margin-right: 20px;
-                padding-left: 10px;
-                border-left: 1px solid #ccc;
-                color: #4689d4;
-                cursor: pointer;
-            }
-
-            .inner-apps {
-                width: 100%;
-                display: flex;
-                flex-direction: column;
-                padding-left: 30px;
-
-                .inner-app-details {
-                    width: 20vw;
-                    display: flex;
-                    align-items: center;
-                    margin-bottom: 10px;
-
-                    img {
-                        height: 30px;
-                        width: 30px;
-                        object-fit: contain;
-                        margin-right: 10px;
-                    }
-
-                    .text {
-                        display: flex;
-                        flex-direction: column;
-
-                        .name {
-                            font-size: 14px;
-                            font-weight: bold;
-
-                            img {
-                                width: 15px;
-                                height: 15px;
-                                margin-left: 5px;
-                                vertical-align: top;
-                            }
-                        }
-
-                        span {
-                            font-size: 12px;
-                            color: grey;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    .right {
-        width: 50%;
-        max-height: 40vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        overflow: auto;
-        overflow-x: hidden;
-
-        /* 设置滚动条的宽度 */
-        &::-webkit-scrollbar {
-            width: 3px;
-            /* 水平滚动条的宽度 */
-            height: 3px;
-            /* 垂直滚动条的高度 */
-        }
-
-        /* 设置滚动条轨道的样式 */
-        &::-webkit-scrollbar-track {
-            background: transparent;
-            /* 轨道背景颜色 */
-            border-radius: 10px;
-            /* 轨道的圆角 */
-        }
-
-        /* 设置滚动条滑块的样式 */
-        &::-webkit-scrollbar-thumb {
-            background: #888;
-            /* 滑块颜色 */
-            border-radius: 10px;
-            /* 滑块的圆角 */
-        }
-
-        /* 设置滚动条滑块在悬停时的样式 */
-        &::-webkit-scrollbar-thumb:hover {
-            background: #555;
-            /* 悬停时的滑块颜色 */
-        }
-
-        .title {
-            color: grey;
-            margin-bottom: 10px;
-        }
-
-        .check-app {
-            width: 20vw;
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-
-            img {
-                height: 30px;
-                width: 30px;
-                object-fit: contain;
-                margin-right: 10px;
-            }
-
-            .text {
-                display: flex;
-                flex-direction: column;
-
-                .name {
-                    font-size: 14px;
-                    font-weight: bold;
-
-                    img {
-                        width: 15px;
-                        height: 15px;
-                        margin-left: 5px;
-                        vertical-align: top;
-                    }
-                }
-
-                span {
-                    font-size: 12px;
-                    color: grey;
-                }
-            }
-        }
     }
 }
 

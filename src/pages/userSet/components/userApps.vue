@@ -1,10 +1,16 @@
 <script setup lang='ts' name='userApps'>
-import { RollbackOutlined } from '@ant-design/icons-vue'
 import { computed, ref } from 'vue'
+import { RollbackOutlined } from '@ant-design/icons-vue'
+import { notification } from 'ant-design-vue'
+import Shuttle from './ShuttleBox.vue'
+import operateTrue from '~@/components/base-loading/operateTrue.vue'
+import operateFalse from '~@/components/base-loading/operateFalse.vue'
 
+// 父组件数据和方法
 const { current } = defineProps(['current'])
-const emit = defineEmits(['reset', 'close'])
+const emit = defineEmits(['close'])
 
+// 类型声明
 interface APPList {
   appID: string
   appName: string
@@ -15,94 +21,18 @@ interface APPList {
 }
 interface OIDList {
   ID: string
-  OID: string
-  OIDname: string
-  adType: string
+  oid: string
+  format: number
   creator: string
   createTime: string
-  OIDauth: boolean
+  auth: boolean
 }
 interface FormState {
-  OIDname: string
+  oid: string
   creator: string
 }
 
-const columns = [
-  {
-    title: '应用ID',
-    dataIndex: 'appID',
-    key: 'appID',
-  },
-  {
-    title: '应用名称',
-    dataIndex: 'appName',
-    key: 'appName',
-  },
-  {
-    title: '应用图标',
-    dataIndex: 'appIcon',
-    key: 'appIcon',
-  },
-  {
-    title: '包名',
-    dataIndex: 'package',
-    key: 'package',
-  },
-  {
-    title: '发行端',
-    dataIndex: 'system',
-    key: 'system',
-  },
-  {
-    title: 'APP权限添加时间',
-    dataIndex: 'addTime',
-    key: 'addTime',
-  },
-  {
-    title: '操作',
-    dataIndex: 'operation',
-    key: 'operation',
-  },
-]// 表格列头
-
-const OIDcolumns = [
-  {
-    title: 'ID',
-    dataIndex: 'ID',
-    key: 'ID',
-  },
-  {
-    title: 'OID',
-    dataIndex: 'OID',
-    key: 'OID',
-  },
-  {
-    title: 'OID名称',
-    dataIndex: 'OIDname',
-    key: 'OIDname',
-  },
-  {
-    title: '广告类型',
-    dataIndex: 'adType',
-    key: 'adType',
-  },
-  {
-    title: '创建人',
-    dataIndex: 'creator',
-    key: 'creator',
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'createTime',
-    key: 'createTime',
-  },
-  {
-    title: 'OID权限',
-    dataIndex: 'OIDauth',
-    key: 'OIDauth',
-  },
-]
-
+// 请求响应数据
 const response = ref<APPList[]>([
   {
     appID: '1',
@@ -136,156 +66,234 @@ const response = ref<APPList[]>([
     system: 'iOS',
     addTime: '2025-04-01',
   },
-])// 表格数据
-
+])// APP表格数据
 const OIDresponse = ref<OIDList[]>([
   {
     ID: '1',
-    OID: 'wd_jajsja_aa',
-    OIDname: 'OID1',
-    adType: '广告1',
+    oid: 'wd_jajsja_aa',
+    format: 0,
     creator: '张三',
     createTime: '2025-01-01',
-    OIDauth: true,
+    auth: true,
   },
   {
     ID: '2',
-    OID: 'wd_jajsja_aa',
-    OIDname: 'OID2',
-    adType: '广告2',
+    oid: 'wd_jajsja_aa',
+    format: 3,
     creator: '李四',
     createTime: '2025-02-01',
-    OIDauth: false,
+    auth: false,
   },
   {
     ID: '3',
-    OID: 'wd_jajsja_aa',
-    OIDname: 'OID3',
-    adType: '广告3',
+    oid: 'wd_jajsja_aa',
+    format: 4,
     creator: '王五',
     createTime: '2025-03-01',
-    OIDauth: true,
+    auth: true,
   },
-  {
-    ID: '4',
-    OID: 'wd_jajsja_aa',
-    OIDname: 'OID3',
-    adType: '广告3',
-    creator: '王五',
-    createTime: '2025-03-01',
-    OIDauth: true,
-  },
-  {
-    ID: '5',
-    OID: 'wd_jajsja_aa',
-    OIDname: 'OID3',
-    adType: '广告3',
-    creator: '王五',
-    createTime: '2025-03-01',
-    OIDauth: true,
-  },
-  {
-    ID: '6',
-    OID: 'wd_jajsja_aa',
-    OIDname: 'OID3',
-    adType: '广告3',
-    creator: '王五',
-    createTime: '2025-03-01',
-    OIDauth: true,
-  },
-  {
-    ID: '7',
-    OID: 'wd_jajsja_aa',
-    OIDname: 'OID3',
-    adType: '广告3',
-    creator: '王五',
-    createTime: '2025-03-01',
-    OIDauth: true,
-  },
-  {
-    ID: '8',
-    OID: 'wd_jajsja_aa',
-    OIDname: 'OID3',
-    adType: '广告3',
-    creator: '王五',
-    createTime: '2025-03-01',
-    OIDauth: true,
-  },
-  {
-    ID: '9',
-    OID: 'wd_jajsja_aa',
-    OIDname: 'OID3',
-    adType: '广告3',
-    creator: '王五',
-    createTime: '2025-03-01',
-    OIDauth: true,
-  },
-  {
-    ID: '10',
-    OID: 'wd_jajsja_aa',
-    OIDname: 'OID3',
-    adType: '广告3',
-    creator: '王五',
-    createTime: '2025-03-01',
-    OIDauth: true,
-  },
-  {
-    ID: '11',
-    OID: 'wd_jajsja_aa',
-    OIDname: 'OID3',
-    adType: '广告3',
-    creator: '王五',
-    createTime: '2025-03-01',
-    OIDauth: true,
-  },
-])// 表格数据
+])// OID表格数据
 
+// APP表格相关变量
+const columns: any = [
+  {
+    title: '应用ID',
+    dataIndex: 'appID',
+    key: 'appID',
+  },
+  {
+    title: '应用名称',
+    dataIndex: 'appName',
+    key: 'appName',
+    align: 'center',
+  },
+  {
+    title: '应用图标',
+    dataIndex: 'appIcon',
+    key: 'appIcon',
+    align: 'center',
+  },
+  {
+    title: '包名',
+    dataIndex: 'package',
+    key: 'package',
+    align: 'center',
+  },
+  {
+    title: '发行端',
+    dataIndex: 'system',
+    key: 'system',
+    align: 'center',
+  },
+  {
+    title: 'APP权限添加时间',
+    dataIndex: 'addTime',
+    key: 'addTime',
+    align: 'center',
+  },
+  {
+    title: '操作',
+    dataIndex: 'operation',
+    key: 'operation',
+    align: 'center',
+  },
+]// 应用表格列头
 const pagination = ref({
   current: 1,
   pageSize: 10,
   total: response.value.length,
-})// 表格分页
+})// APP表格分页
+const openAuth = ref(false)// 权限管理弹窗
+const openOID = ref(false)// OID弹窗
 
+// oid表格相关变量
+const OIDcolumns: any = [
+  {
+    title: 'ID',
+    dataIndex: 'ID',
+    key: 'ID',
+  },
+  {
+    title: 'oid',
+    dataIndex: 'oid',
+    key: 'oid',
+  },
+  {
+    title: '广告类型',
+    dataIndex: 'format',
+    key: 'format',
+  },
+  {
+    title: '创建人',
+    dataIndex: 'creator',
+    key: 'creator',
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createTime',
+    key: 'createTime',
+  },
+  {
+    title: 'OID权限',
+    dataIndex: 'OIDauth',
+    key: 'OIDauth',
+  },
+]// oid表格列头
 const OIDpagination = ref({
   current: 1,
   pageSize: 10,
   total: OIDresponse.value.length,
 })// OID表格分页
-
-const formRef = ref()
+const formRef = ref()// oid查询表单
 const formState = reactive<FormState>({
-  OIDname: '',
+  oid: '',
   creator: '',
-})
+})// oid查询表单数据
+const loading = ref(false)// oid表格加载状态
 
-const loading = ref(false)// 表格加载状态
+// 重新分配APP相关变量
+const resetAppOpen = ref(false)
+const resetApp = ref([])
 
-const openAuth = ref(false)// 权限管理弹窗
-const openOID = ref(false)// OID弹窗
+// 事件反馈相关变量
+const operationYes = ref(false) // 操作成功
+const operationNo = ref(false) // 操作失败
 
+// APP表格相关函数
 function handleTableChange(event: any) {
   pagination.value = event
 }// 表格分页改变
-
-function handleOIDTableChange(event: any) {
-  OIDpagination.value = event
-}// 表格分页改变
-
 function handleAuthOk() {
   openAuth.value = false
 }// 权限管理弹窗确认
-
 function handleAuthCancel() {
   openAuth.value = false
 }// 权限管理弹窗取消
-
 function handleOIDOk() {
+  console.log(OIDresponse.value)
   openOID.value = false
-}// 权限管理弹窗确认
-
+}// oid管理弹窗确认
 function handleOIDCancel() {
   openOID.value = false
-}// 权限管理弹窗取消
+}// oid管理弹窗取消
+
+// oid表格相关函数
+function handleOIDTableChange(event: any) {
+  OIDpagination.value = event
+}// 表格分页改变
+function searchOID() {
+  try {
+    loading.value = true
+    setTimeout(() => {
+      console.log(formState)
+      loading.value = false
+    }, 1000)
+  }
+  catch (error: any) {
+    loading.value = false
+    console.error(error)
+    notification.open({
+      message: '获取数据失败',
+      description: error.message,
+    })
+  }
+}// oid查询
+function resetForm() {
+  Object.assign(formState, {
+    oid: '',
+    creator: '',
+  })
+}// 重置oid查询表单
+const formatOptions = [
+  {
+    label: '插屏广告-INTERSTITIAL',
+    value: 0,
+  },
+  {
+    label: '激励视频广告-REWARDED_VIDEO',
+    value: 1,
+  },
+  {
+    label: '开屏广告-APP_OPEN',
+    value: 2,
+  },
+  {
+    label: '激励插屏广告-REWARDED_INTERSTITIAL',
+    value: 3,
+  },
+  {
+    label: '原生广告-NATIVE',
+    value: 4,
+  },
+  {
+    label: '原生插屏广告-NATIVE_INTER',
+    value: 5,
+  },
+  {
+    label: '横幅广告-BANNER',
+    value: 6,
+  },
+  {
+    label: '中等矩形横幅广告-MEDIUM',
+    value: 7,
+  },
+  {
+    label: '内联横幅广告-INLINE_BANNER',
+    value: 8,
+  },
+]// oid格式选项
+
+// 重新分配APP相关函数
+function resetAppOK() {
+  console.log(resetApp.value)
+  operationYes.value = true
+  resetApp.value = []
+  resetAppOpen.value = false
+}// 重新分配APP
+function resetAppCancel() {
+  resetApp.value = []
+  resetAppOpen.value = false
+}// 取消重新分配APP
 
 interface TreeDataItem {
   key: string
@@ -375,17 +383,6 @@ function onChecked(_: any, e: any, checkedKeys: string[], onItemSelect: (n: any,
     })
   }
 }
-
-function searchOID() {
-  console.log(formState)
-}
-
-function resetForm() {
-  Object.assign(formState, {
-    OIDname: '',
-    creator: '',
-  })
-}
 </script>
 
 <template>
@@ -397,13 +394,13 @@ function resetForm() {
       返回
     </a-button>
     <span>{{ current.userName }}的APP权限管理</span>
-    <a-button type="primary" @click="() => emit('reset', current)">
+    <a-button type="primary" @click="() => resetAppOpen = true">
       重新分配APP
     </a-button>
   </div>
 
   <a-table
-    :columns="columns" :data-source="response" :loading="loading" :pagination="pagination" class="table-part"
+    :columns="columns" :data-source="response" :pagination="pagination" class="table-part"
     @change="handleTableChange($event)"
   >
     <template #bodyCell="{ column, record }">
@@ -428,12 +425,19 @@ function resetForm() {
         </div>
       </template>
     </template>
-    <template #footer>
+    <!-- <template #footer>
       显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
       {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
         * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
-    </template>
+    </template> -->
   </a-table>
+
+  <a-modal
+    v-model:open="resetAppOpen" title="重新分配APP" style="top:20vh;width:80vw;" :mask-closable="false" class="OID-modal"
+    ok-text="确认" cancel-text="取消" @ok="resetAppOK" @cancel="resetAppCancel"
+  >
+    <Shuttle :checked="resetApp" />
+  </a-modal>
 
   <a-modal
     v-model:open="openAuth" title="权限管理" style="top:10vh;width:70vw;" :mask-closable="false" @ok="handleAuthOk"
@@ -464,12 +468,12 @@ function resetForm() {
   </a-modal>
 
   <a-modal
-    v-model:open="openOID" title="OID管理" style="top:5vh;width:70vw;" :mask-closable="false" class="OID-modal"
+    v-model:open="openOID" title="OID管理" style="top:5vh;width:90vw;" :mask-closable="false" class="OID-modal"
     @ok="handleOIDOk" @cancel="handleOIDCancel"
   >
     <a-form ref="formRef" name="OIDForm" :model="formState" layout="inline">
-      <a-form-item label="OID名称" name="OIDname">
-        <a-input v-model:value="formState.OIDname" placeholder="请输入OID名称" />
+      <a-form-item label="OID" name="oid">
+        <a-input v-model:value="formState.oid" placeholder="请输入OID" />
       </a-form-item>
       <a-form-item label="创建人" name="creator">
         <a-input v-model:value="formState.creator" placeholder="请输入创建人" />
@@ -489,26 +493,32 @@ function resetForm() {
       style="margin-top:10px" :scroll="{ y: '50vh' }" @change="handleOIDTableChange($event)"
     >
       <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'format'">
+          {{ formatOptions.find((i) => i.value === record.format)?.label }}
+        </template>
         <template v-if="column.dataIndex === 'OIDauth'">
-          <a-switch v-model:checked="record.OIDauth" />
+          <a-switch v-model:checked="record.auth" />
         </template>
       </template>
-      <template #footer>
+      <!-- <template #footer>
         显示&nbsp;{{ OIDpagination.current * OIDpagination.pageSize - OIDpagination.pageSize + 1 }}&nbsp;到&nbsp;
         {{ OIDpagination.current * OIDpagination.pageSize > OIDpagination.total ? OIDpagination.total : OIDpagination.current
           * OIDpagination.pageSize }}&nbsp;条数据，共&nbsp;{{ OIDpagination.total }}&nbsp;条数据
-      </template>
+      </template> -->
     </a-table>
 
     <template #footer>
       <a-button key="back" @click="handleOIDCancel">
         取消
       </a-button>
-      <a-button key="submit" type="primary" :loading="loading" @click="handleOIDOk">
+      <a-button key="submit" type="primary" @click="handleOIDOk">
         确定
       </a-button>
     </template>
   </a-modal>
+
+  <operateTrue v-model="operationYes" />
+  <operateFalse v-model="operationNo" />
 </template>
 
 <style scoped lang='scss'>

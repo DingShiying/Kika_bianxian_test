@@ -4,6 +4,8 @@ import { CaretDownOutlined, CloseCircleOutlined, PlusOutlined } from '@ant-desig
 import { message } from 'ant-design-vue'
 import compareConfig from './components/compareConfig.vue'
 import AddOID from './components/addOID.vue'
+import operateTrue from '~@/components/base-loading/operateTrue.vue'
+import operateFalse from '~@/components/base-loading/operateFalse.vue'
 import { getJsonData } from '~@/api/json/getJson'
 
 interface SearchFormState {
@@ -1711,12 +1713,20 @@ const areaOptions = [
   },
 ]
 
+// 事件反馈相关变量
+const operationYes = ref(false) // 操作成功
+const operationNo = ref(false) // 操作失败
+
 function handleTableChange(event: any) {
   pagination.value = event
 }// 表格分页改变
 
 function searchConfig() {
   console.log(searchFormState)
+  loading.value = true
+  setTimeout(() => {
+    loading.value = false
+  }, 1000)
 }
 
 function resetSearch() {
@@ -1805,6 +1815,15 @@ async function copyToClipborad(config_name: string) {
     message.error(`复制失败: ${err}`)
   }
 }
+
+function deleteJson(record: any) {
+  currentConfig.value = record
+  console.log(currentConfig.value)
+  setTimeout(() => {
+    operationYes.value = true
+  }, 1000)
+  currentConfig.value = null
+}// 删除配置
 // onMounted(() => {
 //   getData(searchParams.value)
 // })
@@ -1959,22 +1978,34 @@ async function copyToClipborad(config_name: string) {
               <a-button type="link" @click="copyToClipborad(record.configName)">
                 复制JSON
               </a-button>
-              <a-button type="link">
-                删除
-              </a-button>
+
+              <a-popconfirm
+                title="你确定要删除此配置?"
+                ok-text="确定"
+                cancel-text="取消"
+                placement="left"
+                @confirm="deleteJson(record)"
+              >
+                <a-button type="link">
+                  删除
+                </a-button>
+              </a-popconfirm>
             </div>
           </template>
         </template>
-        <template #footer>
+        <!-- <template #footer>
           显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
           {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
             * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
-        </template>
+        </template> -->
       </a-table>
     </a-card>
 
     <compareConfig v-if="compareOpen" :config="currentConfig" @close="closeCompare" />
     <AddOID v-if="addOIDOpen" :current="currentJson" :copy="copyConfig" @close="closeAddOID" />
+
+    <operateTrue v-model="operationYes" />
+    <operateFalse v-model="operationNo" />
   </page-container>
 </template>
 

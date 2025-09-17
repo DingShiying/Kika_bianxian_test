@@ -14,13 +14,7 @@ interface UserData {
   userEmail: string
   business: Array<string>
   role: string
-  selectAPPs: Array<{
-    business: string
-    appName: string
-    system: string
-    package: string
-    icon: string
-  }>
+  selectAPPs: Array<string>
 }// 接口响应数据类型
 interface Params {
   userName: string
@@ -71,7 +65,6 @@ const pagination = ref({
 const currentUser = ref<any>()// 当前用户
 const userAppOpen = ref(false)// 分配APP弹窗状态
 const addUserOpen = ref(false)// 新增用户弹窗状态
-// const deleteCard = ref(false)// 删除用户弹窗
 
 // 请求接口获取数据
 async function getData(searchParams: Params) {
@@ -106,6 +99,7 @@ function handleTableChange(event: any) {
 }// 表格分页改变
 function editUser(user: any) {
   currentUser.value = user
+  console.log(user.selectAPPs)
   addUserOpen.value = true
 }// 编辑用户
 function closeAddUser(value: boolean) {

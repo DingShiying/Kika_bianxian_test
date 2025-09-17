@@ -4,15 +4,18 @@ import { RollbackOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import type { TreeDataItem } from 'ant-design-vue/es/tree/Tree'
 
+// 父组件传值
+const { current } = defineProps(['current'])
+const emit = defineEmits(['close'])
+
+// 数据类型声明
 interface FormState {
   roleName: string
   roleScore: string | undefined
   roleAuth: string[]
 } // 表单数据类型
 
-const { current } = defineProps(['current'])
-const emit = defineEmits(['close'])
-
+// 表单相关变量
 const formRef = ref()// 表单引用
 const formState: FormState = reactive(current || {
   roleName: '',
@@ -35,6 +38,21 @@ const rules: any = {
   }],
   roleAuth: [{ required: true, message: '请至少选择一个权限', trigger: 'change', type: 'array' }],
 }// 表单验证规则
+
+// 表单相关函数
+function handleOk() {
+  formRef.value.validate().then(() => {
+    console.log(formState)
+    // message.success('新建用户成功！')
+    emit('close', true)
+  }).catch((err: any) => {
+    message.warning('请按要求填写表单！')
+    console.error(err)
+  })
+}// 表单提交
+function handleCancel() {
+  emit('close', false)
+}// 表单取消
 
 const treeData: TreeDataItem[] = [
   {
@@ -90,19 +108,6 @@ function findChild(treeData: TreeDataItem[]) {
   innerFunc(treeData)
   return result
 }
-function handleOk() {
-  formRef.value.validate().then(() => {
-    console.log(formState)
-    // message.success('新建用户成功！')
-    emit('close', true)
-  }).catch((err: any) => {
-    message.warning('请按要求填写表单！')
-    console.error(err)
-  })
-}// 表单提交
-function handleCancel() {
-  emit('close', false)
-}// 表单取消
 </script>
 
 <template>
@@ -141,7 +146,7 @@ function handleCancel() {
   </div>
   <div class="footer">
     <a-button type="primary" @click="handleOk">
-      确认创建
+      确认
     </a-button>
     <a-button @click="handleCancel">
       取消

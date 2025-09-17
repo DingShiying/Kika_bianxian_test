@@ -3,27 +3,29 @@ import { reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
 
-interface FormState {
-  businessName: string
-}// 表单数据类型
-
+// 父组件传值
 const { current } = defineProps(['current'])
 const emit = defineEmits(['close'])
 
+// 数据类型声明
+interface FormState {
+  business: string
+}// 表单数据类型
+
+// 表单相关变量
 const formRef = ref()// 表单引用
 const formState: FormState = reactive({
-  businessName: current || '',
+  business: current || '',
 })// 表单数据
-
 const rules: any = {
-  businessName: [{ required: true, message: '业务组名称不能为空', trigger: 'blur', type: 'string' }],
+  business: [{ required: true, message: '业务组名称不能为空', trigger: 'blur', type: 'string' }],
 }// 表单验证规则
 
+// 表单相关函数
 function handleOk() {
   formRef.value.validate().then(() => {
     console.log(formState)
-    message.success('新建业务组成功！')
-    emit('close', false)
+    emit('close', true)
   }).catch((err: any) => {
     message.warning('请按要求填写表单！')
     console.error(err)
@@ -31,7 +33,7 @@ function handleOk() {
 }// 表单提交
 function handleCancel() {
   emit('close', false)
-}
+}// 表单取消
 </script>
 
 <template>
@@ -49,9 +51,9 @@ function handleCancel() {
       ref="formRef" :model="formState" :rules="rules"
       class="form-part"
     >
-      <a-form-item label="业务组名称" name="businessName" style="width: 35vw;">
+      <a-form-item label="业务组名称" name="business" style="width: 35vw;">
         <a-input
-          v-model:value="formState.businessName" placeholder="请输入业务组名称"
+          v-model:value="formState.business" placeholder="请输入业务组名称"
           auto-complete="off"
         />
       </a-form-item>
@@ -59,7 +61,7 @@ function handleCancel() {
   </div>
   <div class="footer">
     <a-button type="primary" @click="handleOk">
-      确认创建
+      确认
     </a-button>
     <a-button @click="handleCancel">
       取消
