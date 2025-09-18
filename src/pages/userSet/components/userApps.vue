@@ -11,8 +11,8 @@ const { current } = defineProps(['current'])
 const emit = defineEmits(['close'])
 
 // 类型声明
-interface APPList {
-  appID: string
+interface APPData {
+  id: string
   appName: string
   appIcon: string
   package: string
@@ -33,9 +33,9 @@ interface FormState {
 }
 
 // 请求响应数据
-const response = ref<APPList[]>([
+const response = ref<APPData[]>([
   {
-    appID: '1',
+    id: '1',
     appName: '应用1',
     appIcon: '/src/assets/images/icon1.png',
     package: 'com.package.jdjdj',
@@ -43,7 +43,7 @@ const response = ref<APPList[]>([
     addTime: '2025-01-01',
   },
   {
-    appID: '2',
+    id: '2',
     appName: '应用2',
     appIcon: '/src/assets/images/icon3.png',
     package: 'com.package.kkididmdm',
@@ -51,7 +51,7 @@ const response = ref<APPList[]>([
     addTime: '2025-02-01',
   },
   {
-    appID: '3',
+    id: '3',
     appName: '应用3',
     appIcon: '/src/assets/images/icon3.png',
     package: 'com.package.ffsdsds',
@@ -59,7 +59,7 @@ const response = ref<APPList[]>([
     addTime: '2025-03-01',
   },
   {
-    appID: '4',
+    id: '4',
     appName: '应用4',
     appIcon: '/src/assets/images/icon4.png',
     package: 'com.package.bajbjhabj,sn',

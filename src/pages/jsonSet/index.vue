@@ -1523,16 +1523,18 @@ const response = ref<ConfigListData>({
 })// 请求接口数据
 
 const columns: any = [
-  {
-    title: 'ID',
-    dataIndex: 'configID',
-    key: 'configID',
-  },
+  // {
+  //   title: 'ID',
+  //   dataIndex: 'configID',
+  //   key: 'configID',
+  //   fixed: 'left',
+  // },
   {
     title: '配置名称',
     dataIndex: 'configName',
     key: 'configName',
     align: 'center',
+    fixed: 'left',
   },
   {
     title: '描述',
@@ -1569,12 +1571,14 @@ const columns: any = [
     dataIndex: 'operation',
     key: 'operation',
     align: 'center',
+    fixed: 'right',
   },
 ]// 表格列头
 
 const loading = ref(false) // 表格加载状态
 const currentJson = ref()// 当前json
 const copyConfig = ref()// 复制配置新建
+const highSearchTable = ref(false)
 
 const pagination = ref({
   current: 1,
@@ -1727,6 +1731,9 @@ function searchConfig() {
   setTimeout(() => {
     loading.value = false
   }, 1000)
+  if (highSearchOpen.value) {
+    highSearchTable.value = true
+  }
 }
 
 function resetSearch() {
@@ -1789,6 +1796,9 @@ function delCondition(index: number) {
 function controlHighSearch() {
   highSearchOpen.value = !highSearchOpen.value
   resetSearch()
+  if (!highSearchOpen.value) {
+    highSearchTable.value = false
+  }
 }
 function editJson(configName: string) {
   currentJson.value = configName
@@ -1827,6 +1837,66 @@ function deleteJson(record: any) {
 // onMounted(() => {
 //   getData(searchParams.value)
 // })
+
+const formatOptions = [
+  {
+    label: 'INTERSTITIAL',
+    // label: '插屏广告',
+    value: 0,
+  },
+  {
+    label: 'REWARDED_VIDEO',
+    // label: '激励视频广告',
+    value: 1,
+  },
+  {
+    label: 'APP_OPEN',
+    // label: '开屏广告',
+    value: 2,
+  },
+  {
+    label: 'REWARDED_INTERSTITIAL',
+    // label: '激励插屏广告',
+    value: 3,
+  },
+  {
+    label: 'NATIVE',
+    // label: '原生广告',
+    value: 4,
+  },
+  {
+    label: 'NATIVE_INTER',
+    // label: '原生插屏广告',
+    value: 5,
+  },
+  {
+    label: 'BANNER',
+    // label: '横幅广告',
+    value: 6,
+  },
+  {
+    label: 'MEDIUM',
+    // label: '中等矩形横幅广告',
+    value: 7,
+  },
+  {
+    label: 'INLINE_BANNER',
+    // label: '内联横幅广告',
+    value: 8,
+  },
+  {
+    label: 'APP_OPEN && INTERSTITIAL', // 开屏广告 && 插屏广告
+    value: 9,
+  },
+  {
+    label: 'NATIVE && BANNER', // 原生广告 && 横幅广告
+    value: 10,
+  },
+  {
+    label: 'FOLDBANNER && BANNER', // 可折叠横幅广告 && 横幅广告
+    value: 11,
+  },
+]
 </script>
 
 <template>
@@ -1903,16 +1973,16 @@ function deleteJson(record: any) {
                   </a-select>
                   <a-select
                     v-show="item.type === 'BuildID'" v-model:value="item.value"
-                    style="width:45%;text-align: center;" :options="versionOptions" :bordered="false" placeholder="请选择版本号"
-                    show-search
+                    style="width:45%;text-align: center;" :options="versionOptions" :bordered="false"
+                    placeholder="请选择版本号" show-search
                   >
                     <template #suffixIcon>
                       <CaretDownOutlined />
                     </template>
                   </a-select>
                   <a-select
-                    v-show="item.type === 'APP'" v-model:value="item.value" style="width:90%;text-align: center;"
-                    :bordered="false" placeholder="请选择应用" show-search
+                    v-show="item.type === 'APP'" v-model:value="item.value"
+                    style="width:90%;text-align: center;" :bordered="false" placeholder="请选择应用" show-search
                   >
                     <template #suffixIcon>
                       <CaretDownOutlined />
@@ -1925,8 +1995,9 @@ function deleteJson(record: any) {
                     </a-select-option>
                   </a-select>
                   <a-select
-                    v-show="item.type === 'area'" v-model:value="item.value" style="width:45%;text-align: center;"
-                    :options="areaOptions" :bordered="false" placeholder="请选择国家/地区" show-search mode="multiple"
+                    v-show="item.type === 'area'" v-model:value="item.value"
+                    style="width:45%;text-align: center;" :options="areaOptions" :bordered="false"
+                    placeholder="请选择国家/地区" show-search mode="multiple"
                   >
                     <template #suffixIcon>
                       <CaretDownOutlined />
@@ -1958,7 +2029,7 @@ function deleteJson(record: any) {
 
       <a-table
         :columns="columns" :data-source="response.data" :loading="loading" :pagination="pagination"
-        class="table-part" @change="handleTableChange($event)"
+        class="table-part" :scroll="{ y: '40vh' }" @change="handleTableChange($event)"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'version'">
@@ -1980,10 +2051,7 @@ function deleteJson(record: any) {
               </a-button>
 
               <a-popconfirm
-                title="你确定要删除此配置?"
-                ok-text="确定"
-                cancel-text="取消"
-                placement="left"
+                title="你确定要删除此配置?" ok-text="确定" cancel-text="取消" placement="left"
                 @confirm="deleteJson(record)"
               >
                 <a-button type="link">
@@ -1993,11 +2061,66 @@ function deleteJson(record: any) {
             </div>
           </template>
         </template>
-        <!-- <template #footer>
+        <template v-if="highSearchTable" #expandedRowRender="{ record }">
+          <div class="OID-part">
+            <div v-for="item in record.json.ad_positions" :key="item.oid" class="OID">
+              <a-tooltip trigger="click" placement="topLeft">
+                <template #title>
+                  {{ item.oid }}
+                </template>
+                <div class="name">
+                  {{ item.oid }}
+                </div>
+              </a-tooltip>
+              <div class="format">
+                <span>广告类型:&nbsp;&nbsp;</span>
+                <a-tag color="blue" style="font-size: 14px;">
+                  {{ formatOptions.find((i) => i.value === item.format)?.label.toLowerCase() }}
+                </a-tag>
+              </div>
+              <div class="nocopy">
+                <div class="ads">
+                  <div>广告源ads</div>
+                  <a-tooltip trigger="click">
+                    <template #title>
+                      {{ item.ad_id }}
+                    </template>
+                    <div class="style">
+                      {{ item.ad_id }}
+                    </div>
+                  </a-tooltip>
+                </div>
+                <div v-if="item.style_id" class="adstyle">
+                  <div>广告样式</div>
+                  <a-tooltip trigger="click">
+                    <template #title>
+                      {{ item.style_id }}
+                    </template>
+                    <div class="style">
+                      {{ item.style_id }}
+                    </div>
+                  </a-tooltip>
+                </div>
+                <div class="adplan">
+                  <div>广告计划</div>
+                  <a-tooltip trigger="click">
+                    <template #title>
+                      {{ item.plan_id }}
+                    </template>
+                    <div class="style">
+                      {{ item.plan_id }}
+                    </div>
+                  </a-tooltip>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+        <template #footer>
           显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
           {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
             * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
-        </template> -->
+        </template>
       </a-table>
     </a-card>
 
@@ -2016,8 +2139,8 @@ function deleteJson(record: any) {
   display: flex;
   justify-content: space-between;
 
-  form{
-    width:calc(100% - 210px);
+  form {
+    width: calc(100% - 210px);
   }
 
   :deep(.ant-form-item-row) {
@@ -2156,6 +2279,9 @@ function deleteJson(record: any) {
   }
 
   .option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     .ant-btn {
       color: #4e46e5;
 
@@ -2347,6 +2473,102 @@ function deleteJson(record: any) {
           font-size: 12px;
           color: grey;
         }
+      }
+    }
+  }
+}
+
+.OID-part {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 280px);
+  justify-content: space-around;
+  width: 100%;
+  gap: 10px;
+
+  .OID {
+    width: 280px;
+    height: fit-content;
+    background-color: #f5f7fa;
+    border-radius: 15px;
+    padding: 10px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+
+    .name {
+      font-size: 18px;
+      font-weight: bolder;
+      color: #409eff;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .copy-other {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+
+      span {
+        font-size: 14px;
+      }
+    }
+
+    .nocopy {
+      width: 100%;
+
+      .ads,
+      .adstyle,
+      .adplan {
+        width: 100%;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+
+        div {
+          width: 100px;
+        }
+
+        .style {
+          width: 160px;
+          padding: 5px 10px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          border: 1px solid #d9d9d9;
+          border-radius: 4px;
+          text-align: center;
+          background-color: #fff;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .withcopy {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+
+      // align-items: center;
+      .copy-header {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #f5f7fa;
+
+        .ant-tag {
+          color: black;
+          margin: 0;
+        }
+      }
+
+      .ant-tag {
+        font-size: 14px;
+        margin-top: 10px;
       }
     }
   }

@@ -4,6 +4,8 @@ export interface UserInfo {
   nickname: string
   avatar: string
   roles?: (string | number)[]
+  userEmail: string
+  currentApp?: string
 }
 
 export function getUserInfoApi() {

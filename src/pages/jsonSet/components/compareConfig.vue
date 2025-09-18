@@ -1553,6 +1553,10 @@ const formatOptions = [
     value: 11,
   },
 ]
+const noToCompare = ref(true)
+const compareResult = computed(() => {
+  return compareThem()
+})
 
 const noCompare = computed(() => {
   if (compareConfig.value) {
@@ -1564,63 +1568,98 @@ const noCompare = computed(() => {
 })
 
 const currentJson: any = computed(() => {
-  const current = JSON.parse(JSON.stringify(jsonList.find(item => item.configID === currentConfig.value)))
-  const adshare = []
-  const adStrong = []
-  const adChain = []
+  const current = jsonList.find(item => item.configID === currentConfig.value)
+  const target = {
+    configName: current?.configName,
+    condition: current?.condition,
+    version: current?.json.version,
+  }
+  let json: any = new Set()
   for (const key in current?.json.ad_shares) {
-    adshare.push({
+    json.add({
       oid: key,
+      share: true,
+      // @ts-expect-error:...
       target: current.json.ad_shares[key],
     })
   }
   for (const key in current?.json.ad_strong_shares) {
-    adStrong.push({
+    json.add({
       oid: key,
+      share: true,
+      // @ts-expect-error:...
       target: current.json.ad_strong_shares[key],
     })
   }
   for (const key in current?.json.ad_chains_v2) {
-    adChain.push({
+    json.add({
       oid: key,
+      share: true,
+      // @ts-expect-error:...
       target: current.json.ad_chains_v2[key],
     })
   }
 
-  current.json.ad_shares = adshare
-  current.json.ad_strong_shares = adStrong
-  current.json.ad_chains_v2 = adChain
-  return current
+  current?.json.ad_positions.forEach((item: any) => {
+    json.add({
+      ...item,
+      share: false,
+    })
+  })
+  json = [...json]
+  json.sort((a: any, b: any) => a.oid - b.oid)
+  // @ts-expect-error:...
+  target.json = json
+  console.log(target)
+  return target
 })
 const compareJson: any = computed(() => {
   if (compareConfig.value) {
-    const current = JSON.parse(JSON.stringify(jsonList.find(item => item.configID === compareConfig.value)))
-    const adshare = []
-    const adStrong = []
-    const adChain = []
+    const current = jsonList.find(item => item.configID === compareConfig.value)
+    const target = {
+      configName: current?.configName,
+      condition: current?.condition,
+      version: current?.json.version,
+    }
+    let json: any = new Set()
     for (const key in current?.json.ad_shares) {
-      adshare.push({
+      json.add({
         oid: key,
+        share: true,
+        // @ts-expect-error:...
         target: current.json.ad_shares[key],
       })
     }
     for (const key in current?.json.ad_strong_shares) {
-      adStrong.push({
+      json.add({
         oid: key,
+        share: true,
+
+        // @ts-expect-error:...
         target: current.json.ad_strong_shares[key],
       })
     }
     for (const key in current?.json.ad_chains_v2) {
-      adChain.push({
+      json.add({
         oid: key,
+        share: true,
+        // @ts-expect-error:...
         target: current.json.ad_chains_v2[key],
       })
     }
+    current?.json.ad_positions.forEach((item: any) => {
+      json.add({
+        ...item,
+        share: false,
+      })
+    })
+    json = [...json]
+    json.sort((a: any, b: any) => a.oid - b.oid)
+    // @ts-expect-error:...
+    target.json = json
+    console.log(target)
 
-    current.json.ad_shares = adshare
-    current.json.ad_strong_shares = adStrong
-    current.json.ad_chains_v2 = adChain
-    return current
+    return target
   }
   else {
     return {}
@@ -1633,41 +1672,102 @@ function currentChange() {
   currentLoading.value = true
 }
 function changeEnd() {
+  noToCompare.value = true
   setTimeout(() => {
     compareLoading.value = false
   }, 500)
 }
 function changeEnd1() {
+  noToCompare.value = true
   setTimeout(() => {
     currentLoading.value = false
   }, 500)
 }
 
 function compareThem() {
-  const compare_left = []
-  const compare_right = []
-  for (const key of ['ad_shares', 'ad_strong_shares', 'ad_chains_v2', 'ad_positions']) {
-    if (key !== 'ad_positions') {
-      compareJson.value[key].forEach((item: any) => {
-        compare_left.push({
-          oid: item.oid,
-          share: true,
-          target: item.target,
-        })
+  const compare_left: any = new Map()
+  const compare_right: any = new Map()
+  let result: any = new Set()
+  compareJson.value.json.forEach((item: any) => {
+    compare_left.set(item.oid, item)
+  })
+  currentJson.value.json.forEach((item: any) => {
+    compare_right.set(item.oid, item)
+  })
+  // for (const key of ['ad_shares', 'ad_strong_shares', 'ad_chains_v2', 'ad_positions']) {
+  //   if (key !== 'ad_positions') {
+  //     console.log(compareJson.value.json[key])
+
+  //     currentJson.value.json[key].forEach((item: any) => {
+  //       compare_right.set(item.oid, {
+  //         oid: item.oid,
+  //         share: true,
+  //         target: item.target,
+  //       })
+  //     })
+  //   }
+  //   else {
+  //     compareJson.value.json[key].forEach((item: any) => {
+  //       compare_left.set(item.oid, {
+  //         ...item,
+  //         share: false,
+  //       })
+  //     })
+  //     currentJson.value.json[key].forEach((item: any) => {
+  //       compare_right.set(item.oid, {
+  //         ...item,
+  //         share: false,
+  //       })
+  //     })
+  //   }
+  // }
+  for (const key of compare_left.keys()) {
+    // 删除的
+    if (!compare_right.has(key)) {
+      result.add({
+        ...compare_left.get(key),
+        color: '#fab3ad',
       })
     }
     else {
-      compareJson.value[key].forEach((item: any) => {
-        compare_left.push({
-          oid: item.oid,
-          share: false,
-          plan_id: item.plan_id,
-          ad_id: item.ad_id,
-          style_id: item.style_id,
+      const json1 = JSON.stringify(compare_left.get(key))
+      const json2 = JSON.stringify(compare_right.get(key))
+      // 差异的
+      if (json1 !== json2) {
+        result.add({
+          ...compare_right.get(key),
+          color: '#84bafd',
         })
+      }
+      // 相同的
+      else {
+        result.add({
+          ...compare_right.get(key),
+          color: '#f3f4f6',
+        })
+      }
+    }
+  }
+  for (const key of compare_right.keys()) {
+    // 增加的
+    if (!compare_left.has(key)) {
+      result.add({
+        ...compare_right.get(key),
+        color: '#a4e8cf',
       })
     }
   }
+  result = [...result]
+  result.sort((a: any, b: any) => a.oid - b.oid)
+  return result
+}
+
+function toCompareThem() {
+  currentLoading.value = true
+  setTimeout(() => {
+    currentLoading.value = false
+  }, 500)
+  noToCompare.value = false
 }
 </script>
 
@@ -1699,6 +1799,9 @@ function compareThem() {
               </a-select-option>
             </a-select>
           </div>
+          <a-button type="primary" @click="toCompareThem">
+            比较
+          </a-button>
         </div>
         <template v-if="!noCompare">
           <a-spin :spinning="compareLoading" size="large">
@@ -1715,11 +1818,90 @@ function compareThem() {
                   </ul>
                 </div>
                 <div class="version">
-                  <span>版本:&nbsp;&nbsp;{{ compareJson?.json.version }}</span>
+                  <span>版本:&nbsp;&nbsp;{{ compareJson?.version }}</span>
                 </div>
               </div>
               <div class="OID-part">
-                <div v-for="item in compareJson?.json.ad_positions" :key="item.oid" class="OID">
+                <div v-for="item in compareJson.json" :key="item.oid" class="OID">
+                  <a-tooltip trigger="click" placement="topLeft">
+                    <template #title>
+                      {{ item.oid }}
+                    </template>
+                    <div class="name">
+                      {{ item.oid }}
+                    </div>
+                  </a-tooltip>
+                  <div class="format">
+                    <span>广告类型:&nbsp;&nbsp;</span>
+                    <a-tag style="font-size: 14px;">
+                      {{ formatOptions.find((i) => i.value === item.format)?.label.toLowerCase() }}
+                    </a-tag>
+                  </div>
+                  <div v-if="!item.share" class="nocopy">
+                    <div class="ads">
+                      <div>广告源ads</div>
+                      <a-tooltip trigger="click">
+                        <template #title>
+                          {{ item.ad_id }}
+                        </template>
+                        <div class="style">
+                          {{ item.ad_id }}
+                        </div>
+                      </a-tooltip>
+                    </div>
+                    <div v-if="item.style_id" class="adstyle">
+                      <div>广告样式</div>
+                      <a-tooltip trigger="click">
+                        <template #title>
+                          {{ item.style_id }}
+                        </template>
+                        <div class="style">
+                          {{ item.style_id }}
+                        </div>
+                      </a-tooltip>
+                    </div>
+                    <div class="adplan">
+                      <div>广告计划</div>
+                      <a-tooltip trigger="click">
+                        <template #title>
+                          {{ item.plan_id }}
+                        </template>
+                        <div class="style">
+                          {{ item.plan_id }}
+                        </div>
+                      </a-tooltip>
+                    </div>
+                  </div>
+                  <div v-else class="withcopy">
+                    <template v-if="typeof item.target === 'object'">
+                      <div class="copy-header">
+                        <a-tag color="#daeafe">
+                          ad_chains_v2
+                        </a-tag>
+                        <span>选择&nbsp;{{ item.target?.length }}&nbsp;个目标OID</span>
+                      </div>
+                      <div class="copyOID">
+                        <a-tag v-for="tag in item.target" :key="tag" color="success">
+                          {{ tag }}
+                        </a-tag>
+                      </div>
+                    </template>
+                    <template v-else>
+                      <div class="copy-header">
+                        <a-tag color="#daeafe">
+                          ad_chains_v2
+                        </a-tag>
+                        <span>选择&nbsp;1&nbsp;个目标OID</span>
+                      </div>
+                      <div class="copyOID">
+                        <a-tag color="success">
+                          {{ item.target }}
+                        </a-tag>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+                <!-- <div v-for="item in compareJson?.json.ad_positions" :key="item.oid" class="OID">
                   <a-tooltip trigger="click" placement="topLeft">
                     <template #title>
                       {{ item.oid }}
@@ -1838,7 +2020,7 @@ function compareThem() {
                       </a-tag>
                     </div>
                   </div>
-                </div>
+                </div> -->
               </div>
             </div>
           </a-spin>
@@ -1855,8 +2037,8 @@ function compareThem() {
               当前配置
             </div>
             <a-select
-              v-model:value="currentConfig" show-search placeholder="请选择当前配置"
-              style="width: 200px" @dropdown-visible-change="currentChange" @change="changeEnd1"
+              v-model:value="currentConfig" show-search placeholder="请选择当前配置" style="width: 200px"
+              @dropdown-visible-change="currentChange" @change="changeEnd1"
             >
               <a-select-option v-for="item in jsonList" :key="item.configID" :value="item.configID">
                 {{ item.configName }}
@@ -1888,133 +2070,292 @@ function compareThem() {
                 </ul>
               </div>
               <div class="version">
-                <span>版本:&nbsp;&nbsp;{{ currentJson?.json.version }}</span>
+                <span>版本:&nbsp;&nbsp;{{ currentJson?.version }}</span>
               </div>
             </div>
             <div class="OID-part">
-              <div v-for="item in currentJson?.json.ad_positions" :key="item.oid" class="OID">
-                <a-tooltip trigger="click" placement="topLeft">
-                  <template #title>
-                    {{ item.oid }}
-                  </template>
-                  <div class="name">
-                    {{ item.oid }}
+              <template v-if="noToCompare">
+                <div v-for="item in currentJson.json" :key="item.oid" class="OID">
+                  <a-tooltip trigger="click" placement="topLeft">
+                    <template #title>
+                      {{ item.oid }}
+                    </template>
+                    <div class="name">
+                      {{ item.oid }}
+                    </div>
+                  </a-tooltip>
+                  <div class="format">
+                    <span>广告类型:&nbsp;&nbsp;</span>
+                    <a-tag color="blue" style="font-size: 14px;">
+                      {{ formatOptions.find((i) => i.value === item.format)?.label.toLowerCase() }}
+                    </a-tag>
                   </div>
-                </a-tooltip>
-                <div class="format">
-                  <span>广告类型:&nbsp;&nbsp;</span>
-                  <a-tag color="blue" style="font-size: 14px;">
-                    {{ formatOptions.find((i) => i.value === item.format)?.label.toLowerCase() }}
-                  </a-tag>
-                </div>
-                <!-- <div class="copy-other">
-                <span>未共享其他OID配置</span>
-              </div> -->
-                <div class="nocopy">
-                  <div class="ads">
-                    <div>广告源ads</div>
-                    <a-tooltip trigger="click">
-                      <template #title>
-                        {{ item.ad_id }}
-                      </template>
-                      <div class="style">
-                        {{ item.ad_id }}
+                  <div v-if="!item.share" class="nocopy">
+                    <div class="ads">
+                      <div>广告源ads</div>
+                      <a-tooltip trigger="click">
+                        <template #title>
+                          {{ item.ad_id }}
+                        </template>
+                        <div class="style">
+                          {{ item.ad_id }}
+                        </div>
+                      </a-tooltip>
+                    </div>
+                    <div v-if="item.style_id" class="adstyle">
+                      <div>广告样式</div>
+                      <a-tooltip trigger="click">
+                        <template #title>
+                          {{ item.style_id }}
+                        </template>
+                        <div class="style">
+                          {{ item.style_id }}
+                        </div>
+                      </a-tooltip>
+                    </div>
+                    <div class="adplan">
+                      <div>广告计划</div>
+                      <a-tooltip trigger="click">
+                        <template #title>
+                          {{ item.plan_id }}
+                        </template>
+                        <div class="style">
+                          {{ item.plan_id }}
+                        </div>
+                      </a-tooltip>
+                    </div>
+                  </div>
+                  <div v-else class="withcopy">
+                    <template v-if="typeof item.target === 'object'">
+                      <div class="copy-header">
+                        <a-tag color="#daeafe">
+                          ad_chains_v2
+                        </a-tag>
+                        <span>选择&nbsp;{{ item.target?.length }}&nbsp;个目标OID</span>
                       </div>
-                    </a-tooltip>
-                  </div>
-                  <div v-if="item.style_id" class="adstyle">
-                    <div>广告样式</div>
-                    <a-tooltip trigger="click">
-                      <template #title>
-                        {{ item.style_id }}
-                      </template>
-                      <div class="style">
-                        {{ item.style_id }}
+                      <div class="copyOID">
+                        <a-tag v-for="tag in item.target" :key="tag" color="success">
+                          {{ tag }}
+                        </a-tag>
                       </div>
-                    </a-tooltip>
-                  </div>
-                  <div class="adplan">
-                    <div>广告计划</div>
-                    <a-tooltip trigger="click">
-                      <template #title>
-                        {{ item.plan_id }}
-                      </template>
-                      <div class="style">
-                        {{ item.plan_id }}
+                    </template>
+                    <template v-else>
+                      <div class="copy-header">
+                        <a-tag color="#daeafe">
+                          ad_chains_v2
+                        </a-tag>
+                        <span>选择&nbsp;1&nbsp;个目标OID</span>
                       </div>
-                    </a-tooltip>
+                      <div class="copyOID">
+                        <a-tag color="success">
+                          {{ item.target }}
+                        </a-tag>
+                      </div>
+                    </template>
                   </div>
                 </div>
-              </div>
-              <div v-for="item in currentJson?.json.ad_shares" :key="item.oid" class="OID">
-                <a-tooltip trigger="click" placement="topLeft">
-                  <template #title>
-                    {{ item.oid }}
-                  </template>
-                  <div class="name">
-                    {{ item.oid }}
-                  </div>
-                </a-tooltip>
-                <div class="withcopy">
-                  <div class="copy-header">
-                    <a-tag color="#daeafe">
-                      ad_share
+                <!-- <div v-for="item in currentJson?.json.ad_positions" :key="item.oid" class="OID">
+                  <a-tooltip trigger="click" placement="topLeft">
+                    <template #title>
+                      {{ item.oid }}
+                    </template>
+                    <div class="name">
+                      {{ item.oid }}
+                    </div>
+                  </a-tooltip>
+                  <div class="format">
+                    <span>广告类型:&nbsp;&nbsp;</span>
+                    <a-tag color="blue" style="font-size: 14px;">
+                      {{ formatOptions.find((i) => i.value === item.format)?.label.toLowerCase() }}
                     </a-tag>
-                    <span>选择&nbsp;1&nbsp;个目标OID</span>
                   </div>
-                  <div class="copyOID">
-                    <a-tag color="success">
-                      {{ item.target }}
-                    </a-tag>
+                  <div class="nocopy">
+                    <div class="ads">
+                      <div>广告源ads</div>
+                      <a-tooltip trigger="click">
+                        <template #title>
+                          {{ item.ad_id }}
+                        </template>
+                        <div class="style">
+                          {{ item.ad_id }}
+                        </div>
+                      </a-tooltip>
+                    </div>
+                    <div v-if="item.style_id" class="adstyle">
+                      <div>广告样式</div>
+                      <a-tooltip trigger="click">
+                        <template #title>
+                          {{ item.style_id }}
+                        </template>
+                        <div class="style">
+                          {{ item.style_id }}
+                        </div>
+                      </a-tooltip>
+                    </div>
+                    <div class="adplan">
+                      <div>广告计划</div>
+                      <a-tooltip trigger="click">
+                        <template #title>
+                          {{ item.plan_id }}
+                        </template>
+                        <div class="style">
+                          {{ item.plan_id }}
+                        </div>
+                      </a-tooltip>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div v-for="item in currentJson?.json.ad_strong_shares" :key="item.oid" class="OID">
-                <a-tooltip trigger="click" placement="topLeft">
-                  <template #title>
-                    {{ item.oid }}
-                  </template>
-                  <div class="name">
-                    {{ item.oid }}
-                  </div>
-                </a-tooltip>
-                <div class="withcopy">
-                  <div class="copy-header">
-                    <a-tag color="#daeafe">
-                      ad_strong_shares
-                    </a-tag>
-                    <span>选择&nbsp;{{ item.target?.length }}&nbsp;个目标OID</span>
-                  </div>
-                  <div class="copyOID">
-                    <a-tag v-for="tag in item.target" :key="tag" color="success">
-                      {{ tag }}
-                    </a-tag>
-                  </div>
-                </div>
-              </div>
-              <div v-for="item in currentJson?.json.ad_chains_v2" :key="item.oid" class="OID">
-                <a-tooltip trigger="click" placement="topLeft">
-                  <template #title>
-                    {{ item.oid }}
-                  </template>
-                  <div class="name">
-                    {{ item.oid }}
-                  </div>
-                </a-tooltip>
-                <div class="withcopy">
-                  <div class="copy-header">
-                    <a-tag color="#daeafe">
-                      ad_chains_v2
-                    </a-tag>
-                    <span>选择&nbsp;{{ item.target?.length }}&nbsp;个目标OID</span>
-                  </div>
-                  <div class="copyOID">
-                    <a-tag v-for="tag in item.target" :key="tag" color="success">
-                      {{ tag }}
-                    </a-tag>
+                <div v-for="item in currentJson?.json.ad_shares" :key="item.oid" class="OID">
+                  <a-tooltip trigger="click" placement="topLeft">
+                    <template #title>
+                      {{ item.oid }}
+                    </template>
+                    <div class="name">
+                      {{ item.oid }}
+                    </div>
+                  </a-tooltip>
+                  <div class="withcopy">
+                    <div class="copy-header">
+                      <a-tag color="#daeafe">
+                        ad_share
+                      </a-tag>
+                      <span>选择&nbsp;1&nbsp;个目标OID</span>
+                    </div>
+                    <div class="copyOID">
+                      <a-tag color="success">
+                        {{ item.target }}
+                      </a-tag>
+                    </div>
                   </div>
                 </div>
-              </div>
+                <div v-for="item in currentJson?.json.ad_strong_shares" :key="item.oid" class="OID">
+                  <a-tooltip trigger="click" placement="topLeft">
+                    <template #title>
+                      {{ item.oid }}
+                    </template>
+                    <div class="name">
+                      {{ item.oid }}
+                    </div>
+                  </a-tooltip>
+                  <div class="withcopy">
+                    <div class="copy-header">
+                      <a-tag color="#daeafe">
+                        ad_strong_shares
+                      </a-tag>
+                      <span>选择&nbsp;{{ item.target?.length }}&nbsp;个目标OID</span>
+                    </div>
+                    <div class="copyOID">
+                      <a-tag v-for="tag in item.target" :key="tag" color="success">
+                        {{ tag }}
+                      </a-tag>
+                    </div>
+                  </div>
+                </div>
+                <div v-for="item in currentJson?.json.ad_chains_v2" :key="item.oid" class="OID">
+                  <a-tooltip trigger="click" placement="topLeft">
+                    <template #title>
+                      {{ item.oid }}
+                    </template>
+                    <div class="name">
+                      {{ item.oid }}
+                    </div>
+                  </a-tooltip>
+                  <div class="withcopy">
+                    <div class="copy-header">
+                      <a-tag color="#daeafe">
+                        ad_chains_v2
+                      </a-tag>
+                      <span>选择&nbsp;{{ item.target?.length }}&nbsp;个目标OID</span>
+                    </div>
+                    <div class="copyOID">
+                      <a-tag v-for="tag in item.target" :key="tag" color="success">
+                        {{ tag }}
+                      </a-tag>
+                    </div>
+                  </div>
+                </div> -->
+              </template>
+              <template v-else>
+                <div v-for="item in compareResult" :key="item.oid" class="OID" :style="{ boxShadow: `0 0 10px 5px ${item.color}` }">
+                  <a-tooltip trigger="click" placement="topLeft">
+                    <template #title>
+                      {{ item.oid }}
+                    </template>
+                    <div class="name">
+                      {{ item.oid }}
+                    </div>
+                  </a-tooltip>
+                  <div class="format">
+                    <span>广告类型:&nbsp;&nbsp;</span>
+                    <a-tag color="blue" style="font-size: 14px;">
+                      {{ formatOptions.find((i) => i.value === item.format)?.label.toLowerCase() }}
+                    </a-tag>
+                  </div>
+                  <div v-if="!item.share" class="nocopy">
+                    <div class="ads">
+                      <div>广告源ads</div>
+                      <a-tooltip trigger="click">
+                        <template #title>
+                          {{ item.ad_id }}
+                        </template>
+                        <div class="style">
+                          {{ item.ad_id }}
+                        </div>
+                      </a-tooltip>
+                    </div>
+                    <div v-if="item.style_id" class="adstyle">
+                      <div>广告样式</div>
+                      <a-tooltip trigger="click">
+                        <template #title>
+                          {{ item.style_id }}
+                        </template>
+                        <div class="style">
+                          {{ item.style_id }}
+                        </div>
+                      </a-tooltip>
+                    </div>
+                    <div class="adplan">
+                      <div>广告计划</div>
+                      <a-tooltip trigger="click">
+                        <template #title>
+                          {{ item.plan_id }}
+                        </template>
+                        <div class="style">
+                          {{ item.plan_id }}
+                        </div>
+                      </a-tooltip>
+                    </div>
+                  </div>
+                  <div v-else class="withcopy">
+                    <template v-if="typeof item.target === 'object'">
+                      <div class="copy-header">
+                        <a-tag color="#daeafe">
+                          ad_chains_v2
+                        </a-tag>
+                        <span>选择&nbsp;{{ item.target?.length }}&nbsp;个目标OID</span>
+                      </div>
+                      <div class="copyOID">
+                        <a-tag v-for="tag in item.target" :key="tag" color="success">
+                          {{ tag }}
+                        </a-tag>
+                      </div>
+                    </template>
+                    <template v-else>
+                      <div class="copy-header">
+                        <a-tag color="#daeafe">
+                          ad_chains_v2
+                        </a-tag>
+                        <span>选择&nbsp;1&nbsp;个目标OID</span>
+                      </div>
+                      <div class="copyOID">
+                        <a-tag color="success">
+                          {{ item.target }}
+                        </a-tag>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+              </template>
             </div>
           </div>
         </a-spin>
@@ -2032,6 +2373,7 @@ function compareThem() {
   left: 0;
   background-color: white;
   z-index: 1000;
+  overflow-y: auto;
 
   .header {
     width: 100%;

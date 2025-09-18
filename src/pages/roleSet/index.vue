@@ -1,47 +1,28 @@
 <script setup lang="ts" name="roleSet">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
-import { notification } from 'ant-design-vue'
 import addRole from './components/addRole.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
+import { getRoleListData } from '~@/api/role/rolelist'
 
 // 数据类型声明
 interface RoleData {
+  id: string
   roleName: string
-  roleScore: string
+  roleScore: number
   creator: string
   createTime: string
   roleAuth: Array<string>
 }// 请求接口数据类型
 interface Params {
   roleName: string
+  page: number
+  pageSize: number
 }// 查询参数类型
 
 // 请求响应数据
-const response = ref<RoleData[]>([
-  {
-    roleName: 'admin',
-    roleScore: '1',
-    creator: 'admin',
-    createTime: '2022-01-01',
-    roleAuth: ['userSet', 'userSearch', 'userDelete'],
-  },
-  {
-    roleName: '超级管理员',
-    roleScore: '2',
-    creator: 'admin',
-    createTime: '2022-01-01',
-    roleAuth: ['userSet', 'userSearch', 'userDelete'],
-  },
-  {
-    roleName: '安卓矩阵-运营',
-    roleScore: '3',
-    creator: 'admin',
-    createTime: '2022-01-01',
-    roleAuth: ['userSet', 'userSearch', 'userDelete'],
-  },
-])// 请求接口数据
+const list = ref<RoleData[]>([])// 请求接口数据
 
 // 事件反馈相关变量
 const operationYes = ref(false) // 操作成功
@@ -82,13 +63,15 @@ const columns: any = [
 const addRoleOpen = ref(false)// 新增角色弹窗
 const searchParams = ref<Params>({
   roleName: '',
+  page: 1,
+  pageSize: 15,
 })// 查询参数
 const loading = ref(false) // 表格加载状态
 const currentRole = ref()// 当前操作的角色
 const pagination = ref({
   current: 1,
-  pageSize: 10,
-  total: response.value.length,
+  pageSize: 15,
+  total: 0,
 })// 表格分页
 
 // 表格相关函数
@@ -116,23 +99,18 @@ function deleteRole(record: any) {
 }// 删除角色
 
 // 请求函数
-async function getRoleList() {
-  try {
-    loading.value = true
-    await setTimeout(() => {
+function getRoleData(searchParams: Params) {
+  loading.value = true
+  getRoleListData(searchParams).then((res: any) => {
+    list.value = res.data.list
+    pagination.value.total = res.data.total
+  }).finally(() => {
+    setTimeout(() => {
       loading.value = false
-      console.log(response.value)
-    }, 1000)
-  }
-  catch (error: any) {
-    loading.value = false
-    console.error(error)
-    notification.open({
-      message: '获取数据失败',
-      description: error,
-    })
-  }
+    }, 500)
+  })
 }
+getRoleData(searchParams.value)// 初始化请求
 </script>
 
 <template>
@@ -149,10 +127,10 @@ async function getRoleList() {
     <a-card v-if="!addRoleOpen">
       <a-input-search
         v-model:value="searchParams.roleName" placeholder="请输入角色名称" enter-button="搜索"
-        style="width: 350px;margin-bottom: 15px;" @search="getRoleList"
+        style="width: 350px;margin-bottom: 15px;" @search="getRoleData(searchParams)"
       />
       <a-table
-        :columns="columns" :data-source="response" :loading="loading" :pagination="pagination"
+        :columns="columns" :data-source="list" :loading="loading" :pagination="pagination"
         class="table-part" @change="handleTableChange($event)"
       >
         <template #bodyCell="{ column, record }">

@@ -1,13 +1,13 @@
 <script setup lang='ts' name='Shuttle'>
-import { computed, ref } from 'vue'
+import { ref, watch } from 'vue'
 import { CloseCircleOutlined } from '@ant-design/icons-vue'
 import Shuttle_item from './Shuttle_item.vue'
 
-const { checked } = defineProps(['checked'])
+const checked: any = defineModel('checked')
 
 // 数据类型声明
 interface APPData {
-  appID: string
+  id: string
   appName: string
   package: string
   firebaseID: string
@@ -32,7 +32,7 @@ interface BusinessGroup {
 
 const appList = ref<APPData[]>([
   {
-    appID: 'app-1',
+    id: 'app-1',
     appName: 'APP1',
     package: 'com.oaojsa.app1',
     firebaseID: 'ajbbhj_jhkbjhb',
@@ -45,7 +45,7 @@ const appList = ref<APPData[]>([
     createTime: '2022-01-01',
   },
   {
-    appID: 'app-2',
+    id: 'app-2',
     appName: 'APP2',
     package: 'com.oaojsa.app2',
     firebaseID: 'ajbbhj_jhkbjhb',
@@ -60,7 +60,7 @@ const appList = ref<APPData[]>([
     copyConfig: ['OID管理', '样式管理', 'APP权限人员'],
   },
   {
-    appID: 'app-3',
+    id: 'app-3',
     appName: 'APP3',
     package: 'com.oaojsa.app3',
     firebaseID: 'ajbbhj_jhkbjhb',
@@ -73,7 +73,7 @@ const appList = ref<APPData[]>([
     createTime: '2022-01-01',
   },
   {
-    appID: 'app-4',
+    id: 'app-4',
     appName: 'APP4',
     package: 'com.oaojsa.app4',
     firebaseID: 'ajbbhj_jhkbjhb',
@@ -86,7 +86,7 @@ const appList = ref<APPData[]>([
     createTime: '2022-01-01',
   },
   {
-    appID: 'app-5',
+    id: 'app-5',
     appName: 'APP5',
     package: 'com.oaojsa.app5',
     firebaseID: 'ajbbhj_jhkbjhb',
@@ -99,7 +99,7 @@ const appList = ref<APPData[]>([
     createTime: '2022-01-01',
   },
   {
-    appID: 'app-5',
+    id: 'app-9',
     appName: 'APP5',
     package: 'com.oaojsa.app5',
     firebaseID: 'ajbbhj_jhkbjhb',
@@ -114,7 +114,7 @@ const appList = ref<APPData[]>([
     copyConfig: ['OID管理', '样式管理', 'APP权限人员'],
   },
   {
-    appID: 'app-6',
+    id: 'app-6',
     appName: 'APP6',
     package: 'com.oaojsa.app6',
     firebaseID: 'ajbbhj_jhkbjhb',
@@ -127,7 +127,7 @@ const appList = ref<APPData[]>([
     createTime: '2022-01-01',
   },
   {
-    appID: 'app-7',
+    id: 'app-7',
     appName: 'APP7',
     package: 'com.oaojsa.app7',
     firebaseID: 'ajbbhj_jhkbjhb',
@@ -154,7 +154,7 @@ appList.value.forEach((app: APPData) => {
         checked: [],
       }
     }
-    if (checked.includes(app.appID)) {
+    if (checked.value.some((item: APPData) => item.id === app.id)) {
       businessGroup.value[firstBusiness].checked.push(app)
     }
     businessGroup.value[firstBusiness].apps.push(app)
@@ -162,17 +162,21 @@ appList.value.forEach((app: APPData) => {
 })
 
 function cancel(business: string, app: APPData) {
-  businessGroup.value[business].checked = businessGroup.value[business].checked.filter((item: APPData) => item.appID !== app.appID)
+  businessGroup.value[business].checked = businessGroup.value[business].checked.filter((item: APPData) => item.id !== app.id)
 }
 
-const checkCount = computed(() => {
-  let count = 0
-  for (const key in businessGroup.value) {
-    count += businessGroup.value[key].checked.length
-  }
-
-  return count
-})
+watch(businessGroup, (newVal) => {
+  console.log('newVal', newVal)
+  const apps: any = []
+  Object.keys(businessGroup.value).forEach((key: string) => {
+    const app = businessGroup.value[key].checked
+    if (app.length > 0) {
+      apps.push(...app)
+    }
+  })
+  checked.value = apps
+  console.log('checked', apps)
+}, { deep: true })
 </script>
 
 <template>
@@ -191,10 +195,10 @@ const checkCount = computed(() => {
     <div class="line" />
     <div class="right">
       <div class="title">
-        已选择&nbsp;{{ checkCount }}&nbsp;个APP
+        已选择&nbsp;{{ checked.length }}&nbsp;个APP
       </div>
       <template v-for="business in Object.keys(businessGroup)" :key="business">
-        <div v-for="app in businessGroup[business].checked" :key="app.appID" class="check-app">
+        <div v-for="app in businessGroup[business].checked" :key="app.id" class="check-app">
           <img :src="app.icon">
           <div class="text">
             <div class="name">

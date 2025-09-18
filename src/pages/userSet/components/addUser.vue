@@ -5,6 +5,7 @@ import { RollbackOutlined } from '@ant-design/icons-vue'
 import Shuttle from './ShuttleBox.vue'
 import Select from '~@/components/form/Select.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
+import { addUser } from '~@/api/user/useradd'
 
 // 父组件传值
 const { current } = defineProps(['current'])
@@ -12,10 +13,11 @@ const emit = defineEmits(['close'])
 
 // 数据类型定义
 interface FormState {
+  userName: string
   userEmail: string
   business: []
   role: string | undefined
-  selectAPPs: Array<{
+  apps: Array<{
     business: string
     appName: string
     system: string
@@ -157,16 +159,19 @@ const businessList: BusinessList[] = [
 // 表单相关属性
 const formRef = ref()// 表单引用
 const formState: FormState = reactive(current || {
+  userName: '',
   userEmail: '',
   business: [],
   role: undefined,
-  selectAPPs: [],
+  apps: [],
 })// 表单数据
 const rules: any = {
-  userEmail: [{ required: true, message: '用户邮箱不能为空', trigger: 'blur', type: 'string' }],
+  userName: [{ required: true, message: '用户名不能为空', trigger: 'blur', type: 'string' }],
+  userEmail: [{ required: true, message: '用户邮箱不能为空', trigger: 'blur', type: 'string' }, { validator: validateEmail, trigger: 'blur' },
+  ],
   business: [{ required: true, message: '请至少选择一个业务组', trigger: 'change', type: 'array' }],
   role: [{ required: true, message: '请选择一个角色', trigger: 'blur', type: 'string' }],
-  selectAPPs: [{ required: true, message: '请至少选择一个APP', trigger: 'blur', type: 'array' }],
+  apps: [{ required: true, message: '请至少选择一个APP', trigger: 'blur', type: 'array' }],
 }// 表单验证规则
 
 // 事件反馈相关变量
@@ -177,8 +182,12 @@ function submitForm() {
   formRef.value
     .validate()
     .then(() => {
-      console.log(formState)
-      emit('close', true)
+      const form = { ...formState }
+      form.apps = formState.apps.map((item: any) => item.appName)
+      // @ts-expect-error:...
+      addUser(form).then((res) => {
+        emit('close', true)
+      })
     })
     .catch((error: any) => {
       operationNo.value = true
@@ -190,6 +199,20 @@ function submitForm() {
       })
     })
 }
+function validateEmail(_: any, value: any) {
+  if (!value) {
+    return Promise.reject(new Error('请输入邮箱'))
+  }
+  const emailRegex = /^[\w.%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i
+  if (!emailRegex.test(value)) {
+    return Promise.reject(new Error('请输入有效的邮箱地址'))
+  }
+  return Promise.resolve()
+}// 邮箱验证
+
+watch(() => formState.apps, (nes) => {
+  console.log('watch', nes)
+}, { deep: true })
 </script>
 
 <template>
@@ -204,6 +227,10 @@ function submitForm() {
       <span>{{ current ? '编辑用户' : '新增用户' }}</span>
     </div>
     <a-form ref="formRef" :model="formState" :rules="rules" layout="vertical">
+      <a-form-item label="用户名" name="userName" style="width: 35vw;">
+        <a-input v-model:value="formState.userName" placeholder="请输入用户名" />
+      </a-form-item>
+
       <a-form-item label="用户邮箱" name="userEmail" style="width: 35vw;">
         <a-input v-model:value="formState.userEmail" placeholder="请输入用户邮箱" />
       </a-form-item>
@@ -223,8 +250,8 @@ function submitForm() {
         </a-select>
       </a-form-item>
 
-      <a-form-item label="分配APP" name="selectAPPs">
-        <Shuttle :checked="formState.selectAPPs" />
+      <a-form-item label="分配APP" name="apps">
+        <Shuttle v-model:checked="formState.apps" />
       </a-form-item>
     </a-form>
   </div>

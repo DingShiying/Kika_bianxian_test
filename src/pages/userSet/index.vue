@@ -1,36 +1,49 @@
 <script setup lang="ts" name="userSet">
 import { ref } from 'vue'
 import { FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
-import { notification } from 'ant-design-vue'
 import addUser from './components/addUser.vue'
 import userApps from './components/userApps.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
-import { getUserListData } from '~@/api/authority/index.ts'
+import { getUserListData } from '~@/api/user/userlist'
+import { deleteUser } from '~@/api/user/userdelete'
 
 // 数据类型声明
 interface UserData {
+  id: string
   userName: string
   userEmail: string
   business: Array<string>
   role: string
-  selectAPPs: Array<string>
-}// 接口响应数据类型
+  apps: Array<string>
+}// 用户数据类型
+interface UserList {
+  code: number
+  msg: string
+  data: {
+    total: number
+    list: UserData[]
+  }
+}
 interface Params {
   userName: string
+  page: number
+  pageSize: number
 }// 查询参数类型
 
 // 请求接口相关变量
 const searchParams = ref<Params>({
   userName: '',
+  page: 1,
+  pageSize: 10,
 })// 查询参数
-const response = ref<UserData[]>([])// 请求接口数据
+const list = ref<UserData[]>([])// 请求接口数据
 
 // 事件反馈相关变量
 const operationYes = ref(false) // 操作成功
 const operationNo = ref(false) // 操作失败
 
-// table相关变量
+// 表格相关变量
 const tableLoading = ref(false) // 表格加载状态
 const columns: any = [
   {
@@ -58,7 +71,7 @@ const columns: any = [
 const pagination = ref({
   current: 1,
   pageSize: 15,
-  total: response.value.length,
+  total: 0,
 })// 表格分页
 
 // 表格操作相关变量
@@ -67,30 +80,17 @@ const userAppOpen = ref(false)// 分配APP弹窗状态
 const addUserOpen = ref(false)// 新增用户弹窗状态
 
 // 请求接口获取数据
-async function getData(searchParams: Params) {
-  try {
-    tableLoading.value = true
-    const res = await getUserListData(searchParams)
-    if (res.code === 200) {
-      // @ts-expect-error:忽略
-      response.value = res.data || []
-      pagination.value.total = response.value.length
-    }
-    else {
-      throw new Error(res.msg)
-    }
-  }
-  catch (error: any) {
-    notification.open({
-      message: '获取数据失败',
-      description: error,
-    })
-  }
-  finally {
+function getData(searchParams: Params) {
+  tableLoading.value = true
+  // @ts-expect-error:忽略
+  getUserListData(searchParams).then((res: UserList) => {
+    list.value = res.data.list
+    pagination.value.total = res.data.total
+  }).finally(() => {
     setTimeout(() => {
       tableLoading.value = false
     }, 500)
-  }
+  })
 }
 
 // 表格操作
@@ -105,6 +105,7 @@ function editUser(user: any) {
 function closeAddUser(value: boolean) {
   if (value) {
     operationYes.value = true
+    getData(searchParams.value)
   }
   addUserOpen.value = false
   currentUser.value = null
@@ -112,23 +113,18 @@ function closeAddUser(value: boolean) {
 function openCard(user: any) {
   currentUser.value = user
   userAppOpen.value = true
-}// 打开分配APP弹窗
+}// 打开管理用户APP弹窗
 function closeCard(target: boolean) {
   userAppOpen.value = target
   currentUser.value = null
-}// 关闭分配APP弹窗
-// function toDelete(user: any) {
-//   currentUser.value = user
-//   deleteCard.value = true
-// }
-function deleteUser(record: any) {
+}// 关闭管理用户APP弹窗
+function deleteUserBut(record: any) {
   currentUser.value = record
-  console.log(currentUser.value)
-  // deleteCard.value = false
-  setTimeout(() => {
+  deleteUser({ userEmail: currentUser.value.userEmail }).then(() => {
+    currentUser.value = null
     operationYes.value = true
-  }, 1000)
-  currentUser.value = null
+    getData(searchParams.value)
+  })
 }// 删除用户
 
 // 初始请求数据
@@ -153,7 +149,7 @@ getData(searchParams.value)
           style="width: 350px;margin-bottom: 15px;" @search="getData(searchParams)"
         />
         <a-table
-          :columns="columns" :data-source="response" :loading="tableLoading" :pagination="pagination"
+          :columns="columns" :data-source="list" :loading="tableLoading" :pagination="pagination"
           class="table-part" :scroll="{ y: '45vh' }" @change="handleTableChange($event)"
         >
           <template #bodyCell="{ column, record }">
@@ -186,7 +182,7 @@ getData(searchParams.value)
                   ok-text="确定"
                   cancel-text="取消"
                   placement="left"
-                  @confirm="deleteUser(record)"
+                  @confirm="deleteUserBut(record)"
                 >
                   <span>删除</span>
                 </a-popconfirm>
