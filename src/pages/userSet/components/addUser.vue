@@ -11,6 +11,9 @@ import { addUser } from '~@/api/user/useradd'
 const { current } = defineProps(['current'])
 const emit = defineEmits(['close'])
 
+// 当前用户
+const { operator } = useUserStore()
+
 // 数据类型定义
 interface FormState {
   userName: string
@@ -182,7 +185,8 @@ function submitForm() {
   formRef.value
     .validate()
     .then(() => {
-      const form = { ...formState }
+      const form = { ...formState, operator }
+      console.log(form)
       form.apps = formState.apps.map((item: any) => item.appName)
       // @ts-expect-error:...
       addUser(form).then((res) => {
@@ -209,10 +213,6 @@ function validateEmail(_: any, value: any) {
   }
   return Promise.resolve()
 }// 邮箱验证
-
-watch(() => formState.apps, (nes) => {
-  console.log('watch', nes)
-}, { deep: true })
 </script>
 
 <template>

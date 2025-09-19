@@ -5,7 +5,7 @@ export interface UserInfo {
   avatar: string
   roles?: (string | number)[]
   userEmail: string
-  currentApp?: string
+  apps?: Array<string>
 }
 
 export function getUserInfoApi() {

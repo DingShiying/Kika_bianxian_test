@@ -140,6 +140,7 @@ const appList = ref<APPData[]>([
     createTime: '2022-01-01',
   },
 ])// 请求接口数据
+console.log(JSON.stringify(appList.value))
 
 const businessGroup = ref<BusinessGroup>({})
 
@@ -165,8 +166,7 @@ function cancel(business: string, app: APPData) {
   businessGroup.value[business].checked = businessGroup.value[business].checked.filter((item: APPData) => item.id !== app.id)
 }
 
-watch(businessGroup, (newVal) => {
-  console.log('newVal', newVal)
+watch(businessGroup, () => {
   const apps: any = []
   Object.keys(businessGroup.value).forEach((key: string) => {
     const app = businessGroup.value[key].checked
@@ -175,7 +175,6 @@ watch(businessGroup, (newVal) => {
     }
   })
   checked.value = apps
-  console.log('checked', apps)
 }, { deep: true })
 </script>
 

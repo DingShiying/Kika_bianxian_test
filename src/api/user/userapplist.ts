@@ -1,6 +1,7 @@
 // 数据类型声明
-interface UserData {
+interface Params {
   userEmail: string
+  operator: string | undefined
 }// 用户数据类型
 interface APPData {
   id: string
@@ -16,8 +17,8 @@ interface Response {
   data: APPData[]
 }// 请求参数类型
 
-export function getUserAppList(params: UserData) {
-  return usePost<Response, UserData>('/proxy/user/applist', params, {
+export function getUserAppList(params: Params) {
+  return usePost<Response, Params>('/proxy/user/applist', params, {
     // 设置为false的时候不会携带token
     token: true,
     // 开发模式下使用自定义的接口

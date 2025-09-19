@@ -19,7 +19,11 @@ interface Params {
   roleName: string
   page: number
   pageSize: number
+  operator: string | undefined
 }// 查询参数类型
+
+// 当前用户
+const { operator } = useUserStore()
 
 // 请求响应数据
 const list = ref<RoleData[]>([])// 请求接口数据
@@ -65,6 +69,7 @@ const searchParams = ref<Params>({
   roleName: '',
   page: 1,
   pageSize: 15,
+  operator,
 })// 查询参数
 const loading = ref(false) // 表格加载状态
 const currentRole = ref()// 当前操作的角色

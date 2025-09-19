@@ -16,8 +16,9 @@ export const useUserStore = defineStore('user', () => {
   const avatar = computed(() => userInfo.value?.avatar)
   const nickname = computed(() => userInfo.value?.nickname ?? userInfo.value?.username)
   const roles = computed(() => userInfo.value?.roles)
-  const isSuperManage = ref(false)
-  const userEmail = computed(() => userInfo.value?.userEmail)
+  const isSuperManage = ref(true)
+  const operator = computed(() => userInfo.value?.userEmail)
+  const apps = computed(() => userInfo.value?.apps)
 
   // interface MenuDataItem {
   //   id: string | number
@@ -118,6 +119,8 @@ export const useUserStore = defineStore('user', () => {
     isSuperManage.value = state
   }
 
+  const currentApp = ref<undefined | string>(undefined)
+
   return {
     userInfo,
     roles,
@@ -130,6 +133,8 @@ export const useUserStore = defineStore('user', () => {
     nickname,
     setSuperManage,
     isSuperManage,
-    userEmail,
+    operator,
+    apps,
+    currentApp,
   }
 })

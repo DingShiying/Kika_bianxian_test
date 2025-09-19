@@ -29,14 +29,20 @@ interface Params {
   userName: string
   page: number
   pageSize: number
+  operator: string | undefined
 }// 查询参数类型
+
+// 当前用户
+const { operator } = useUserStore()
 
 // 请求接口相关变量
 const searchParams = ref<Params>({
   userName: '',
   page: 1,
   pageSize: 10,
+  operator,
 })// 查询参数
+
 const list = ref<UserData[]>([])// 请求接口数据
 
 // 事件反馈相关变量
@@ -99,7 +105,6 @@ function handleTableChange(event: any) {
 }// 表格分页改变
 function editUser(user: any) {
   currentUser.value = user
-  console.log(user.selectAPPs)
   addUserOpen.value = true
 }// 编辑用户
 function closeAddUser(value: boolean) {
@@ -120,7 +125,7 @@ function closeCard(target: boolean) {
 }// 关闭管理用户APP弹窗
 function deleteUserBut(record: any) {
   currentUser.value = record
-  deleteUser({ userEmail: currentUser.value.userEmail }).then(() => {
+  deleteUser({ userEmail: currentUser.value.userEmail, operator }).then(() => {
     currentUser.value = null
     operationYes.value = true
     getData(searchParams.value)
@@ -189,11 +194,11 @@ getData(searchParams.value)
               </div>
             </template>
           </template>
-          <!-- <template #footer>
+          <template v-if="pagination.total > 0" #footer>
             显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
             {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
               * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
-          </template> -->
+          </template>
         </a-table>
       </a-card>
     </template>

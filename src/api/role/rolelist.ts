@@ -19,6 +19,7 @@ interface Params {
   roleName: string
   page: number
   pageSize: number
+  operator: string | undefined
 }// 请求参数类型
 
 export function getRoleListData(params: Params) {
