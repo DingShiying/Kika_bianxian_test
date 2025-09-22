@@ -1,6 +1,7 @@
 // 数据类型声明
 interface Params {
-  id: string
+  platformName: string
+  status: boolean
   operator: string | undefined
 }// 用户数据类型
 interface Response {
@@ -8,8 +9,8 @@ interface Response {
   msg: string
 }// 请求参数类型
 
-export function deleteUser(params: Params) {
-  return usePost<Response, Params>('/proxy/user/delete', params, {
+export function addPlatform(params: Params) {
+  return usePost<Response, Params>('/proxy/platform/add', params, {
     // 设置为false的时候不会携带token
     token: true,
     // 开发模式下使用自定义的接口

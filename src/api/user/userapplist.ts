@@ -1,6 +1,6 @@
 // 数据类型声明
 interface Params {
-  userEmail: string
+  id: string
   operator: string | undefined
 }// 用户数据类型
 interface APPData {

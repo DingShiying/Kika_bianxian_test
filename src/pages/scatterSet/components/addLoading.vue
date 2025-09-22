@@ -1,39 +1,50 @@
 <script setup lang='ts' name='addRole'>
-import { onMounted, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
+import { addLoadStrategy } from '~@/api/scatter_loading/addplan'
 
 // 父组件传值
 const { current } = defineProps(['current'])
 const emit = defineEmits(['close'])
 
+// 当前用户
+const { operator } = useUserStore()
+
 // 数据类型声明
 interface FormState {
-  strategyName: string
-  scatter_loading: number | undefined
+  label: string
+  scatter_loading: number
   status: boolean
 } // 表单数据类型
 
 // 表单相关数据
 const formRef = ref()// 表单引用
 const formState: FormState = reactive(current || {
-  strategyName: '',
-  scatter_loading: undefined,
+  label: '',
+  scatter_loading: '',
   status: true,
 })// 表单数据
 const rules: any = {
-  strategyName: [{ required: true, message: '加载策略值名称不能为空', trigger: 'blur', type: 'string' }],
+  label: [{ required: true, message: '加载策略值名称不能为空', trigger: 'blur', type: 'string' }],
   scatter_loading: [{ required: true, message: '加载策略值不能为空', trigger: 'blur', type: 'string' }],
 }// 表单验证规则
 
 // 表单相关函数
 function handleOk() {
   formRef.value.validate().then(() => {
-    console.log(formState)
-    emit('close', true)
-  }).catch((err: any) => {
-    message.warning('请按要求填写表单！')
-    console.error(err)
+    formRef.value.validate().then(async () => {
+      formState.scatter_loading = Number(formState.scatter_loading)
+      await addLoadStrategy({
+        ...formState,
+        operator,
+      })
+      emit('close', true)
+    }).catch((err: any) => {
+      if (err.name !== 'AxiosError') {
+        message.warning('请按要求填写表单！')
+      }
+    })
   })
 }// 表单提交
 function handleCancel() {
@@ -56,8 +67,8 @@ function handleCancel() {
       ref="formRef" :model="formState" :rules="rules" layout="vertical"
       class="form-part"
     >
-      <a-form-item label="加载策略名称" name="strategyName" style="width: 35vw;">
-        <a-input v-model:value="formState.strategyName" placeholder="请输入加载策略名称" />
+      <a-form-item label="加载策略名称" name="label" style="width: 35vw;">
+        <a-input v-model:value="formState.label" placeholder="请输入加载策略名称" />
       </a-form-item>
 
       <a-form-item label="加载策略值" name="scatter_loading" style="width: 35vw;">
@@ -73,7 +84,7 @@ function handleCancel() {
   </div>
   <div class="footer">
     <a-button type="primary" @click="handleOk">
-      确认创建
+      确认
     </a-button>
     <a-button @click="handleCancel">
       取消

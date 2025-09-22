@@ -5,6 +5,8 @@ interface RoleData {
   roleScore: number
   creator: string
   createTime: string
+  updater: string
+  updateTime: string
   roleAuth: Array<string>
 }// 请求接口数据类型
 interface RoleList {

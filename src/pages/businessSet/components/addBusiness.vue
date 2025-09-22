@@ -2,20 +2,26 @@
 import { reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
+import { addBusiness } from '~@/api/business/addbusiness'
 
 // 父组件传值
 const { current } = defineProps(['current'])
 const emit = defineEmits(['close'])
 
+// 当前用户
+const { operator } = useUserStore()
+
 // 数据类型声明
 interface FormState {
   business: string
+  operator: string | undefined
 }// 表单数据类型
 
 // 表单相关变量
 const formRef = ref()// 表单引用
 const formState: FormState = reactive({
   business: current || '',
+  operator,
 })// 表单数据
 const rules: any = {
   business: [{ required: true, message: '业务组名称不能为空', trigger: 'blur', type: 'string' }],
@@ -23,12 +29,13 @@ const rules: any = {
 
 // 表单相关函数
 function handleOk() {
-  formRef.value.validate().then(() => {
-    console.log(formState)
+  formRef.value.validate().then(async () => {
+    await addBusiness(formState)
     emit('close', true)
   }).catch((err: any) => {
-    message.warning('请按要求填写表单！')
-    console.error(err)
+    if (err.name !== 'AxiosError') {
+      message.warning('请按照要求填写表单！')
+    }
   })
 }// 表单提交
 function handleCancel() {

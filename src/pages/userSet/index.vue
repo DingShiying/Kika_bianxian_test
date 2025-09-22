@@ -125,10 +125,13 @@ function closeCard(target: boolean) {
 }// 关闭管理用户APP弹窗
 function deleteUserBut(record: any) {
   currentUser.value = record
-  deleteUser({ userEmail: currentUser.value.userEmail, operator }).then(() => {
-    currentUser.value = null
+  deleteUser({ id: currentUser.value.id, operator }).then(() => {
     operationYes.value = true
+  }).catch(() => {
+    operationNo.value = true
+  }).finally(() => {
     getData(searchParams.value)
+    currentUser.value = null
   })
 }// 删除用户
 
@@ -183,10 +186,7 @@ getData(searchParams.value)
                 </div>
 
                 <a-popconfirm
-                  title="你确定要删除此用户?"
-                  ok-text="确定"
-                  cancel-text="取消"
-                  placement="left"
+                  title="你确定要删除此用户?" ok-text="确定" cancel-text="取消" placement="left"
                   @confirm="deleteUserBut(record)"
                 >
                   <span>删除</span>

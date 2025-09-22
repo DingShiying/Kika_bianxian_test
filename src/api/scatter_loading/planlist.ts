@@ -1,30 +1,30 @@
 // 数据类型声明
-interface PlatformData {
-  id: string
-  platformName: string
+interface PlanData {
+  label: string
+  scatter_loading: number
   creator: string
   createTime: string
   updater: string
   updateTime: string
   status: boolean
-}// 请求接口数据类型
-interface PlatformList {
+}// 用户数据类型
+interface PlanList {
   code: number
   msg: string
   data: {
     total: number
-    list: PlatformData[]
+    list: PlanData[]
   }
 }// 用户列表数据类型
 interface Params {
-  platformName: string
+  scatter_loading: string
   page: number
   pageSize: number
   operator: string | undefined
-}// 查询参数类型
+}// 请求参数类型
 
-export function getPlatformListData(params: Params) {
-  return useGet<PlatformList, Params>('/proxy/platform/list', params, {
+export function getPlanListData(params: Params) {
+  return usePost<PlanList, Params>('/proxy/scatterLoading/list', params, {
     // 设置为false的时候不会携带token
     token: true,
     // 开发模式下使用自定义的接口

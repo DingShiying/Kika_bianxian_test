@@ -5,6 +5,7 @@ import addRole from './components/addRole.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
 import { getRoleListData } from '~@/api/role/rolelist'
+import { deleteRoleData } from '~@/api/role/deleterole'
 
 // 数据类型声明
 interface RoleData {
@@ -13,6 +14,8 @@ interface RoleData {
   roleScore: number
   creator: string
   createTime: string
+  updater: string
+  updateTime: string
   roleAuth: Array<string>
 }// 请求接口数据类型
 interface Params {
@@ -38,6 +41,7 @@ const columns: any = [
     title: '角色名称',
     dataIndex: 'roleName',
     key: 'roleName',
+    fixed: 'left',
   },
   {
     title: '展示顺序',
@@ -58,10 +62,23 @@ const columns: any = [
     align: 'center',
   },
   {
+    title: '最近修改人',
+    dataIndex: 'updater',
+    key: 'updater',
+    align: 'center',
+  },
+  {
+    title: '最近修改时间',
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    align: 'center',
+  },
+  {
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
     align: 'center',
+    fixed: 'right',
   },
 ]// 表格列头
 const addRoleOpen = ref(false)// 新增角色弹窗
@@ -87,6 +104,7 @@ function closeAddRole(value: boolean) {
   if (value) {
     operationYes.value = true
   }
+  getRoleData(searchParams.value)
   addRoleOpen.value = false
   currentRole.value = null
 }// 关闭新增角色弹窗
@@ -96,11 +114,17 @@ function editRole(record: any) {
 }// 编辑角色
 function deleteRole(record: any) {
   currentRole.value = record
-  console.log(currentRole.value)
-  setTimeout(() => {
+  deleteRoleData({
+    id: currentRole.value.id,
+    operator,
+  }).then(() => {
     operationYes.value = true
-  }, 1000)
-  currentRole.value = null
+  }).catch(() => {
+    operationNo.value = true
+  }).finally(() => {
+    currentRole.value = null
+    getRoleData(searchParams.value)
+  })
 }// 删除角色
 
 // 请求函数
@@ -158,11 +182,11 @@ getRoleData(searchParams.value)// 初始化请求
             </div>
           </template>
         </template>
-        <!-- <template #footer>
+        <template v-if="pagination.total > 0" #footer>
           显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
           {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
             * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
-        </template> -->
+        </template>
       </a-table>
     </a-card>
 

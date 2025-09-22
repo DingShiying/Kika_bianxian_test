@@ -1,39 +1,33 @@
 <script setup lang="ts" name="businessSet">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
-import { notification } from 'ant-design-vue'
 import addBusiness from './components/addBusiness.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
+import { getBusinessListData } from '~@/api/business/businesslist'
+import { deleteBusinessData } from '~@/api/business/deletebusiness'
 
 // 数据类型声明
 interface BusinessData {
+  id: string
   business: string
   creator: string
   createTime: string
+  updater: string
+  updateTime: string
 }// 请求接口数据类型
 interface Params {
   business: string
+  page: number
+  pageSize: number
+  operator: string | undefined
 }// 查询参数类型
 
+// 当前用户
+const { operator } = useUserStore()
+
 // 请求响应数据
-const response = ref<BusinessData[]>([
-  {
-    business: '电商业务组',
-    creator: '张三',
-    createTime: '2023-01-01',
-  },
-  {
-    business: '金融业务组',
-    creator: '王五',
-    createTime: '2023-01-02',
-  },
-  {
-    business: '物流业务组',
-    creator: '钱七',
-    createTime: '2023-01-03',
-  },
-])// 请求接口数据
+const list = ref<BusinessData[]>()// 请求接口数据
 
 // 表格相关变量
 const columns: any = [
@@ -41,6 +35,7 @@ const columns: any = [
     title: '业务组名称',
     dataIndex: 'business',
     key: 'business',
+    fixed: 'left',
   },
   {
     title: '创建人',
@@ -55,17 +50,30 @@ const columns: any = [
     align: 'center',
   },
   {
+    title: '更新人',
+    dataIndex: 'updater',
+    key: 'updater',
+    align: 'center',
+  },
+  {
+    title: '更新时间',
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    align: 'center',
+  },
+  {
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
     align: 'center',
+    fixed: 'right',
   },
 ]// 表格列头
 const loading = ref(false) // 表格加载状态
 const pagination = ref({
   current: 1,
-  pageSize: 10,
-  total: response.value.length,
+  pageSize: 15,
+  total: 0,
 })// 表格分页
 const addBusinessOpen = ref(false)// 新增业务组弹窗状态
 const currentBusiness = ref()
@@ -73,6 +81,9 @@ const currentBusiness = ref()
 // 查询相关变量
 const searchParams = ref<Params>({
   business: '',
+  page: 1,
+  pageSize: 15,
+  operator,
 })// 查询参数
 
 // 事件反馈相关变量
@@ -91,36 +102,53 @@ function closeAddBusiness(value: boolean) {
   if (value) {
     operationYes.value = true
   }
+  getBusinessList()
   addBusinessOpen.value = false
   currentBusiness.value = null
 }// 关闭新增业务组弹窗
 function deleteBusiness(record: any) {
   currentBusiness.value = record
-  console.log(currentBusiness.value)
-  setTimeout(() => {
+  deleteBusinessData({
+    id: record.id,
+    operator,
+  }).then(() => {
     operationYes.value = true
-  }, 1000)
-  currentBusiness.value = null
+  }).catch(() => {
+    operationNo.value = true
+  }).finally(() => {
+    currentBusiness.value = null
+    getBusinessList()
+  })
 }// 删除策略
 
 // 请求函数
-async function getBusinessList() {
-  try {
-    loading.value = true
-    await setTimeout(() => {
+function getBusinessList() {
+  loading.value = true
+  getBusinessListData(searchParams.value).then((res: any) => {
+    list.value = res.data.list
+    pagination.value.total = res.data.total
+  }).finally(() => {
+    setTimeout(() => {
       loading.value = false
-      console.log(response.value)
-    }, 1000)
-  }
-  catch (error: any) {
-    loading.value = false
-    console.error(error)
-    notification.open({
-      message: '获取数据失败',
-      description: error,
-    })
-  }
+    }, 500)
+  })
+  // try {
+  //   loading.value = true
+  //   await setTimeout(() => {
+  //     loading.value = false
+  //     console.log(response.value)
+  //   }, 1000)
+  // }
+  // catch (error: any) {
+  //   loading.value = false
+  //   console.error(error)
+  //   notification.open({
+  //     message: '获取数据失败',
+  //     description: error,
+  //   })
+  // }
 }
+getBusinessList()
 </script>
 
 <template>
@@ -140,7 +168,7 @@ async function getBusinessList() {
         style="width: 350px;margin-bottom: 15px;" @search="getBusinessList"
       />
       <a-table
-        :columns="columns" :data-source="response" :loading="loading" :pagination="pagination"
+        :columns="columns" :data-source="list" :loading="loading" :pagination="pagination"
         class="table-part" @change="handleTableChange($event)"
       >
         <template #bodyCell="{ column, record }">
@@ -164,11 +192,11 @@ async function getBusinessList() {
             </div>
           </template>
         </template>
-        <!-- <template #footer>
+        <template v-if="pagination.total > 0" #footer>
           显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
           {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
             * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
-        </template> -->
+        </template>
       </a-table>
     </a-card>
 

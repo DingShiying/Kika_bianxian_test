@@ -1,30 +1,29 @@
 // 数据类型声明
-interface PlatformData {
+interface BusinessData {
   id: string
-  platformName: string
+  business: string
   creator: string
   createTime: string
   updater: string
   updateTime: string
-  status: boolean
 }// 请求接口数据类型
-interface PlatformList {
+interface BusinessList {
   code: number
   msg: string
   data: {
     total: number
-    list: PlatformData[]
+    list: BusinessData[]
   }
 }// 用户列表数据类型
 interface Params {
-  platformName: string
-  page: number
-  pageSize: number
+  business?: string
+  page?: number
+  pageSize?: number
   operator: string | undefined
-}// 查询参数类型
+}// 请求参数类型
 
-export function getPlatformListData(params: Params) {
-  return useGet<PlatformList, Params>('/proxy/platform/list', params, {
+export function getBusinessListData(params: Params) {
+  return usePost<BusinessList, Params>('/proxy/business/list', params, {
     // 设置为false的时候不会携带token
     token: true,
     // 开发模式下使用自定义的接口

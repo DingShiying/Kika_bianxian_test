@@ -2,14 +2,20 @@
 import { reactive, ref } from 'vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
+import { addPlatform } from '~@/api/platform/addplatform'
 
+// 父组件传值
+const { current } = defineProps(['current'])
+const emit = defineEmits(['close'])
+
+// 表单数据类型
 interface FormState {
   platformName: string
   status: boolean
-}// 表单数据类型
+}
 
-const { current } = defineProps(['current'])
-const emit = defineEmits(['close'])
+// 当前用户
+const { operator } = useUserStore()
 
 const formRef = ref()// 表单引用
 const formState: FormState = reactive(current || {
@@ -22,13 +28,16 @@ const rules: any = {
 }// 表单验证规则
 
 function handleOk() {
-  formRef.value.validate().then(() => {
-    console.log(formState)
-    // message.success('新建用户成功！')
+  formRef.value.validate().then(async () => {
+    await addPlatform({
+      ...formState,
+      operator,
+    })
     emit('close', true)
   }).catch((err: any) => {
-    console.error(err)
-    message.warning('请按照要求填写表单！')
+    if (err.name !== 'AxiosError') {
+      message.warning('请按照要求填写表单！')
+    }
   })
 }// 表单提交
 function handleCancel() {

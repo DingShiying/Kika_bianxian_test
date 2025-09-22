@@ -1,101 +1,53 @@
 <script setup lang="ts" name="appSet">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import { notification } from 'ant-design-vue'
 import addApp from './components/addApp.vue'
 import Shuttle from './components/ShuttleBox.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
+import { getBusinessListData } from '~@/api/business/businesslist'
+import { getAppListData } from '~@/api/app/applist'
 
 // 数据类型声明
 interface APPData {
-  appID: string
+  id: string
   appName: string
   package: string
   firebaseID: string
-  business: string
-  users: string[]
+  business: string[]
+  manager: string[]
   system: string
   platform: string[]
   icon: string
   creator: string
   createTime: string
+  updater: string
+  updateTime: string
   copyAppID?: string | undefined
   copyConfig?: string[]
 }// 请求接口数据类型
 interface BusinessData {
+  id: string
   business: string
   creator: string
   createTime: string
+  updater: string
+  updateTime: string
 }// 请求接口数据类型
 interface FormState {
   appName: string
   system: string | undefined
   business: string | undefined
+  operator: string | undefined
 }
 
-// 请求响应数据
-const response = ref<APPData[]>([
-  {
-    appID: 'app-1',
-    appName: 'APP1',
-    package: 'com.oaojsa.app1',
-    firebaseID: 'ajbbhj_jhkbjhb',
-    business: '电商业务组',
-    users: ['张三', '李四'],
-    system: 'iOS',
-    platform: ['Google', 'Apple Store', 'xiaomi'],
-    icon: '/src/assets/images/icon1.png',
-    creator: '王五',
-    createTime: '2022-01-01',
-  },
-  {
-    appID: 'app-2',
-    appName: 'APP2',
-    package: 'com.oaojsa.app2',
-    firebaseID: 'ajbbhj_jhkbjhb',
-    business: '电商健康组',
-    users: ['王五', '李四'],
-    system: 'Android',
-    platform: ['Google', 'Apple Store'],
-    icon: '/src/assets/images/icon2.png',
-    creator: '王五',
-    createTime: '2022-01-01',
-    copyAppID: 'app-1',
-    copyConfig: ['OID管理', '样式管理', 'APP权限人员'],
-  },
-  {
-    appID: 'app-3',
-    appName: 'APP3',
-    package: 'com.oaojsa.app3',
-    firebaseID: 'ajbbhj_jhkbjhb',
-    business: '电商幸福组',
-    users: ['张三', '王五'],
-    system: 'iOS',
-    platform: ['Apple Store', 'xiaomi'],
-    icon: '/src/assets/images/icon3.png',
-    creator: '王五',
-    createTime: '2022-01-01',
-  },
-])// 请求接口数据
-const businessList = ref<BusinessData[]>([
-  {
-    business: '电商业务组',
-    creator: '张三',
-    createTime: '2023-01-01',
-  },
-  {
-    business: '金融业务组',
-    creator: '王五',
-    createTime: '2023-01-02',
+// 当前用户
+const { operator } = useUserStore()
 
-  },
-  {
-    business: '物流业务组',
-    creator: '钱七',
-    createTime: '2023-01-03',
-  },
-])
+// 请求响应数据
+const list = ref<APPData[]>()// 请求接口数据
+const businessList = ref<BusinessData[]>()
 
 // 表格相关变量
 const columns: any = [
@@ -139,7 +91,7 @@ const loading = ref(false) // 表格加载状态
 const pagination = ref({
   current: 1,
   pageSize: 10,
-  total: response.value.length,
+  total: 0,
 })// 表格分页
 const currentApp = ref()// 当前选中应用
 const copyApp = ref()// 复制应用
@@ -153,6 +105,7 @@ const formState = reactive<FormState>({
   appName: '',
   system: undefined,
   business: undefined,
+  operator,
 })// oid查询表单数据
 
 // 事件反馈相关变量
@@ -202,23 +155,42 @@ function userSetCancel() {
 }// 人员管理取消
 
 // 请求函数
-async function getAPPList() {
-  try {
-    loading.value = true
-    await setTimeout(() => {
-      loading.value = false
-      console.log(response.value)
-    }, 1000)
-  }
-  catch (error: any) {
-    loading.value = false
-    console.error(error)
-    notification.open({
-      message: '获取数据失败',
-      description: error,
-    })
-  }
+function getBusinessList() {
+  getBusinessListData({
+    business: '',
+    operator,
+  }).then((res: any) => {
+    businessList.value = res.data.list
+  })
 }
+getBusinessList()
+function getAPPList() {
+  loading.value = true
+  getAppListData(formState).then((res: any) => {
+    list.value = res.data.list
+    pagination.value.total = res.data.total
+  }).finally(() => {
+    setTimeout(() => {
+      loading.value = false
+    }, 500)
+  })
+  // try {
+  //   loading.value = true
+  //   await setTimeout(() => {
+  //     loading.value = false
+  //     console.log(response.value)
+  //   }, 1000)
+  // }
+  // catch (error: any) {
+  //   loading.value = false
+  //   console.error(error)
+  //   notification.open({
+  //     message: '获取数据失败',
+  //     description: error,
+  //   })
+  // }
+}
+getAPPList()
 function resetForm() {
   Object.assign(formState, {
     appName: '',
@@ -276,7 +248,7 @@ function resetForm() {
         </div>
       </a-form>
       <a-table
-        :columns="columns" :data-source="response" :loading="loading" :pagination="pagination"
+        :columns="columns" :data-source="list" :loading="loading" :pagination="pagination"
         class="table-part" @change="handleTableChange($event)"
       >
         <template #bodyCell="{ column, record }">

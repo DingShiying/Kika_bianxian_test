@@ -1,39 +1,48 @@
 <script setup lang='ts' name='addRole'>
-import { onMounted, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
+import { addLoadStrategy } from '~@/api/load_strategy/addplan'
 
 // 父组件传值
 const { current } = defineProps(['current'])
 const emit = defineEmits(['close'])
 
+// 当前用户
+const { operator } = useUserStore()
+
 // 数据类型声明
 interface FormState {
-  strategyName: string
-  load_strategy: number | undefined
+  label: string
+  load_strategy: number
   status: boolean
 } // 表单数据类型
 
 // 表单相关数据
 const formRef = ref()// 表单引用
 const formState: FormState = reactive(current || {
-  strategyName: '',
+  label: '',
   load_strategy: undefined,
   status: true,
 })// 表单数据
 const rules: any = {
-  strategyName: [{ required: true, message: '加载策略值名称不能为空', trigger: 'blur', type: 'string' }],
+  label: [{ required: true, message: '加载策略值名称不能为空', trigger: 'blur', type: 'string' }],
   load_strategy: [{ required: true, message: '加载策略值不能为空', trigger: 'blur', type: 'string' }],
 }// 表单验证规则
 
 // 表单相关函数
 function handleOk() {
-  formRef.value.validate().then(() => {
-    console.log(formState)
+  formRef.value.validate().then(async () => {
+    formState.load_strategy = Number(formState.load_strategy)
+    await addLoadStrategy({
+      ...formState,
+      operator,
+    })
     emit('close', true)
   }).catch((err: any) => {
-    message.warning('请按要求填写表单！')
-    console.error(err)
+    if (err.name !== 'AxiosError') {
+      message.warning('请按要求填写表单！')
+    }
   })
 }// 表单提交
 function handleCancel() {
@@ -56,8 +65,8 @@ function handleCancel() {
       ref="formRef" :model="formState" :rules="rules" layout="vertical"
       class="form-part"
     >
-      <a-form-item label="加载策略名称" name="strategyName" style="width: 35vw;">
-        <a-input v-model:value="formState.strategyName" placeholder="请输入加载策略名称" />
+      <a-form-item label="加载策略名称" name="label" style="width: 35vw;">
+        <a-input v-model:value="formState.label" placeholder="请输入加载策略名称" />
       </a-form-item>
 
       <a-form-item label="加载策略值" name="load_strategy" style="width: 35vw;">
