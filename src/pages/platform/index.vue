@@ -107,7 +107,7 @@ function closeAddPlatform(value: boolean) {
   if (value) {
     operationYes.value = true
   }
-  getPlatformList(searchParams.value)
+  getPlatformList()
   addPlatformOpen.value = false
   currentPlatform.value = null
 }// 关闭新增弹窗
@@ -122,14 +122,14 @@ function deletePlatform(record: any) {
     operationNo.value = true
   }).finally(() => {
     currentPlatform.value = null
-    getPlatformList(searchParams.value)
+    getPlatformList()
   })
 }// 删除平台
 
 // 请求函数
-function getPlatformList(searchParams: Params) {
+function getPlatformList() {
   loading.value = true
-  getPlatformListData(searchParams).then((res: any) => {
+  getPlatformListData(searchParams.value).then((res: any) => {
     list.value = res.data.list
     pagination.value.total = res.data.total
   }).finally(() => {
@@ -138,13 +138,13 @@ function getPlatformList(searchParams: Params) {
     }, 500)
   })
 }
-getPlatformList(searchParams.value)// 初始化请求
+getPlatformList()// 初始化请求
 </script>
 
 <template>
   <page-container>
     <template #extra>
-      <a-button type="primary" @click="() => addPlatformOpen = true">
+      <a-button type="primary" :disabled="addPlatformOpen" @click="() => addPlatformOpen = true">
         <template #icon>
           <PlusOutlined />
         </template>
@@ -155,7 +155,7 @@ getPlatformList(searchParams.value)// 初始化请求
     <a-card v-if="!addPlatformOpen">
       <a-input-search
         v-model:value="searchParams.platformName" placeholder="请输入平台名称" enter-button="搜索"
-        style="width: 350px;margin-bottom: 15px;" @search="getPlatformList(searchParams)"
+        style="width: 350px;margin-bottom: 15px;" @search="getPlatformList"
       />
       <a-table
         :columns="columns" :data-source="list" :loading="loading" :pagination="pagination"
@@ -163,7 +163,7 @@ getPlatformList(searchParams.value)// 初始化请求
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'status'">
-            <a-switch v-model:checked="record.status" />
+            <a-switch v-model:checked="record.status" :disabled="true" />
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <div class="option">

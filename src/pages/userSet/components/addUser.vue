@@ -1,11 +1,13 @@
 <script setup lang='ts' name='addUser'>
 import { reactive, ref } from 'vue'
-import { notification } from 'ant-design-vue'
+import { message } from 'ant-design-vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
-import Shuttle from './ShuttleBox.vue'
+import ShuttleBox from './ShuttleBox.vue'
 import Select from '~@/components/form/Select.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
 import { addUser } from '~@/api/user/useradd'
+import { getBusinessListData } from '~@/api/business/businesslist'
+import { getRoleListData } from '~@/api/role/rolelist'
 
 // 父组件传值
 const { current } = defineProps(['current'])
@@ -20,144 +22,30 @@ interface FormState {
   userEmail: string
   business: []
   role: string | undefined
-  apps: Array<{
-    business: string
-    appName: string
-    system: string
-    package: string
-    icon: string
-  }>
+  apps: Array<string>
 }// 表单数据类型
-interface BusinessList {
+interface BusinessData {
+  id: string
   business: string
-  apps: Array<{
-    appName: string
-    system: string
-    package: string
-    icon: string
-  }>
-}//
+  creator: string
+  createTime: string
+  updater: string
+  updateTime: string
+}// 业务组数据类型
+interface RoleData {
+  id: string
+  roleName: string
+  roleScore: number
+  creator: string
+  createTime: string
+  updater: string
+  updateTime: string
+  roleAuth: Array<string>
+}// 平台数据类型
 
 // 请求接口数据
-const roleList = ['人事经理', '系统管理员', '系统管理员', '开发工程师', '市场经理']
-const businessList: BusinessList[] = [
-  {
-    'business': '电商业务组',
-    'apps': [
-      {
-        'appName': '哈哈哈',
-        'system': 'iOS',
-        'package': 'com.jiankangguanli.mall',
-        'icon': '/src/assets/images/icon1.png',
-      },
-      {
-        'appName': '哦哦哦',
-        'system': 'android',
-        'package': 'com.aabjhsba.mall',
-        'icon': '/src/assets/images/icon2.png',
-      },
-      {
-        'appName': '点点滴滴',
-        'system': 'iOS',
-        'package': 'com.sasasas.mall',
-        'icon': '/src/assets/images/icon3.png',
-      },
-      {
-        'appName': '呃呃呃呃',
-        'system': 'android',
-        'package': 'com.sasasasai.mall',
-        'icon': '/src/assets/images/icon4.png',
-      },
-    ],
-  },
-  {
-    'business': '电商健康组',
-    'apps': [
-      {
-        'appName': '哈哈哈1',
-        'system': 'iOS',
-        'package': 'com.jiankangguanli.mall',
-        'icon': '/src/assets/images/icon1.png',
-      },
-      {
-        'appName': '哦哦哦1',
-        'system': 'android',
-        'package': 'com.aabjhsba.mall',
-        'icon': '/src/assets/images/icon2.png',
-      },
-      {
-        'appName': '点点滴滴1',
-        'system': 'iOS',
-        'package': 'com.sasasas.mall',
-        'icon': '/src/assets/images/icon3.png',
-      },
-      {
-        'appName': '呃呃呃呃1',
-        'system': 'android',
-        'package': 'com.sasasasai.mall',
-        'icon': '/src/assets/images/icon4.png',
-      },
-    ],
-  },
-  {
-    'business': '电商哈哈组',
-    'apps': [
-      {
-        'appName': '哈哈哈2',
-        'system': 'iOS',
-        'package': 'com.jiankangguanli.mall',
-        'icon': '/src/assets/images/icon1.png',
-      },
-      {
-        'appName': '哦哦哦2',
-        'system': 'android',
-        'package': 'com.aabjhsba.mall',
-        'icon': '/src/assets/images/icon2.png',
-      },
-      {
-        'appName': '点点滴滴2',
-        'system': 'iOS',
-        'package': 'com.sasasas.mall',
-        'icon': '/src/assets/images/icon3.png',
-      },
-      {
-        'appName': '呃呃呃呃2',
-        'system': 'android',
-        'package': 'com.sasasasai.mall',
-        'icon': '/src/assets/images/icon4.png',
-      },
-    ],
-  },
-  {
-    'business': '电商呼呼组',
-    'apps': [
-      {
-        'appName': '哈哈哈3',
-        'system': 'iOS',
-        'package': 'com.jiankangguanli.mall',
-        'icon': '/src/assets/images/icon1.png',
-      },
-      {
-        'appName': '哦哦哦3',
-        'system': 'android',
-        'package': 'com.aabjhsba.mall',
-        'icon': '/src/assets/images/icon2.png',
-      },
-      {
-        'appName': '点点滴滴3',
-        'system': 'iOS',
-        'package': 'com.sasasas.mall',
-        'icon': '/src/assets/images/icon3.png',
-      },
-      {
-        'appName': '呃呃呃呃3',
-        'system': 'android',
-        'package': 'com.sasasasai.mall',
-        'icon': '/src/assets/images/icon4.png',
-      },
-    ],
-  },
-]
+const roleList = ref<RoleData[]>([])
+const businessList = ref<BusinessData[] >([])
 
 // 表单相关属性
 const formRef = ref()// 表单引用
@@ -176,6 +64,14 @@ const rules: any = {
   role: [{ required: true, message: '请选择一个角色', trigger: 'blur', type: 'string' }],
   apps: [{ required: true, message: '请至少选择一个APP', trigger: 'blur', type: 'array' }],
 }// 表单验证规则
+const isAdd = computed(() => {
+  if (current) {
+    return false
+  }
+  else {
+    return true
+  }
+})
 
 // 事件反馈相关变量
 const operationNo = ref(false) // 操作失败
@@ -185,34 +81,38 @@ function submitForm() {
   formRef.value
     .validate()
     .then(() => {
-      const form = { ...formState, operator }
-      console.log(form)
-      form.apps = formState.apps.map((item: any) => item.appName)
-      // @ts-expect-error:...
-      addUser(form).then((res) => {
+      const form = { ...formState, isAdd: isAdd.value, operator }
+      addUser(form).then(() => {
         emit('close', true)
       })
-    })
-    .catch((error: any) => {
-      operationNo.value = true
-      console.log('error', error)
-      notification.open({
-        message: '操作失败',
-        description: '请正确填写信息',
-        duration: 3,
-      })
+    }).catch((err: any) => {
+      if (err.name !== 'AxiosError') {
+        message.warning('请按照要求填写表单！')
+      }
     })
 }
 function validateEmail(_: any, value: any) {
-  if (!value) {
-    return Promise.reject(new Error('请输入邮箱'))
-  }
-  const emailRegex = /^[\w.%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i
-  if (!emailRegex.test(value)) {
-    return Promise.reject(new Error('请输入有效的邮箱地址'))
+  if (value) {
+    const emailRegex = /^[\w.%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i
+    if (!emailRegex.test(value)) {
+      return Promise.reject(new Error('请输入有效的邮箱地址'))
+    }
   }
   return Promise.resolve()
 }// 邮箱验证
+
+function getBusinessList() {
+  getBusinessListData({ operator }).then((res: any) => {
+    businessList.value = res.data.list
+  })
+}
+getBusinessList()
+function getRoleData() {
+  getRoleListData({ operator }).then((res: any) => {
+    roleList.value = res.data.list
+  })
+}
+getRoleData()// 初始化请求
 </script>
 
 <template>
@@ -243,15 +143,15 @@ function validateEmail(_: any, value: any) {
       </a-form-item>
 
       <a-form-item label="所属角色" name="role" style="width: 35vw;">
-        <a-select v-model:value="formState.role" placeholder="请选择所属角色">
-          <a-select-option v-for="item in roleList" :key="item" :value="item">
-            {{ item }}
+        <a-select v-model:value="formState.role" placeholder="请选择所属角色" show-search>
+          <a-select-option v-for="item in roleList" :key="item" :value="item.roleName">
+            {{ item.roleName }}
           </a-select-option>
         </a-select>
       </a-form-item>
 
       <a-form-item label="分配APP" name="apps">
-        <Shuttle v-model:checked="formState.apps" />
+        <ShuttleBox v-model:checked="formState.apps" />
       </a-form-item>
     </a-form>
   </div>

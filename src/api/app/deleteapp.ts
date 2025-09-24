@@ -9,7 +9,7 @@ interface Params {
 }// 请求参数类型
 
 export function deleteAppData(params: Params) {
-  return usePost<Response, Params>('/proxy/business/delete', params, {
+  return usePost<Response, Params>('/proxy/app/delete', params, {
     // 设置为false的时候不会携带token
     token: true,
     // 开发模式下使用自定义的接口

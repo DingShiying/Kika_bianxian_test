@@ -1,6 +1,7 @@
 // 数据类型声明
 interface Params {
   business: string
+  isAdd: boolean
   operator: string | undefined
 }// 用户数据类型
 interface Response {

@@ -1,6 +1,6 @@
 <script setup lang="ts" name="userSet">
 import { ref } from 'vue'
-import { FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { FormOutlined, KeyOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import addUser from './components/addUser.vue'
 import userApps from './components/userApps.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
@@ -16,6 +16,10 @@ interface UserData {
   business: Array<string>
   role: string
   apps: Array<string>
+  creator: string
+  createTime: string
+  updater: string
+  updateTime: string
 }// 用户数据类型
 interface UserList {
   code: number
@@ -68,10 +72,34 @@ const columns: any = [
     key: 'role',
   },
   {
+    title: '创建人',
+    dataIndex: 'creator',
+    key: 'creator',
+    align: 'center',
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createTime',
+    key: 'createTime',
+    align: 'center',
+  },
+  {
+    title: '更新人',
+    dataIndex: 'updater',
+    key: 'updater',
+    align: 'center',
+  },
+  {
+    title: '更新时间',
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    align: 'center',
+  },
+  {
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
-    align: 'center',
+    // align: 'center',
   },
 ]// 表格列头
 const pagination = ref({
@@ -86,10 +114,10 @@ const userAppOpen = ref(false)// 分配APP弹窗状态
 const addUserOpen = ref(false)// 新增用户弹窗状态
 
 // 请求接口获取数据
-function getData(searchParams: Params) {
+function getData() {
   tableLoading.value = true
   // @ts-expect-error:忽略
-  getUserListData(searchParams).then((res: UserList) => {
+  getUserListData(searchParams.value).then((res: UserList) => {
     list.value = res.data.list
     pagination.value.total = res.data.total
   }).finally(() => {
@@ -102,6 +130,8 @@ function getData(searchParams: Params) {
 // 表格操作
 function handleTableChange(event: any) {
   pagination.value = event
+  searchParams.value.page = event.current
+  getData()
 }// 表格分页改变
 function editUser(user: any) {
   currentUser.value = user
@@ -110,7 +140,7 @@ function editUser(user: any) {
 function closeAddUser(value: boolean) {
   if (value) {
     operationYes.value = true
-    getData(searchParams.value)
+    getData()
   }
   addUserOpen.value = false
   currentUser.value = null
@@ -130,13 +160,13 @@ function deleteUserBut(record: any) {
   }).catch(() => {
     operationNo.value = true
   }).finally(() => {
-    getData(searchParams.value)
+    getData()
     currentUser.value = null
   })
 }// 删除用户
 
 // 初始请求数据
-getData(searchParams.value)
+getData()
 </script>
 
 <template>
@@ -154,7 +184,7 @@ getData(searchParams.value)
       <a-card>
         <a-input-search
           v-model:value="searchParams.userName" placeholder="请输入用户名称" enter-button="搜索"
-          style="width: 350px;margin-bottom: 15px;" @search="getData(searchParams)"
+          style="width: 350px;margin-bottom: 15px;" @search="getData"
         />
         <a-table
           :columns="columns" :data-source="list" :loading="tableLoading" :pagination="pagination"
@@ -162,34 +192,32 @@ getData(searchParams.value)
         >
           <template #bodyCell="{ column, record }">
             <template v-if="column.dataIndex === 'business'">
-              <div class="business">
-                <div v-for="item in record.business" :key="item" class="business-item">
-                  {{ item }}
-                </div>
-              </div>
+              <a-tag v-for="item in record.business" :key="item" color="#87d068">
+                {{ item }}
+              </a-tag>
             </template>
             <template v-if="column.dataIndex === 'role'">
-              <div class="role">
+              <a-tag color="#2db7f5">
                 {{ record.role }}
-              </div>
+              </a-tag>
             </template>
             <template v-if="column.dataIndex === 'operation'">
-              <div class="option">
-                <div class="link-app" @click="openCard(record)">
-                  <img src="@/assets/images/key.svg">
-                  <span>管理APP</span>
+              <div class="flex flex-col items-start cursor-pointer">
+                <div class="flex items-center" @click="openCard(record)">
+                  <KeyOutlined class="mr-1 text-[#4e46e5]" />
+                  <span class="text-[#4e46e5]">管理APP</span>
                 </div>
 
-                <div class="link-app" @click="editUser(record)">
-                  <FormOutlined />
-                  <span>编辑</span>
+                <div class="flex items-center cursor-pointer" @click="editUser(record)">
+                  <FormOutlined class="mr-1 text-[#4e46e5]" />
+                  <span class="text-[#4e46e5]">编辑</span>
                 </div>
 
                 <a-popconfirm
                   title="你确定要删除此用户?" ok-text="确定" cancel-text="取消" placement="left"
                   @confirm="deleteUserBut(record)"
                 >
-                  <span>删除</span>
+                  <span class="text-left text-[#e35150] cursor-pointer">删除</span>
                 </a-popconfirm>
               </div>
             </template>
@@ -236,76 +264,6 @@ getData(searchParams.value)
 </template>
 
 <style lang="scss" scoped>
-.table-part {
-  min-height: 50vh;
-
-  .business {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-
-    .business-item {
-      width: fit-content;
-      padding: 5px 8px;
-      border-radius: 15px;
-      background-color: #dbeafe;
-      color: #3b5bbb;
-      font-size: 14px;
-      margin-right: 10px;
-
-      &:last-of-type {
-        margin-right: 0;
-      }
-    }
-  }
-
-  .role {
-    width: fit-content;
-    padding: 5px 8px;
-    border-radius: 15px;
-    background-color: #dcfce7;
-    color: #186736;
-    font-size: 14px;
-  }
-
-  .option {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    font-size: 14px;
-
-    span {
-      cursor: pointer;
-
-      &:first-of-type {
-        color: #4e46e5;
-      }
-
-      &:last-of-type {
-        color: #e35150;
-      }
-    }
-
-    .link-app {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-
-      span {
-        font-size: 14px;
-        color: #4e46e5;
-        margin-inline-start: 5px;
-      }
-
-      img {
-        height: 14px;
-        object-fit: contain;
-      }
-    }
-  }
-}
-
 .containner {
   position: fixed;
   top: 0;

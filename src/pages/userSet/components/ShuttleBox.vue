@@ -2,8 +2,12 @@
 import { ref, watch } from 'vue'
 import { CloseCircleOutlined } from '@ant-design/icons-vue'
 import Shuttle_item from './Shuttle_item.vue'
+import { getAppListData } from '~@/api/app/applist'
 
 const checked: any = defineModel('checked')
+
+// 当前用户
+const { operator } = useUserStore()
 
 // 数据类型声明
 interface APPData {
@@ -12,12 +16,14 @@ interface APPData {
   package: string
   firebaseID: string
   business: string[]
-  manager: string[]
+  users: string[]
   system: string
   platform: string[]
   icon: string
   creator: string
   createTime: string
+  updater: string
+  updateTime: string
   copyAppID?: string | undefined
   copyConfig?: string[]
 }// 请求接口数据类型
@@ -30,137 +36,31 @@ interface BusinessGroup {
   }
 }
 
-const appList = ref<APPData[]>([
-  {
-    id: 'app-1',
-    appName: 'APP1',
-    package: 'com.oaojsa.app1',
-    firebaseID: 'ajbbhj_jhkbjhb',
-    business: ['电商业务组', '电商健康组'],
-    manager: ['张三', '李四'],
-    system: 'iOS',
-    platform: ['Google', 'Apple Store', 'xiaomi'],
-    icon: '/src/assets/images/icon1.png',
-    creator: '王五',
-    createTime: '2022-01-01',
-  },
-  {
-    id: 'app-2',
-    appName: 'APP2',
-    package: 'com.oaojsa.app2',
-    firebaseID: 'ajbbhj_jhkbjhb',
-    business: ['电商健康组'],
-    manager: ['王五', '李四'],
-    system: 'Android',
-    platform: ['Google', 'Apple Store'],
-    icon: '/src/assets/images/icon2.png',
-    creator: '王五',
-    createTime: '2022-01-01',
-    copyAppID: 'app-1',
-    copyConfig: ['OID管理', '样式管理', 'APP权限人员'],
-  },
-  {
-    id: 'app-3',
-    appName: 'APP3',
-    package: 'com.oaojsa.app3',
-    firebaseID: 'ajbbhj_jhkbjhb',
-    business: ['电商幸福组'],
-    manager: ['张三', '王五'],
-    system: 'iOS',
-    platform: ['Apple Store', 'xiaomi'],
-    icon: '/src/assets/images/icon3.png',
-    creator: '王五',
-    createTime: '2022-01-01',
-  },
-  {
-    id: 'app-4',
-    appName: 'APP4',
-    package: 'com.oaojsa.app4',
-    firebaseID: 'ajbbhj_jhkbjhb',
-    business: ['电商幸福组', '电商健康组'],
-    manager: ['张三', '王五'],
-    system: 'iOS',
-    platform: ['Apple Store', 'xiaomi'],
-    icon: '/src/assets/images/icon4.png',
-    creator: '王五',
-    createTime: '2022-01-01',
-  },
-  {
-    id: 'app-5',
-    appName: 'APP5',
-    package: 'com.oaojsa.app5',
-    firebaseID: 'ajbbhj_jhkbjhb',
-    business: ['电商业务组', '电商健康组'],
-    manager: ['张三', '李四'],
-    system: 'iOS',
-    platform: ['Google', 'Apple Store', 'xiaomi'],
-    icon: '/src/assets/images/icon1.png',
-    creator: '王五',
-    createTime: '2022-01-01',
-  },
-  {
-    id: 'app-9',
-    appName: 'APP5',
-    package: 'com.oaojsa.app5',
-    firebaseID: 'ajbbhj_jhkbjhb',
-    business: ['电商健康组'],
-    manager: ['王五', '李四'],
-    system: 'Android',
-    platform: ['Google', 'Apple Store'],
-    icon: '/src/assets/images/icon2.png',
-    creator: '王五',
-    createTime: '2022-01-01',
-    copyAppID: 'app-1',
-    copyConfig: ['OID管理', '样式管理', 'APP权限人员'],
-  },
-  {
-    id: 'app-6',
-    appName: 'APP6',
-    package: 'com.oaojsa.app6',
-    firebaseID: 'ajbbhj_jhkbjhb',
-    business: ['电商幸福组'],
-    manager: ['张三', '王五'],
-    system: 'iOS',
-    platform: ['Apple Store', 'xiaomi'],
-    icon: '/src/assets/images/icon3.png',
-    creator: '王五',
-    createTime: '2022-01-01',
-  },
-  {
-    id: 'app-7',
-    appName: 'APP7',
-    package: 'com.oaojsa.app7',
-    firebaseID: 'ajbbhj_jhkbjhb',
-    business: ['电商幸福组', '电商健康组'],
-    manager: ['张三', '王五'],
-    system: 'iOS',
-    platform: ['Apple Store', 'xiaomi'],
-    icon: '/src/assets/images/icon4.png',
-    creator: '王五',
-    createTime: '2022-01-01',
-  },
-])// 请求接口数据
-console.log(JSON.stringify(appList.value))
+const appList = ref<APPData[]>([])// 请求接口数据
 
 const businessGroup = ref<BusinessGroup>({})
 
-appList.value.forEach((app: APPData) => {
-  if (app.business.length > 0) {
-    const firstBusiness: string = app.business[0]
-    if (!businessGroup.value[firstBusiness]) {
-      businessGroup.value[firstBusiness] = {
-        checkAll: false,
-        indeterminate: false,
-        apps: [],
-        checked: [],
+function getAPPList() {
+  getAppListData({ operator }).then((res: any) => {
+    appList.value = res.data.list
+    appList.value.forEach((app: APPData) => {
+      const firstBusiness: string = app.business[0]
+      if (!businessGroup.value[firstBusiness]) {
+        businessGroup.value[firstBusiness] = {
+          checkAll: false,
+          indeterminate: false,
+          apps: [],
+          checked: [],
+        }
       }
-    }
-    if (checked.value.some((item: APPData) => item.id === app.id)) {
-      businessGroup.value[firstBusiness].checked.push(app)
-    }
-    businessGroup.value[firstBusiness].apps.push(app)
-  }
-})
+      if (checked.value.includes(app.id)) {
+        businessGroup.value[firstBusiness].checked.push(app)
+      }
+      businessGroup.value[firstBusiness].apps.push(app)
+    })
+  })
+}
+getAPPList()
 
 function cancel(business: string, app: APPData) {
   businessGroup.value[business].checked = businessGroup.value[business].checked.filter((item: APPData) => item.id !== app.id)
@@ -170,9 +70,11 @@ watch(businessGroup, () => {
   const apps: any = []
   Object.keys(businessGroup.value).forEach((key: string) => {
     const app = businessGroup.value[key].checked
-    if (app.length > 0) {
-      apps.push(...app)
-    }
+    app.forEach((item: APPData) => {
+      if (!apps.includes(item.id)) {
+        apps.push(item.id)
+      }
+    })
   })
   checked.value = apps
 }, { deep: true })

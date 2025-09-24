@@ -45,7 +45,7 @@ watch(model, (val) => {
     <template #overlay>
       <a-menu>
         <a-menu-item>
-          <a-input-search v-model:value="searchValue" placeholder="搜索其他选项" allow-clear />
+          <a-input-search v-model:value="searchValue" placeholder="搜索其他选项" allow-clear autocomplete="off" />
         </a-menu-item>
         <a-menu-item>
           <a-checkbox

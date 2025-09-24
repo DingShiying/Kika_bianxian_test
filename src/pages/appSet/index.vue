@@ -1,13 +1,14 @@
 <script setup lang="ts" name="appSet">
 import { ref } from 'vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
-import { notification } from 'ant-design-vue'
 import addApp from './components/addApp.vue'
-import Shuttle from './components/ShuttleBox.vue'
+import ShuttleBox from './components/ShuttleBox.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
 import { getBusinessListData } from '~@/api/business/businesslist'
 import { getAppListData } from '~@/api/app/applist'
+import { deleteAppData } from '~@/api/app/deleteapp'
+import { addApp as toEditApp } from '~@/api/app/addapp'
 
 // 数据类型声明
 interface APPData {
@@ -16,7 +17,7 @@ interface APPData {
   package: string
   firebaseID: string
   business: string[]
-  manager: string[]
+  users: string[]
   system: string
   platform: string[]
   icon: string
@@ -39,6 +40,8 @@ interface FormState {
   appName: string
   system: string | undefined
   business: string | undefined
+  page: number
+  pageSize: number
   operator: string | undefined
 }
 
@@ -53,31 +56,67 @@ const businessList = ref<BusinessData[]>()
 const columns: any = [
   {
     title: '应用ID',
-    dataIndex: 'appID',
-    key: 'appID',
+    width: 100,
+    dataIndex: 'id',
+    key: 'id',
+    fixed: 'left',
   },
   {
     title: '应用名称',
+    width: 100,
     dataIndex: 'appName',
     key: 'appName',
     align: 'center',
+    fixed: 'left',
   },
   {
     title: '应用图标',
+    width: 100,
     dataIndex: 'icon',
     key: 'icon',
     align: 'center',
+    fixed: 'left',
   },
   {
     title: '包名',
+    width: 200,
     dataIndex: 'package',
     key: 'package',
     align: 'center',
   },
   {
+    title: '所属业务组',
+    width: 200,
+    dataIndex: 'business',
+    key: 'business',
+    align: 'center',
+  },
+  {
+    title: '创建人',
+    width: 100,
+    dataIndex: 'creator',
+    key: 'creator',
+    align: 'center',
+  },
+  {
     title: '创建时间',
+    width: 150,
     dataIndex: 'createTime',
     key: 'createTime',
+    align: 'center',
+  },
+  {
+    title: '更新人',
+    width: 100,
+    dataIndex: 'updater',
+    key: 'updater',
+    align: 'center',
+  },
+  {
+    title: '更新时间',
+    width: 150,
+    dataIndex: 'updateTime',
+    key: 'updateTime',
     align: 'center',
   },
   {
@@ -85,15 +124,17 @@ const columns: any = [
     dataIndex: 'operation',
     key: 'operation',
     align: 'center',
+    width: 150,
+    fixed: 'right',
   },
 ]// 表格列头
 const loading = ref(false) // 表格加载状态
 const pagination = ref({
   current: 1,
-  pageSize: 10,
+  pageSize: 15,
   total: 0,
 })// 表格分页
-const currentApp = ref()// 当前选中应用
+const currentApp = ref<any>()// 当前选中应用
 const copyApp = ref()// 复制应用
 const addAppOpen = ref(false)// 新增应用弹窗状态
 const usersOpen = ref(false)// 用户列表弹窗状态
@@ -105,6 +146,8 @@ const formState = reactive<FormState>({
   appName: '',
   system: undefined,
   business: undefined,
+  page: 1,
+  pageSize: 15,
   operator,
 })// oid查询表单数据
 
@@ -115,6 +158,8 @@ const operationNo = ref(false) // 操作失败
 // 表格相关函数
 function handleTableChange(event: any) {
   pagination.value = event
+  formState.page = event.current
+  getAPPList()
 }// 表格分页改变
 function closeAddApp(value: boolean) {
   if (value) {
@@ -125,7 +170,12 @@ function closeAddApp(value: boolean) {
   copyApp.value = null
 }// 关闭新增应用弹窗
 function editManager(record: any) {
-  users.value = record.users
+  currentApp.value = record
+  delete currentApp.value.updateTime
+  delete currentApp.value.updater
+  delete currentApp.value.createTime
+  delete currentApp.value.creator
+  console.log(currentApp.value)
   usersOpen.value = true
 }// 编辑人员
 function copyCreateAPP(record: any) {
@@ -134,20 +184,39 @@ function copyCreateAPP(record: any) {
 }// 复制新建
 function editAPP(record: any) {
   currentApp.value = record
+  delete currentApp.value.updateTime
+  delete currentApp.value.updater
+  delete currentApp.value.createTime
+  delete currentApp.value.creator
+
   addAppOpen.value = true
 }// 编辑应用
 function deleteAPP(record: any) {
+  deleteAppData
   currentApp.value = record
-  console.log(currentApp.value)
-  setTimeout(() => {
+  deleteAppData({
+    id: record.id,
+    operator,
+  }).then(() => {
     operationYes.value = true
-  }, 1000)
-  currentApp.value = null
+  }).catch(() => {
+    operationNo.value = true
+  }).finally(() => {
+    currentApp.value = null
+    getAPPList()
+  })
 }// 删除策略
 function userSetOK() {
-  console.log(users.value)
-  operationYes.value = true
-  usersOpen.value = false
+  toEditApp({
+    ...currentApp.value,
+    isAdd: false,
+    operator,
+  }).then(() => {
+    operationYes.value = true
+    usersOpen.value = false
+  }).catch(() => {
+    operationNo.value = true
+  })
 }// 人员管理确定
 function userSetCancel() {
   users.value = []
@@ -174,21 +243,6 @@ function getAPPList() {
       loading.value = false
     }, 500)
   })
-  // try {
-  //   loading.value = true
-  //   await setTimeout(() => {
-  //     loading.value = false
-  //     console.log(response.value)
-  //   }, 1000)
-  // }
-  // catch (error: any) {
-  //   loading.value = false
-  //   console.error(error)
-  //   notification.open({
-  //     message: '获取数据失败',
-  //     description: error,
-  //   })
-  // }
 }
 getAPPList()
 function resetForm() {
@@ -198,13 +252,13 @@ function resetForm() {
     business: undefined,
   })
   console.log(formState)
-}// 重置oid查询表单
+}// 重置查询表单
 </script>
 
 <template>
   <page-container>
     <template #extra>
-      <a-button type="primary" @click="() => addAppOpen = true">
+      <a-button type="primary" :disabled="addAppOpen" @click="() => addAppOpen = true">
         <template #icon>
           <PlusOutlined />
         </template>
@@ -213,14 +267,12 @@ function resetForm() {
     </template>
 
     <a-card v-if="!addAppOpen">
-      <a-form ref="formRef" name="OIDForm" :model="formState" layout="inline">
+      <a-form ref="formRef" name="OIDForm" :model="formState" layout="inline" class="mb-[10px]">
         <a-form-item label="APP名称" name="appName">
           <a-input v-model:value="formState.appName" placeholder="请输入APP名称" style="width: 15vw;" />
         </a-form-item>
         <a-form-item label="发行端" name="system">
-          <a-select
-            v-model:value="formState.system" placeholder="请输入发行端" style="width: 15vw;text-align: center;"
-          >
+          <a-select v-model:value="formState.system" placeholder="请输入发行端" style="width: 15vw;text-align: center;">
             <a-select-option value="iOS">
               iOS
             </a-select-option>
@@ -230,9 +282,7 @@ function resetForm() {
           </a-select>
         </a-form-item>
         <a-form-item label="所属业务组" name="business">
-          <a-select
-            v-model:value="formState.business" placeholder="请输入所属业务组" style="width: 15vw;text-align: center;"
-          >
+          <a-select v-model:value="formState.business" placeholder="请输入所属业务组" style="width: 15vw;text-align: center;">
             <a-select-option v-for="option in businessList" :key="option.business" :value="option.business">
               {{ option.business }}
             </a-select-option>
@@ -249,7 +299,7 @@ function resetForm() {
       </a-form>
       <a-table
         :columns="columns" :data-source="list" :loading="loading" :pagination="pagination"
-        class="table-part" @change="handleTableChange($event)"
+        :scroll="{ x: '50vw', y: '45vh' }" @change="handleTableChange($event)"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'appName'">
@@ -263,25 +313,38 @@ function resetForm() {
             <a-image :src="record.icon" :height="30" :width="30" />
           </template>
 
+          <template v-if="column.dataIndex === 'business'">
+            <div class="flex flex-wrap flex-justify-between">
+              <a-tag v-if="record.business.length === 1">
+                {{ record.business[0] }}
+              </a-tag>
+              <template v-else>
+                <a-tag v-for="item in record.business" :key="item">
+                  {{ item }}
+                </a-tag>
+              </template>
+            </div>
+          </template>
+
           <template v-if="column.dataIndex === 'operation'">
-            <div class="option">
-              <span style="color: #4e46e5;" @click="editAPP(record)">编辑</span>
-              <span style="color: #4e46e5;" @click="copyCreateAPP(record)">复用配置创建APP</span>
-              <span style="color: #4e46e5;" @click="editManager(record)">人员管理</span>
+            <div class="flex flex-col items-start">
+              <span class="text-[#4e46e5] cursor-pointer " @click="editAPP(record)">编辑</span>
+              <span class="text-[#4e46e5] cursor-pointer" @click="copyCreateAPP(record)">复用配置创建</span>
+              <span class="text-[#4e46e5] cursor-pointer" @click="editManager(record)">人员管理</span>
               <a-popconfirm
                 title="你确定要删除此APP?" ok-text="确定" cancel-text="取消" placement="left"
                 @confirm="deleteAPP(record)"
               >
-                <span style="color: #e35150;">删除</span>
+                <span class="text-[#e35150] cursor-pointer">删除</span>
               </a-popconfirm>
             </div>
           </template>
         </template>
-        <!-- <template #footer>
+        <template v-if="pagination.total > 0" #footer>
           显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
           {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
             * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
-        </template> -->
+        </template>
       </a-table>
     </a-card>
 
@@ -292,44 +355,50 @@ function resetForm() {
     <operateTrue v-model="operationYes" />
     <operateFalse v-model="operationNo" />
 
-    <a-modal
-      v-model:open="usersOpen" title="人员管理" style="top:20vh;width:80vw;" :mask-closable="false" class="OID-modal"
-      ok-text="确认" cancel-text="取消" @ok="userSetOK" @cancel="userSetCancel"
-    >
-      <Shuttle :checked="users" />
-    </a-modal>
+    <template v-if="usersOpen">
+      <a-modal
+        v-model:open="usersOpen" title="人员管理" style="top:20vh;width:70vw;" :mask-closable="false" class="OID-modal"
+        ok-text="确认" cancel-text="取消" :closable="false" @ok="userSetOK" @cancel="userSetCancel"
+      >
+        <ShuttleBox v-model:checked="currentApp.users" />
+      </a-modal>
+    </template>
   </page-container>
 </template>
 
 <style lang="scss" scoped>
-.table-part {
-  min-height: 50vh;
+.business {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  .app-name {
-    display: flex;
-    align-items: center;
+.app-name {
+  display: flex;
+  align-items: center;
 
-    img {
-      width: 15px;
-      height: 15px;
-      object-fit: cover;
-      margin-right: 5px;
-    }
-
-    span {
-      font-size: 14px;
-    }
+  img {
+    width: 15px;
+    height: 15px;
+    object-fit: cover;
+    margin-right: 5px;
   }
 
-  .option {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
+  span {
     font-size: 14px;
+  }
+}
 
-    span {
-      cursor: pointer;
-    }
+.option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-around;
+  font-size: 14px;
+
+  span {
+    cursor: pointer;
   }
 }
 

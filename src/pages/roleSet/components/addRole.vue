@@ -38,6 +38,14 @@ const rules: any = {
   }],
   roleAuth: [{ required: true, message: '请至少选择一个权限', trigger: 'change', type: 'array' }],
 }// 表单验证规则
+const isAdd = computed(() => {
+  if (current) {
+    return false
+  }
+  else {
+    return true
+  }
+})
 
 // 表单相关函数
 function handleOk() {

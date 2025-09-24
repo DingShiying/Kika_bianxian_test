@@ -168,7 +168,7 @@ getStrategyList()
 <template>
   <page-container>
     <template #extra>
-      <a-button type="primary" @click="() => addLoadingOpen = true">
+      <a-button type="primary" :disabled="addLoadingOpen" @click="() => addLoadingOpen = true">
         <template #icon>
           <PlusOutlined />
         </template>
@@ -187,7 +187,7 @@ getStrategyList()
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'status'">
-            <a-switch v-model:checked="record.status" />
+            <a-switch v-model:checked="record.status" :disabled="true" />
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <div class="option">

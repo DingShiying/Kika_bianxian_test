@@ -23,7 +23,7 @@ interface Params {
 }// 请求参数类型
 
 export function getAppListData(params: Params) {
-  return usePost<BusinessList, Params>('/proxy/business/list', params, {
+  return usePost<BusinessList, Params>('/proxy/app/list', params, {
     // 设置为false的时候不会携带token
     token: true,
     // 开发模式下使用自定义的接口

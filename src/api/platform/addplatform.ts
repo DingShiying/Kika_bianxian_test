@@ -2,6 +2,7 @@
 interface Params {
   platformName: string
   status: boolean
+  isAdd: boolean
   operator: string | undefined
 }// 用户数据类型
 interface Response {

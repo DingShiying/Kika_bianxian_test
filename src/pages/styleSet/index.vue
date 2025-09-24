@@ -1,103 +1,56 @@
 <script setup lang="ts" name="styleeSet">
-import { onMounted, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { EyeOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import AddStyle from './components/addStyle.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
+import { getStyleListData } from '~@/api/style/stylelist'
 
-interface SearchFormState {
-  styleName: string
-  styleType: string | undefined
+// 当前用户、app
+const { operator, currentApp } = useUserStore()
+
+// 类型声明
+interface SearchParams {
+  id: string | number
+  type: string | undefined
   creator: string
+  page: number
+  pageSize: number
+  operator: string | undefined
+  currentApp: string | undefined
 }// 检索表单数据类型
-interface ConfigListData {
-  data: Array<{
-    style_id: string
-    type: string
-    base_id?: number
-    differences?: {
-      [key: string]: {
-        [key: string]: string | number
-      }
-    }
-    preview: string
-    creator: string
-    createTime: string
-    currentEditor: string
-    editTime: string
-    json?: {
+interface StyleData {
+  id: string | number
+  type: string
+  differences?: {
+    [key: string]: {
       [key: string]: string | number
     }
-  }>
+  }
+  preview?: string
+  creator: string
+  createTime: string
+  updator: string
+  updateTime: string
+  json?: {
+    [key: string]: string | number
+  }
 }// 请求接口数据类型
 
-const response = ref<ConfigListData>({
-  data: [
-    {
-      style_id: '样式1',
-      type: '基准',
-      preview: '/src/assets/images/style_preview.png',
-      creator: '张三',
-      createTime: '2023-01-01',
-      currentEditor: '李四',
-      editTime: '2023-01-02',
-    },
-    {
-      style_id: '样式2',
-      base_id: 304,
-      type: '自定义',
-      differences: {
-        'bg_start_color': {
-          'base': '#f4f4f4',
-          'current': '#f5f5f5',
-        },
-        'bg_end_color': {
-          'base': '#f4f4f4',
-          'current': '#f5f5f5',
-        },
-        'info_bg_color': {
-          'base': '#f4f4f4',
-          'current': '#f5f5f5',
-        },
-        'info_bg_radius': {
-          'base': '8px',
-          'current': '10px',
-        },
-      },
-      preview: '/src/assets/images/style_preview.png',
-      creator: '王五',
-      createTime: '2023-01-03',
-      currentEditor: '赵六',
-      editTime: '2023-01-04',
-      json: {
-        bg_start_color: '#fffff',
-        bg_end_color: '#eeeeee',
-        info_bg_color: '#ffffff',
-        info_bg_radius: '10',
-      },
-    },
-    {
-      style_id: '样式3',
-      type: '基准',
-      preview: '/src/assets/images/style_preview.png',
-      creator: '钱七',
-      createTime: '2023-01-05',
-      currentEditor: '孙八',
-      editTime: '2023-01-06',
-    },
-  ],
-})// 请求接口数据
+// 请求响应数据
+const list = ref<StyleData[]>([])// 请求接口数据
 
 // 事件反馈相关变量
 const operationYes = ref(false) // 操作成功
 const operationNo = ref(false) // 操作失败
 
+// 表格相关变量
 const columns: any = [
   {
-    title: '样式名称',
-    dataIndex: 'style_id',
-    key: 'style_id',
-    align: 'center',
+    title: '样式id',
+    dataIndex: 'id',
+    key: 'id',
+    fixed: 'left',
   },
   {
     title: '样式类型',
@@ -130,15 +83,15 @@ const columns: any = [
     align: 'center',
   },
   {
-    title: '最新修改人',
-    dataIndex: 'currentEditor',
-    key: 'currentEditor',
+    title: '最近修改人',
+    dataIndex: 'updator',
+    key: 'updator',
     align: 'center',
   },
   {
-    title: '最新修改时间',
-    dataIndex: 'editTime',
-    key: 'editTime',
+    title: '最近修改时间',
+    dataIndex: 'updateTime',
+    key: 'updateTime',
     align: 'center',
   },
   {
@@ -148,85 +101,59 @@ const columns: any = [
     align: 'center',
   },
 ]// 表格列头
-
 const loading = ref(false) // 表格加载状态
 const addStyleOpen = ref(false)// 新增样式弹窗状态
 const differencesOpen = ref(false)// 差异弹窗状态
 const differences = ref()// 差异弹窗数据
-
 const pagination = ref({
   current: 1,
-  pageSize: 10,
-  total: response.value.data.length,
+  pageSize: 15,
+  total: 0,
 })// 表格分页
-
-const searchFormRef = ref()// 检索表单引用
-
-const searchFormState: SearchFormState = reactive({
-  styleName: '',
-  styleType: undefined,
-  creator: '',
-})// 表单数据
-
-const styleTypeOptions = [
-  {
-    label: '样式1',
-    value: 1,
-  },
-  {
-    label: '样式2',
-    value: 2,
-  },
-  {
-    label: '样式3',
-    value: 3,
-  },
-]
-
 const currentStyle = ref()// 当前选中样式
 
+// 检索相关变量
+const searchFormRef = ref()// 检索表单引用
+const searchParams = ref<SearchParams>({
+  id: '',
+  type: undefined,
+  creator: '',
+  page: 1,
+  pageSize: 15,
+  operator,
+  currentApp,
+})// 查询数据
+
+// 表格相关函数
 function handleTableChange(event: any) {
   pagination.value = event
+  searchParams.value.page = event.current
+  getStyleList()
 }// 表格分页改变
-
-function searchConfig() {
-  console.log(searchFormState)
-}
-
-function resetSearch() {
-  Object.assign(searchFormState, {
-    styleName: '',
-    styleType: undefined,
-    creator: '',
-  })
-}
-
 function closeAddStyle(value: boolean) {
   if (value) {
     operationYes.value = true
   }
   addStyleOpen.value = false
   currentStyle.value = null
-}
-
+}// 关闭新增样式弹窗
 function handleEdit(record: any) {
   if (record.type === '自定义') {
     currentStyle.value = record
     addStyleOpen.value = true
   }
-}
-
+}// 编辑样式
 function handleCopy(record: any) {
   if (record.type === '自定义') {
     currentStyle.value = JSON.parse(JSON.stringify(record))
     currentStyle.value.style_id = ''
     addStyleOpen.value = true
   }
-}
+}// 复制样式新建
 function showDifferences(record: Array<string>) {
   differences.value = record
   differencesOpen.value = true
-}
+}// 查看差异
 function deleteStyle(user: any) {
   currentStyle.value = user
   console.log(currentStyle.value)
@@ -235,10 +162,27 @@ function deleteStyle(user: any) {
     operationYes.value = true
   }, 1000)
   currentStyle.value = null
-}// 删除用户
-// onMounted(() => {
-//   getData(searchParams.value)
-// })
+}// 删除样式
+
+// 检索相关函数
+function resetSearch() {
+  searchParams.value.id = ''
+  searchParams.value.type = undefined
+  searchParams.value.creator = ''
+}// 重置检索条件
+function getStyleList() {
+  loading.value = true
+  getStyleListData(searchParams.value).then((res: any) => {
+    list.value = res.data.list
+    console.log(list.value)
+    pagination.value.total = res.data.total
+  }).finally(() => {
+    setTimeout(() => {
+      loading.value = false
+    }, 500)
+  })
+}
+getStyleList()
 </script>
 
 <template>
@@ -254,22 +198,29 @@ function deleteStyle(user: any) {
 
     <a-card v-if="!addStyleOpen">
       <div class="search-part">
-        <a-form ref="searchFormRef" :model="searchFormState" layout="inline">
+        <a-form ref="searchFormRef" :model="searchParams" layout="inline">
           <a-form-item label="样式名称" name="styleName">
-            <a-input v-model:value="searchFormState.styleName" placeholder="请输入样式名称" />
+            <a-input v-model:value="searchParams.id" placeholder="请输入样式名称" />
           </a-form-item>
 
           <a-form-item label="样式类型" name="styleType">
-            <a-select v-model:value="searchFormState.styleType" placeholder="请选择样式类型" :options="styleTypeOptions" />
+            <a-select v-model:value="searchParams.type" placeholder="请选择样式类型">
+              <a-select-option value="base">
+                基准样式
+              </a-select-option>
+              <a-select-option value="diy">
+                自定义样式
+              </a-select-option>
+            </a-select>
           </a-form-item>
 
           <a-form-item label="创建人" name="creator">
-            <a-input v-model:value="searchFormState.creator" placeholder="请输入创建人名称" />
+            <a-input v-model:value="searchParams.creator" placeholder="请输入创建人名称" />
           </a-form-item>
         </a-form>
 
         <div class="but-part">
-          <a-button type="primary" @click="searchConfig">
+          <a-button type="primary" @click="getStyleList">
             查询
           </a-button>
           <a-button style="margin-left: 10px" @click="resetSearch">
@@ -279,26 +230,31 @@ function deleteStyle(user: any) {
       </div>
 
       <a-table
-        :columns="columns" :data-source="response.data" :loading="loading" :pagination="pagination"
+        :columns="columns" :data-source="list" :loading="loading" :pagination="pagination"
         class="table-part" @change="handleTableChange($event)"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'differences'">
-            <span v-if="record.type === '基准'">无差异</span>
+            <span v-if="record.type === 'base'">无差异</span>
             <span v-else style="cursor:pointer" @click="showDifferences(record.differences)">{{ Object.keys(record.differences).length }} 个差异</span>
           </template>
           <template v-if="column.dataIndex === 'preview'">
-            <a-image :src="record.preview" :height="20" />
+            <template v-if="record.type === 'base'">
+              <a-image :src="record.preview" :height="20" />
+            </template>
+            <template v-else>
+              无
+            </template>
           </template>
           <template v-if="column.dataIndex === 'operation'">
-            <div class="option">
-              <div class="link-app" @click="handleCopy(record)">
-                <EyeOutlined />
-                <span>复用配置新建</span>
+            <div class="flex flex-col items-start">
+              <div class="flex items-center " @click="handleCopy(record)">
+                <EyeOutlined class="mr-1 text-[#4e46e5]" />
+                <span class="text-[#4e46e5]">复用配置新建</span>
               </div>
-              <div class="link-app" @click="handleEdit(record)">
-                <FormOutlined />
-                <span>编辑</span>
+              <div class="flex items-center " @click="handleEdit(record)">
+                <FormOutlined class="mr-1 text-[#4e46e5]" />
+                <span class="text-[#4e46e5]">编辑</span>
               </div>
               <a-popconfirm
                 title="你确定要删除此样式?"
@@ -307,30 +263,34 @@ function deleteStyle(user: any) {
                 placement="left"
                 @confirm="deleteStyle(record)"
               >
-                <span>删除</span>
+                <span class="text-[#e35150]">删除</span>
               </a-popconfirm>
             </div>
           </template>
         </template>
-        <!-- <template #footer>
+        <template v-if="pagination.total > 0" #footer>
           显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
           {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
             * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
-        </template> -->
+        </template>
       </a-table>
     </a-card>
     <a-card v-else style="margin-bottom: 30px;">
       <AddStyle :current="currentStyle" @close="closeAddStyle" />
     </a-card>
 
-    <a-modal v-model:visible="differencesOpen" title="与基准样式的差异" :footer="null">
+    <a-modal v-model:open="differencesOpen" title="与基准样式的差异" :footer="null">
       <div v-for="item in Object.keys(differences)" :key="item" class="diff">
         <div class="diff-title">
           {{ item }}&nbsp;:
         </div>
-        <a-tag>{{ differences[item].base }}</a-tag>
-        <span>&nbsp;->&nbsp;</span>
-        <a-tag>{{ differences[item].current }}</a-tag>
+        <a-tag>
+          {{ differences[item].base }}
+        </a-tag>
+        <span>&nbsp;——>&nbsp;</span>
+        <a-tag>
+          {{ differences[item].diy }}
+        </a-tag>
       </div>
     </a-modal>
 

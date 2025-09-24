@@ -22,7 +22,14 @@ const formState: FormState = reactive(current || {
   platformName: '',
   status: true,
 })// 表单数据
-
+const isAdd = computed(() => {
+  if (current) {
+    return false
+  }
+  else {
+    return true
+  }
+})
 const rules: any = {
   platformName: [{ required: true, message: '上架平台名称不能为空', trigger: 'blur', type: 'string' }],
 }// 表单验证规则
@@ -31,6 +38,7 @@ function handleOk() {
   formRef.value.validate().then(async () => {
     await addPlatform({
       ...formState,
+      isAdd: isAdd.value,
       operator,
     })
     emit('close', true)

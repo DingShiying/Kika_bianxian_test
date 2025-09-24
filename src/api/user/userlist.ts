@@ -16,9 +16,9 @@ interface UserList {
   }
 }// 用户列表数据类型
 interface Params {
-  userName: string
-  page: number
-  pageSize: number
+  userName?: string
+  page?: number
+  pageSize?: number
   operator: string | undefined
 }// 请求参数类型
 

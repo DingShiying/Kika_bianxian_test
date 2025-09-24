@@ -5,6 +5,7 @@ interface Params {
   business: []
   role: string | undefined
   apps: Array<string>
+  isAdd: boolean
   operator: string | undefined
 }// 用户数据类型
 interface Response {

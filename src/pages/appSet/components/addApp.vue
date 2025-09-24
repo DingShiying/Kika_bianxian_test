@@ -2,11 +2,18 @@
 import { computed, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
+import ShuttleBox from './ShuttleBox.vue'
 import Select from '~@/components/form/Select.vue'
+import { addApp } from '~@/api/app/addapp'
+import { getBusinessListData } from '~@/api/business/businesslist'
+import { getPlatformListData } from '~@/api/platform/platformlist'
 
 // 父组件传值
 const { current, copy } = defineProps(['current', 'copy'])
 const emit = defineEmits(['close'])
+
+// 当前用户
+const { operator } = useUserStore()
 
 // 数据类型声明
 interface APPData {
@@ -25,27 +32,33 @@ interface APPData {
   copyConfig?: string[]
 }// 请求接口数据类型
 interface BusinessData {
+  id: string
   business: string
   creator: string
   createTime: string
+  updater: string
+  updateTime: string
 }// 请求接口数据类型
 interface PlatformData {
+  id: string
   platformName: string
   creator: string
   createTime: string
+  updater: string
+  updateTime: string
   status: boolean
 }// 请求接口数据类型
 interface FormState {
   appName: string
   package: string
   firebaseID: string
-  business: string | undefined
+  business: string[]
   users: string[]
   system: string
   platform: string[]
   icon: string
   copyAppID: string | undefined
-  copyConfig: string[]
+  copyConfig: string[] | undefined
 }// 表单数据类型
 
 // 请求响应数据
@@ -90,58 +103,33 @@ const appList = ref<APPData[]>([
     createTime: '2022-01-01',
   },
 ])
-const businessList = ref<BusinessData[]>([
-  {
-    business: '电商业务组',
-    creator: '张三',
-    createTime: '2023-01-01',
-  },
-  {
-    business: '金融业务组',
-    creator: '王五',
-    createTime: '2023-01-02',
-  },
-  {
-    business: '物流业务组',
-    creator: '钱七',
-    createTime: '2023-01-03',
-  },
-])// 请求接口数据
-const platformList = ref<PlatformData[]>([
-  {
-    platformName: 'Google',
-    creator: '张三',
-    createTime: '2023-01-01',
-    status: true,
-  },
-  {
-    platformName: 'Facebook',
-    creator: '李四',
-    createTime: '2023-01-01',
-    status: false,
-  },
-  {
-    platformName: 'Amazon',
-    creator: '王五',
-    createTime: '2023-01-01',
-    status: true,
-  },
-])// 请求接口数据
+const businessList = ref<BusinessData[]>([])// 请求接口数据
+const platformList = ref<PlatformData[]>([])// 请求接口数据
 
 // 表单相关变量
+const isAdd = computed(() => {
+  if (current || copy) {
+    return false
+  }
+  else {
+    return true
+  }
+})
 const formRef = ref()// 表单引用
 const formState: FormState = reactive(current || {
   appName: '',
   package: '',
   firebaseID: '',
-  business: undefined,
+  business: [],
   users: [],
   system: 'iOS',
   platform: [],
   icon: '',
   copyAppID: undefined,
-  copyConfig: [],
+  copyConfig: undefined,
 })// 表单数据
+const visible = ref(false)
+const open = ref(false)
 if (copy) {
   Object.assign(formState, copy)
   formState.appName = ''
@@ -152,27 +140,50 @@ const rules: any = {
   appName: [{ required: true, message: '应用名称不能为空', trigger: 'blur', type: 'string' }],
   package: [{ required: true, message: '包名不能为空', trigger: 'blur', type: 'string' }],
   firebaseID: [{ required: true, message: 'firebase关联ID不能为空', trigger: 'blur', type: 'string' }],
-  business: [{ required: true, message: '归属业务组不能为空', trigger: 'blur', type: 'string' }],
-  manager: [{ required: true, message: '请至少选择一名管理员', trigger: 'blur', type: 'array' }],
+  business: [{ required: true, message: '归属业务组不能为空', trigger: 'change', type: 'array' }],
+  system: [{ required: true, message: '请选择发行端', trigger: 'blur', type: 'string' }],
   platform: [{ required: true, message: '请至少选择一个上架平台', trigger: 'change', type: 'array' }],
+  users: [{ required: true, message: '请至少选择一个所属用户', trigger: 'blur', type: 'array' }],
   // icon: [{ required: true, message: '请上传应用图标', trigger: 'blur', type: 'string' }],
-  copyConfig: [{ required: true, message: '请至少选择一个配置项', trigger: 'blur', type: 'array' }],
+  copyConfig: [{ required: true, message: '请至少选择一个配置项', trigger: 'change', type: 'array' }],
 }// 表单验证规则
 
 // 表单相关函数
 function handleOk() {
-  formRef.value.validate().then(() => {
-    console.log(formState)
+  console.log(formState)
+  formRef.value.validate().then(async () => {
+    await addApp({
+      ...formState,
+      isAdd: isAdd.value,
+      operator,
+    })
     emit('close', true)
   }).catch((err: any) => {
-    message.warning('请按要求填写表单！')
-    console.error(err)
+    if (err.name !== 'AxiosError') {
+      message.warning('请按照要求填写表单！')
+    }
   })
 }// 表单提交
 function handleCancel() {
   emit('close', false)
+}// 关闭新增弹窗
+function handleOkUser() {
+  visible.value = false
+  open.value = false
 }
 
+function getBusinessList() {
+  getBusinessListData({ operator }).then((res: any) => {
+    businessList.value = res.data.list
+  })
+}
+getBusinessList()
+function getPlatformList() {
+  getPlatformListData({ operator }).then((res: any) => {
+    platformList.value = res.data.list
+  })
+}
+getPlatformList()// 初始化请求
 // 复用APP是否禁用
 const copyDisabled = computed(() => {
   if (current) {
@@ -218,14 +229,17 @@ const copyDisabled = computed(() => {
       </a-form-item>
 
       <a-form-item label="归属业务组" name="business" style="width: 35vw;text-align: center;">
-        <a-select
+        <!-- <a-select
           v-model:value="formState.business" placeholder="请选择归属业务组"
           show-search
         >
-          <a-select-option v-for="option in businessList" :key="option.business" :value="option.business">
+          <a-select-option v-for="option in businessList" :key="option.business" :value="option.id">
             {{ option.business }}
           </a-select-option>
-        </a-select>
+        </a-select> -->
+        <div class="select">
+          <Select v-model="formState.business" :options="businessList.map(item => item.business)" />
+        </div>
       </a-form-item>
 
       <a-form-item label="发行端" name="system" style="width: 35vw;">
@@ -239,10 +253,22 @@ const copyDisabled = computed(() => {
         </a-radio-group>
       </a-form-item>
 
-      <a-form-item label="上架平台" name="platform" style="width: 35vw;">
+      <a-form-item label="上架平台" name="platform" style="width: 35vw;text-align: center;">
         <div class="select">
           <Select v-model="formState.platform" :options="platformList.map(item => item.platformName)" />
         </div>
+      </a-form-item>
+
+      <a-form-item label="所属人员" name="users">
+        <a-button
+          class="mr-[10px]" @click="() => {
+            visible = true
+            open = true
+          }"
+        >
+          分配
+        </a-button>
+        <span class="text-gray">已选择&nbsp;{{ formState.users.length }}&nbsp;人</span>
       </a-form-item>
 
       <a-form-item label="应用图标" name="icon">
@@ -307,6 +333,19 @@ const copyDisabled = computed(() => {
       取消
     </a-button>
   </div>
+  <template v-if="visible">
+    <a-modal
+      v-model:open="open" :mask-closable="false"
+      ok-text="确认" cancel-text="取消" title="分配所属人员" style="top:20vh;width:70vw;" :closable="false"
+    >
+      <template #footer>
+        <a-button key="submit" type="primary" @click="handleOkUser">
+          确定
+        </a-button>
+      </template>
+      <ShuttleBox v-model:checked="formState.users" />
+    </a-modal>
+  </template>
 </template>
 
 <style scoped lang='scss'>

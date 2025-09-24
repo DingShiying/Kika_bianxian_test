@@ -1,17 +1,22 @@
 <script setup lang='ts' name='Shuttle'>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { CloseCircleOutlined, SmileOutlined } from '@ant-design/icons-vue'
 import Shuttle_item from './Shuttle_item.vue'
+import { getUserListData } from '~@/api/user/userlist'
 
-const { checked } = defineProps(['checked'])
+const checked: any = defineModel('checked')
+
+// 当前用户
+const { operator } = useUserStore()
 
 // 数据类型声明
 interface UserData {
+  id: string
   userName: string
   userEmail: string
   business: Array<string>
   role: string
-  selectAPPs: Array<string>
+  apps: Array<string>
 }// 接口响应数据类型
 interface UserGroup {
   [key: string]: {
@@ -22,69 +27,57 @@ interface UserGroup {
   }
 }
 
-const userList = ref<UserData[]>([
-  {
-    'userName': '张三sansnan',
-    'userEmail': 'qqq.com',
-    'business': ['财务部', '人事部'],
-    'role': '系统管理员',
-    'selectAPPs': ['app-1', 'app-4'],
-  },
-  {
-    'userName': '李四',
-    'userEmail': 'qqq.com',
-    'business': ['财务部'],
-    'role': '系统管理员',
-    'selectAPPs': ['app-5', 'app-1'],
-  },
-  {
-    'userName': '王五',
-    'userEmail': 'qqq.com',
-    'business': ['人事部'],
-    'role': '人事经理',
-    'selectAPPs': ['app-2', 'app-4'],
-  },
-  {
-    'userName': '赵六',
-    'userEmail': 'qqq.com',
-    'business': ['开发部'],
-    'role': '开发工程师',
-    'selectAPPs': ['app-1', 'app-2', 'app-6', 'app-4'],
-  },
-])// 请求接口数据
-
+const userList = ref<UserData[]>([])// 请求接口数据
 const businessGroup = ref<UserGroup>({})
-
-userList.value.forEach((user: UserData) => {
-  if (user.business.length > 0) {
-    const firstBusiness: string = user.business[0]
-    if (!businessGroup.value[firstBusiness]) {
-      businessGroup.value[firstBusiness] = {
-        checkAll: false,
-        indeterminate: false,
-        users: [],
-        checked: [],
+function getUserList() {
+  getUserListData({ operator }).then((res: any) => {
+    userList.value = res.data.list
+    userList.value.forEach((user: UserData) => {
+      const firstBusiness: string = user.business[0]
+      if (!businessGroup.value[firstBusiness]) {
+        businessGroup.value[firstBusiness] = {
+          checkAll: false,
+          indeterminate: false,
+          users: [],
+          checked: [],
+        }
       }
-    }
-    if (checked.includes(user.userName)) {
-      businessGroup.value[firstBusiness].checked.push(user)
-    }
-    businessGroup.value[firstBusiness].users.push(user)
-  }
-})
+      if (checked.value.includes(user.id)) {
+        businessGroup.value[firstBusiness].checked.push(user)
+      }
+      businessGroup.value[firstBusiness].users.push(user)
+    })
+  })
+}
+getUserList()
 
 function cancel(business: string, user: UserData) {
   businessGroup.value[business].checked = businessGroup.value[business].checked.filter((item: UserData) => item.userName !== user.userName)
 }
 
-const checkCount = computed(() => {
-  let count = 0
-  for (const key in businessGroup.value) {
-    count += businessGroup.value[key].checked.length
-  }
+watch(businessGroup, () => {
+  const users: any = []
+  Object.keys(businessGroup.value).forEach((key: string) => {
+    const user = businessGroup.value[key].checked
+    if (user.length > 0) {
+      user.forEach((item: UserData) => {
+        if (!users.includes(item)) {
+          users.push(item.id)
+        }
+      })
+    }
+  })
+  checked.value = users
+}, { deep: true })
 
-  return count
-})
+// const checkCount = computed(() => {
+//   let count = 0
+//   for (const key in businessGroup.value) {
+//     count += businessGroup.value[key].checked.length
+//   }
+
+//   return count
+// })
 </script>
 
 <template>
@@ -103,7 +96,7 @@ const checkCount = computed(() => {
     <div class="line" />
     <div class="right">
       <div class="title">
-        已选择&nbsp;{{ checkCount }}&nbsp;个人
+        已选择&nbsp;{{ checked.length }}&nbsp;个人
       </div>
       <template v-for="business in Object.keys(businessGroup)" :key="business">
         <div v-for="user in businessGroup[business].checked" :key="user.userName" class="check-app">

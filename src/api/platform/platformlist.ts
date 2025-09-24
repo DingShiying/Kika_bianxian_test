@@ -17,14 +17,14 @@ interface PlatformList {
   }
 }// 用户列表数据类型
 interface Params {
-  platformName: string
-  page: number
-  pageSize: number
+  platformName?: string
+  page?: number
+  pageSize?: number
   operator: string | undefined
 }// 查询参数类型
 
 export function getPlatformListData(params: Params) {
-  return useGet<PlatformList, Params>('/proxy/platform/list', params, {
+  return usePost<PlatformList, Params>('/proxy/platform/list', params, {
     // 设置为false的时候不会携带token
     token: true,
     // 开发模式下使用自定义的接口

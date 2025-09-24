@@ -145,7 +145,7 @@ getRoleData(searchParams.value)// 初始化请求
 <template>
   <page-container>
     <template #extra>
-      <a-button type="primary" @click="() => addRoleOpen = true">
+      <a-button type="primary" :disabled="addRoleOpen" @click="() => addRoleOpen = true">
         <template #icon>
           <PlusOutlined />
         </template>

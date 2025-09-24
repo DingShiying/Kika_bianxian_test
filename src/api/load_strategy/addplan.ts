@@ -3,6 +3,7 @@ interface Params {
   label: string
   load_strategy: number
   status: boolean
+  isAdd: boolean
   operator: string | undefined
 }// 用户数据类型
 interface Response {

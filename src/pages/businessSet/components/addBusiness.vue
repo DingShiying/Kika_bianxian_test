@@ -26,11 +26,22 @@ const formState: FormState = reactive({
 const rules: any = {
   business: [{ required: true, message: '业务组名称不能为空', trigger: 'blur', type: 'string' }],
 }// 表单验证规则
+const isAdd = computed(() => {
+  if (current) {
+    return false
+  }
+  else {
+    return true
+  }
+})
 
 // 表单相关函数
 function handleOk() {
   formRef.value.validate().then(async () => {
-    await addBusiness(formState)
+    await addBusiness({
+      ...formState,
+      isAdd: isAdd.value,
+    })
     emit('close', true)
   }).catch((err: any) => {
     if (err.name !== 'AxiosError') {

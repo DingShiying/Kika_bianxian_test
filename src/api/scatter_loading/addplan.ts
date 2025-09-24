@@ -3,6 +3,7 @@ interface Params {
   label: string
   scatter_loading: number
   status: boolean
+  isAdd: boolean
   operator: string | undefined
 }// 用户数据类型
 interface Response {

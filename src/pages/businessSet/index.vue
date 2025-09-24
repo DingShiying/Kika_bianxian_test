@@ -154,7 +154,7 @@ getBusinessList()
 <template>
   <page-container>
     <template #extra>
-      <a-button type="primary" @click="() => addBusinessOpen = true">
+      <a-button type="primary" :disabled="addBusinessOpen" @click="() => addBusinessOpen = true">
         <template #icon>
           <PlusOutlined />
         </template>

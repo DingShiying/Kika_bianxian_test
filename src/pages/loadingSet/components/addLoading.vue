@@ -29,6 +29,14 @@ const rules: any = {
   label: [{ required: true, message: '加载策略值名称不能为空', trigger: 'blur', type: 'string' }],
   load_strategy: [{ required: true, message: '加载策略值不能为空', trigger: 'blur', type: 'string' }],
 }// 表单验证规则
+const isAdd = computed(() => {
+  if (current) {
+    return false
+  }
+  else {
+    return true
+  }
+})
 
 // 表单相关函数
 function handleOk() {
@@ -36,6 +44,7 @@ function handleOk() {
     formState.load_strategy = Number(formState.load_strategy)
     await addLoadStrategy({
       ...formState,
+      isAdd: isAdd.value,
       operator,
     })
     emit('close', true)
