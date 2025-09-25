@@ -1,122 +1,54 @@
 <script setup lang="ts" name="adUnitSet">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { CopyOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import addUnit from './components/addUnit.vue'
+import { getUnitListData } from '~@/api/adUnit/unitlist'
+import { deleteUnitData } from '~@/api/adUnit/deleteunit'
+import operateTrue from '~@/components/base-loading/operateTrue.vue'
+import operateFalse from '~@/components/base-loading/operateFalse.vue'
 
-interface FormState {
-  ad_unit_name: string
-  ad_unit: string
-  format: number | undefined
+// 类型声明
+interface SearchParams {
+  unitName: string
+  value: string
+  format: number | undefined | string
   source: string | undefined
+  creator: string
+  page: number
+  pageSize: number
 }// 表单数据类型
-
-interface unitListData {
-  data: Array<{
-    ad_unit_name: string
-    ad_unit: string
+interface unitData {
+  id: number
+  unitName: string
+  json: {
+    value: string
     format: number
     source: string
-    creator: string
-    createTime: string
-  }>
-  source: Array<{
-    label: string
-    value: string
-  }>
-  format: Array<{
-    label: string
-    value: number
-  }>
+  }
+  creator: string
+  createTime: string
+  updater: string
+  updateTime: string
 }// 请求接口数据类型
 
-const response = ref<unitListData>({
-  data: [
-    {
-      ad_unit_name: '广告单元1',
-      ad_unit: 'fhafbhsjdbhj_haukbdhja',
-      format: 1,
-      source: 'MAX',
-      creator: '张三',
-      createTime: '2023-01-01',
-    },
-    {
-      ad_unit_name: '广告单元2',
-      ad_unit: 'fajdhasbdhuk_djabjhab',
-      format: 2,
-      source: 'MAX',
-      creator: '张三',
-      createTime: '2023-01-01',
-    },
-    {
-      ad_unit_name: '广告单元3',
-      ad_unit: 'hahkdhbhjsa_djkabmcxnb',
-      format: 6,
-      source: 'AMOB',
-      creator: '张三',
-      createTime: '2023-01-01',
-    },
-    {
-      ad_unit_name: '广告单元4',
-      ad_unit: 'dbjabmjs_bdjabdjabmhjbjk',
-      format: 8,
-      source: 'MAX',
-      creator: '张三',
-      createTime: '2023-01-01',
-    },
-  ],
-  source: [{
-    label: 'MAX',
-    value: 'MAX',
-  }, {
-    label: 'AMOB',
-    value: 'AMOB',
-  }],
-  format: [
-    {
-      label: '插屏广告-INTERSTITIAL',
-      value: 0,
-    },
-    {
-      label: '激励视频广告-REWARDED_VIDEO',
-      value: 1,
-    },
-    {
-      label: '开屏广告-APP_OPEN',
-      value: 2,
-    },
-    {
-      label: '激励插屏广告-REWARDED_INTERSTITIAL',
-      value: 3,
-    },
-    {
-      label: '原生广告-NATIVE',
-      value: 4,
-    },
-    {
-      label: '原生插屏广告-NATIVE_INTER',
-      value: 5,
-    },
-    {
-      label: '横幅广告-BANNER',
-      value: 6,
-    },
-    {
-      label: '中等矩形横幅广告-MEDIUM',
-      value: 7,
-    },
-    {
-      label: '内联横幅广告-INLINE_BANNER',
-      value: 8,
-    },
-  ],
-})// 请求接口数据
+// 广告类型和来源数据
+const { formats, sources } = useUserStore()
 
+// 事件反馈相关变量
+const operationYes = ref(false) // 操作成功
+const operationNo = ref(false) // 操作失败
+
+// 请求获取数据
+const list = ref<unitData[]>([])// 请求接口数据
+
+// 表格相关变量
 const columns: any = [
   {
-    title: '广告单元',
-    dataIndex: 'ad_unit_name',
-    key: 'ad_unit_name',
+    title: '广告单元名称',
+    dataIndex: 'unitName',
+    key: 'unitName',
+    fixed: 'left',
   },
   {
     title: '广告源',
@@ -143,128 +75,103 @@ const columns: any = [
     align: 'center',
   },
   {
+    title: '最近修改人',
+    dataIndex: 'updater',
+    key: 'updater',
+    align: 'center',
+  },
+  {
+    title: '最近修改时间',
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    align: 'center',
+  },
+  {
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
     align: 'center',
+    fixed: 'right',
   },
 ]// 表格列头
-
 const loading = ref(false) // 表格加载状态
-
 const pagination = ref({
   current: 1,
-  pageSize: 10,
-  total: response.value.data.length,
+  pageSize: 15,
+  total: 0,
 })// 表格分页
-
-// const open = ref(false)// 表单弹窗状态
 const addUnitOpen = ref(false)// 新增业务组弹窗状态
-const currentUnit = ref()
+const currentUnit = ref()// 当前选中的广告单元
+const isUpdate = ref(false)// 是否是更新操作
 
+// 检索相关变量
 const formRef = ref()// 表单引用
-const formState: FormState = reactive({
-  ad_unit_name: '',
-  ad_unit: '',
-  format: undefined,
-  source: undefined,
+const searchParams = ref<SearchParams>({
+  unitName: '',
+  value: '',
+  format: '',
+  source: '',
+  creator: '',
+  page: 1,
+  pageSize: 15,
 })// 表单数据
 
-// async function getData(searchParams: Params) {
-//   try {
-//     const res = await getUserListData(searchParams)
-//     if (res.code === 200) {
-//       // @ts-expect-error:忽略
-//       response.value = res.data
-//       pagination.value.total = response.value.data.length
-//       // @ts-expect-error:忽略
-//       const checkState = []
-//       response.value.appList.forEach((item: any) => {
-//         const currentState = {
-//           checkAll: false,
-//           extend: false,
-//           checkList: [],
-//         }
-//         item.apps.forEach(() => {
-//           // @ts-expect-error:忽略
-//           currentState.checkList.push(false)
-//         })
-//         checkState.push(currentState)
-//       })
-//       // @ts-expect-error:忽略
-//       business_apps_check.value = checkState
-//     }
-//     else {
-//       message.error(res.msg)
-//     }
-//   }
-//   catch (error: any) {
-//     message.error(error.msg)
-//   }
-//   finally {
-//     loading.value = false
-//   }
-// }
-
+// 表格相关函数
 function handleTableChange(event: any) {
   pagination.value = event
+  searchParams.value.page = event.current
+  getUnitList()
 }// 表格分页改变
-
-// function handleOk() {
-//   formRef.value.validate().then(() => {
-//     console.log(formState)
-//     open.value = false
-//     Modal.destroyAll()
-//     formRef.value.resetFields()
-//     message.success('新建用户成功！')
-//   })
-// }// 表单提交
-// function handleCancel() {
-//   open.value = false
-//   Modal.destroyAll()
-//   Object.assign(formState, {
-//     businessName: '',
-//     linkUser: [],
-//     linkAPP: [],
-//   })
-//   Object.assign(formDisabled, {
-//     businessName: false,
-//     linkUser: false,
-//     linkAPP: false,
-//   })
-// }// 表单取消
-
-function editUnit(record: any) {
-  currentUnit.value = {
-    ad_unit_name: record.ad_unit_name,
-    ad_unit: record.ad_unit,
-    format: record.format,
-    source: record.source,
-  }
-  addUnitOpen.value = true
-}
 function closeAddUnit(value: boolean) {
-  addUnitOpen.value = value
+  if (value) {
+    operationYes.value = true
+  }
+  getUnitList()
+  addUnitOpen.value = false
+  isUpdate.value = false
   currentUnit.value = null
-}
-
-function searchConfig() {
-  console.log(formState)
-}
-
-function resetSearch() {
-  Object.assign(formState, {
-    ad_unit_name: '',
-    ad_unit: '',
-    format: undefined,
-    source: undefined,
-  })
-}
-
+}// 关闭新增弹窗
+function editUnit(record: any) {
+  currentUnit.value = record.id
+  isUpdate.value = true
+  addUnitOpen.value = true
+}// 编辑广告单元
 function copyToClipborad(text: string) {
   navigator.clipboard.writeText(text)
   message.success('已复制到剪贴板')
+}// 复制到剪贴板
+function deleteUnit(record: any) {
+  currentUnit.value = record
+  deleteUnitData({ id: record.id }).then(() => {
+    operationYes.value = true
+  }).catch(() => {
+    operationNo.value = true
+  }).finally(() => {
+    currentUnit.value = null
+    getUnitList()
+  })
 }
+
+// 请求函数
+function getUnitList() {
+  loading.value = true
+  getUnitListData(searchParams.value).then((res: any) => {
+    list.value = res.data.list
+    pagination.value.total = res.data.total
+  }).finally(() => {
+    setTimeout(() => {
+      loading.value = false
+    }, 500)
+  })
+}
+function resetSearch() {
+  searchParams.value.unitName = ''
+  searchParams.value.value = ''
+  searchParams.value.format = ''
+  searchParams.value.source = ''
+  searchParams.value.creator = ''
+}
+getUnitList()// 初始化请求
 </script>
 
 <template>
@@ -280,29 +187,35 @@ function copyToClipborad(text: string) {
 
     <a-card v-if="!addUnitOpen">
       <div class="search-part">
-        <a-form ref="formRef" :model="formState" layout="inline">
-          <a-form-item label="广告单元name" name="ad_unit_name">
-            <a-input v-model:value="formState.ad_unit_name" placeholder="请输入广告单元name" />
+        <a-form ref="formRef" :model="searchParams" layout="inline">
+          <a-form-item label="广告单元name" name="unitName">
+            <a-input v-model:value="searchParams.unitName" placeholder="请输入广告单元name" />
           </a-form-item>
-          <a-form-item label="广告单元value" name="ad_unit">
-            <a-input v-model:value="formState.ad_unit" placeholder="请输入广告单元value" />
+          <a-form-item label="广告单元value" name="value">
+            <a-input v-model:value="searchParams.value" placeholder="请输入广告单元value" />
           </a-form-item>
           <a-form-item label="广告源" name="source">
             <a-select
-              v-model="formState.source" placeholder="请选择广告源"
-              :options="response.source" show-search
+              v-model="searchParams.source" placeholder="请选择广告源"
+              :options="sources"
             />
           </a-form-item>
           <a-form-item label="广告样式" name="format">
             <a-select
-              v-model="formState.format" placeholder="请选择广告样式"
-              :options="response.format"
+              v-model="searchParams.format" placeholder="请选择广告样式"
+              :options="formats"
+            />
+          </a-form-item>
+
+          <a-form-item label="创建人" name="creator">
+            <a-input
+              v-model="searchParams.creator" placeholder="请选择广告样式"
             />
           </a-form-item>
         </a-form>
 
         <div class="but-part">
-          <a-button type="primary" @click="searchConfig">
+          <a-button type="primary" @click="getUnitList">
             查询
           </a-button>
           <a-button style="margin-left: 10px" @click="resetSearch">
@@ -311,40 +224,49 @@ function copyToClipborad(text: string) {
         </div>
       </div>
       <a-table
-        :columns="columns" :data-source="response.data" :loading="loading" :pagination="pagination"
+        :columns="columns" :data-source="list" :loading="loading" :pagination="pagination"
         class="table-part" @change="handleTableChange($event)"
       >
         <template #bodyCell="{ column, record }">
-          <template v-if="column.dataIndex === 'ad_unit_name'">
+          <template v-if="column.dataIndex === 'unitName'">
             <div class="ad-unit">
               <div class="name">
-                {{ record.ad_unit_name }}
+                {{ record.unitName }}
               </div>
               <div class="unit-value">
-                {{ record.ad_unit }}
-                <CopyOutlined style="margin-left: 5px;cursor:pointer;" @click="copyToClipborad(record.ad_unit)" />
+                {{ record.json.value }}
+                <CopyOutlined style="margin-left: 5px;cursor:pointer;" @click="copyToClipborad(record.json.value)" />
               </div>
             </div>
+          </template>
+
+          <template v-if="column.dataIndex === 'source'">
+            <span>
+              {{ sources.find((i) => i.value === record.json.source)?.label }}
+            </span>
           </template>
 
           <template v-if="column.dataIndex === 'format'">
             <span>
-              {{ response.format.find((i) => i.value === record.format)?.label }}
+              {{ formats.find((i) => i.value === record.json.format)?.label }}
             </span>
           </template>
 
           <template v-if="column.dataIndex === 'operation'">
-            <div class="option">
-              <a-button type="link" @click="editUnit(record)">
+            <div class="flex flex-col items-center">
+              <span type="link" class="text-[#4e46e5] cursor-pointer" @click="editUnit(record)">
                 编辑
-              </a-button>
-              <a-button type="link">
-                删除
-              </a-button>
+              </span>
+              <a-popconfirm
+                title="你确定要删除此APP?" ok-text="确定" cancel-text="取消" placement="left"
+                @confirm="deleteUnit(record)"
+              >
+                <span class="text-[#e35150] cursor-pointer">删除</span>
+              </a-popconfirm>
             </div>
           </template>
         </template>
-        <template #footer>
+        <template v-if="pagination.total > 0" #footer>
           显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
           {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
             * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
@@ -353,8 +275,11 @@ function copyToClipborad(text: string) {
     </a-card>
 
     <a-card v-else>
-      <addUnit :current="currentUnit" @close="closeAddUnit" />
+      <addUnit :current="currentUnit" :update="isUpdate" @close="closeAddUnit" />
     </a-card>
+
+    <operateTrue v-model="operationYes" />
+    <operateFalse v-model="operationNo" />
   </page-container>
 </template>
 
@@ -366,12 +291,12 @@ function copyToClipborad(text: string) {
   justify-content: space-between;
 
   form {
-    width: calc(100% - 210px);
+    width: calc(100% - 200px);
   }
 
   :deep(.ant-form-item-row) {
     flex-direction: column;
-    width: 14vw;
+    width: 11vw;
     margin-bottom: 10px;
 
     .ant-form-item-label {

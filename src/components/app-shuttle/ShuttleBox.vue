@@ -53,7 +53,7 @@ function getAPPList() {
           checked: [],
         }
       }
-      if (checked.value.includes(app.id)) {
+      if (checked.value.includes(app.package)) {
         businessGroup.value[firstBusiness].checked.push(app)
       }
       businessGroup.value[firstBusiness].apps.push(app)
@@ -71,8 +71,8 @@ watch(businessGroup, () => {
   Object.keys(businessGroup.value).forEach((key: string) => {
     const app = businessGroup.value[key].checked
     app.forEach((item: APPData) => {
-      if (!apps.includes(item.id)) {
-        apps.push(item.id)
+      if (!apps.includes(item.package)) {
+        apps.push(item.package)
       }
     })
   })

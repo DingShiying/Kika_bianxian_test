@@ -1,256 +1,244 @@
 <script setup lang="ts" name="loadingPlan">
-import { onMounted, reactive, ref } from 'vue'
+import { ref } from 'vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import AddPlan from './components/addPlan.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
+import { getPlanListData } from '~@/api/plan/planlist'
+import { getPlanListData as getLoadStrategyList } from '~@/api/load_strategy/planlist'
+import { deletePlanData } from '~@/api/plan/deleteplan'
 
-interface SearchFormState {
-  planID: string
+// 当前用户、app
+const { operator, currentApp } = useUserStore()
+
+// 类型声明
+interface SearchParams {
+  id: string
   creator: string
-}// 检索表单数据类型
-interface ConfigListData {
-  data: Array<{
+  page: number
+  pageSize: number
+  operator: string | undefined
+  currentApp: string | undefined
+}// 查询参数
+interface PlanData {
+  id: string
+  desc: string
+  creator: string
+  createTime: string
+  updator: string
+  updateTime: string
+  json: {
     id: string
-    count: number
-    refill: number
-    load_strategy: number
-    timeout: number
-    scatter_loading: number
-    chaping_ad: {
-      offset: number
-      prob: number
-      limit: number
-    }
-    creator: string
-    createTime: string
-    currentEditor: string
-    editTime: string
-  }>
+    count: number | undefined
+    refill: number | undefined
+    load_strategy: number | undefined
+    timeout: number | undefined
+    capping: number | undefined
+    load_context: number | undefined
+    scatter_loading: number | undefined
+    offset: number | undefined
+    prob: number | undefined
+    load_prob: number | undefined
+    limit: number | undefined
+  }
+}// 请求接口数据类型
+interface StrategyData {
+  label: string
+  load_strategy: number
+  creator: string
+  createTime: string
+  updater: string
+  updateTime: string
+  status: boolean
 }// 请求接口数据类型
 
 // 事件反馈相关变量
 const operationYes = ref(false) // 操作成功
 const operationNo = ref(false) // 操作失败
 
-const response = ref<ConfigListData>({
-  data: [
-    {
-      id: '1',
-      count: 100,
-      refill: 1,
-      load_strategy: 1,
-      timeout: 3000,
-      scatter_loading: 1,
-      chaping_ad: {
-        offset: 10,
-        prob: 50,
-        limit: 5,
-      },
-      creator: 'User1',
-      createTime: '2024-05-28',
-      currentEditor: 'Editor1',
-      editTime: '2024-05-29',
-    },
-    {
-      id: '2',
-      count: 150,
-      refill: 0,
-      load_strategy: 0,
-      timeout: 4500,
-      scatter_loading: 1,
-      chaping_ad: {
-        offset: 15,
-        prob: 30,
-        limit: 10,
-      },
-      creator: 'User2',
-      createTime: '2024-05-29',
-      currentEditor: 'Editor2',
-      editTime: '2024-05-30',
-    },
-    {
-      id: '3',
-      count: 200,
-      refill: 1,
-      load_strategy: 1,
-      timeout: 6000,
-      scatter_loading: 0,
-      chaping_ad: {
-        offset: 20,
-        prob: 70,
-        limit: 15,
-      },
-      creator: 'User3',
-      createTime: '2024-05-30',
-      currentEditor: 'Editor3',
-      editTime: '2024-05-31',
-    },
-    {
-      id: '4',
-      count: 250,
-      refill: 0,
-      load_strategy: 1,
-      timeout: 9000,
-      scatter_loading: 1,
-      chaping_ad: {
-        offset: 25,
-        prob: 90,
-        limit: 20,
-      },
-      creator: 'User4',
-      createTime: '2024-05-31',
-      currentEditor: 'Editor4',
-      editTime: '2024-06-01',
-    },
-  ],
-})// 请求接口数据
+// 请求获取数据
+const list = ref<PlanData[]>([])// 加载计划列表
+const loadStrategyList = ref<StrategyData[]>([])// 加载策略列表
 
+// 表格相关变量
 const columns: any = [
   {
     title: '加载计划ID',
+    width: 150,
     dataIndex: 'id',
     key: 'id',
+    fixed: 'left',
+  },
+  {
+    title: '描述',
+    width: 150,
+    dataIndex: 'desc',
+    key: 'desc',
     align: 'center',
   },
-  // {
-  //   title: '描述',
-  //   dataIndex: 'description',
-  //   key: 'description',
-  // },
   {
     title: '缓存数量',
+    width: 150,
     dataIndex: 'count',
     key: 'count',
     align: 'center',
   },
   {
     title: '是否补仓',
+    width: 150,
     dataIndex: 'refill',
     key: 'refill',
     align: 'center',
   },
   {
     title: '加载策略',
+    width: 150,
     dataIndex: 'load_strategy',
     key: 'load_strategy',
     align: 'center',
   },
   {
     title: '超时时间(ms)',
+    width: 150,
     dataIndex: 'timeout',
     key: 'timeout',
     align: 'center',
   },
   {
     title: '分散加载',
+    width: 150,
     dataIndex: 'scatter_loading',
     key: 'scatter_loading',
     align: 'center',
   },
   {
     title: '插屏广告设置',
-    dataIndex: 'chaping_ad',
-    key: 'chaping_ad',
+    width: 150,
+    dataIndex: 'offset',
+    key: 'offset',
     align: 'center',
   },
   {
     title: '创建人',
+    width: 150,
     dataIndex: 'creator',
     key: 'creator',
     align: 'center',
   },
   {
     title: '创建时间',
+    width: 150,
     dataIndex: 'createTime',
     key: 'createTime',
     align: 'center',
   },
   {
+    title: '更新人',
+    width: 150,
+    dataIndex: 'updater',
+    key: 'updater',
+    align: 'center',
+  },
+  {
+    title: '更新时间',
+    width: 150,
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    align: 'center',
+  },
+  {
     title: '操作',
+    width: 150,
     dataIndex: 'operation',
     key: 'operation',
     align: 'center',
+    fixed: 'right',
   },
 ]// 表格列头
-
 const loading = ref(false) // 表格加载状态
 const addPlanOpen = ref(false)// 新增样式弹窗状态
-
-const currentPlan = ref<any>()// 当前选中计划
-
+const currentPlan = ref<any>()// 当前选中计划id
 const pagination = ref({
   current: 1,
-  pageSize: 10,
-  total: response.value.data.length,
+  pageSize: 15,
+  total: 0,
 })// 表格分页
+const isCopy = ref(false)// 是否为复制计划新建
+const isUpdate = ref(false)// 是否为修改计划
 
+// 检索相关变量
 const searchFormRef = ref()// 检索表单引用
-
-const searchFormState: SearchFormState = reactive({
-  planID: '',
+const searchParams = ref<SearchParams>({
+  id: '',
   creator: '',
+  page: 1,
+  pageSize: 15,
+  operator,
+  currentApp,
 })// 表单数据
 
+// 表格相关函数
 function handleTableChange(event: any) {
   pagination.value = event
+  searchParams.value.page = event.current
+  getPlanList()
 }// 表格分页改变
-
-function searchConfig() {
-  console.log(searchFormState)
-}
-
-function resetSearch() {
-  Object.assign(searchFormState, {
-    planID: '',
-    creator: '',
-  })
-}
-
 function closeAddPlan(value: boolean) {
   if (value) {
     operationYes.value = true
   }
   addPlanOpen.value = false
   currentPlan.value = null
-}
-
+  isCopy.value = false
+  isUpdate.value = false
+  getPlanList()
+}// 关闭新增样式弹窗
 function handleCopy(record: any) {
-  currentPlan.value = JSON.parse(JSON.stringify(record))
-  if (currentPlan.value.chaping_ad) {
-    currentPlan.value = {
-      ...currentPlan.value,
-      ...currentPlan.value.chaping_ad,
-    }
-  }
-  delete currentPlan.value.chaping_ad
-  delete currentPlan.value.id
+  currentPlan.value = record.id
+  isCopy.value = true
   addPlanOpen.value = true
-}
+}// 复制计划新建
 function handleEdit(record: any) {
-  currentPlan.value = JSON.parse(JSON.stringify(record))
-  if (currentPlan.value.chaping_ad) {
-    currentPlan.value = {
-      ...currentPlan.value,
-      ...currentPlan.value.chaping_ad,
-    }
-  }
-  delete currentPlan.value.chaping_ad
+  currentPlan.value = record.id
+  isUpdate.value = true
   addPlanOpen.value = true
-}
-
+}// 编辑计划
 function deletePlan(record: any) {
   currentPlan.value = record
-  console.log(currentPlan.value)
-  // deleteCard.value = false
-  setTimeout(() => {
+  deletePlanData({ id: record.id }).then(() => {
     operationYes.value = true
-  }, 1000)
+    getPlanList()
+  })
   currentPlan.value = null
-}// 删除用户
-// onMounted(() => {
-//   getData(searchParams.value)
-// })
+}// 删除计划
+
+// 检索相关函数
+function resetSearch() {
+  searchParams.value.id = ''
+  searchParams.value.creator = ''
+}// 重置检索
+function getPlanList() {
+  loading.value = true
+  getPlanListData(searchParams.value).then((res: any) => {
+    list.value = res.data.list
+    pagination.value.total = res.data.total
+  }).finally(() => {
+    setTimeout(() => {
+      loading.value = false
+    }, 500)
+  })
+}// 获取计划列表
+function getStrategyList() {
+  getLoadStrategyList({ operator }).then((res: any) => {
+    loadStrategyList.value = res.data.list
+  }).finally(() => {
+    setTimeout(() => {
+      loading.value = false
+    }, 500)
+  })
+}// 获取策略列表
+getPlanList()
+getStrategyList()
 </script>
 
 <template>
@@ -260,24 +248,24 @@ function deletePlan(record: any) {
         <template #icon>
           <PlusOutlined />
         </template>
-        新增计划
+        新增
       </a-button>
     </template>
 
     <a-card v-if="!addPlanOpen">
       <div class="search-part">
-        <a-form ref="searchFormRef" :model="searchFormState" layout="inline">
+        <a-form ref="searchFormRef" :model="searchParams" layout="inline">
           <a-form-item label="广告加载ID" name="styleName">
-            <a-input v-model:value="searchFormState.planID" placeholder="请输入广告加载ID" />
+            <a-input v-model:value="searchParams.id" placeholder="请输入广告加载ID" />
           </a-form-item>
 
           <a-form-item label="创建人" name="creator">
-            <a-input v-model:value="searchFormState.creator" placeholder="请输入创建人名称" />
+            <a-input v-model:value="searchParams.creator" placeholder="请输入创建人名称" />
           </a-form-item>
         </a-form>
 
         <div class="but-part">
-          <a-button type="primary" @click="searchConfig">
+          <a-button type="primary" @click="getPlanList">
             查询
           </a-button>
           <a-button style="margin-left: 10px" @click="resetSearch">
@@ -287,29 +275,32 @@ function deletePlan(record: any) {
       </div>
 
       <a-table
-        :columns="columns" :data-source="response.data" :loading="loading" :pagination="pagination"
-        class="table-part" @change="handleTableChange($event)"
+        :columns="columns" :data-source="list" :loading="loading" :pagination="pagination"
+        class="table-part" :scroll="{ x: '50vw', y: '50vh' }" @change="handleTableChange($event)"
       >
         <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'count'">
+            <span>{{ record.json.count }}</span>
+          </template>
           <template v-if="column.dataIndex === 'refill'">
-            <span>{{ record.refill ? '是' : '否' }}</span>
+            <span>{{ record.json.refill ? '是' : '否' }}</span>
           </template>
           <template v-if="column.dataIndex === 'load_strategy'">
-            <span v-if="record.load_strategy === 0">价格优先</span>
-            <span v-if="record.load_strategy === 1">速度优先</span>
-            <span v-if="record.load_strategy === 2">混合模式</span>
-            <span v-if="record.load_strategy >= 3 && record.load_strategy <= 6">价值分层模式</span>
-            <span v-if="record.load_strategy === 11">展示上限模式</span>
-            <span v-if="record.load_strategy === 21 || record.load_strategy === 22">广告比价模式</span>
+            <a-tag color="skyblue">
+              {{ loadStrategyList.find((item:StrategyData) => item.load_strategy === record.json.load_strategy)?.label }}
+            </a-tag>
+          </template>
+          <template v-if="column.dataIndex === 'timeout'">
+            <span>{{ record.json.timeout }}</span>
           </template>
           <template v-if="column.dataIndex === 'scatter_loading'">
-            <span>{{ record.scatter_loading ? '开启' : '关闭' }}</span>
+            <span>{{ record.json.scatter_loading ? '开启' : '关闭' }}</span>
           </template>
-          <template v-if="column.dataIndex === 'chaping_ad'">
-            <div class="chaping">
-              <span>跳过展示:&nbsp;{{ record.chaping_ad.offset }}&nbsp;次</span>
-              <span>展示概率:&nbsp;{{ record.chaping_ad.prob }}&nbsp;%</span>
-              <span>最多展示:&nbsp;{{ record.chaping_ad.limit }}&nbsp;次</span>
+          <template v-if="column.dataIndex === 'offset'">
+            <div class="flex items-start flex-col">
+              <span>跳过展示:&nbsp;{{ record.json.offset }}&nbsp;次</span>
+              <span>展示概率:&nbsp;{{ record.json.prob }}&nbsp;%</span>
+              <span>最多展示:&nbsp;{{ record.json.limit }}&nbsp;次</span>
             </div>
           </template>
           <template v-if="column.dataIndex === 'operation'">
@@ -329,15 +320,15 @@ function deletePlan(record: any) {
             </div>
           </template>
         </template>
-        <!-- <template #footer>
+        <template v-if="pagination.total > 0" #footer>
           显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
           {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
             * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
-        </template> -->
+        </template>
       </a-table>
     </a-card>
     <a-card v-else style="margin-bottom: 30px;">
-      <AddPlan :current="currentPlan" @close="closeAddPlan" />
+      <AddPlan :current="currentPlan" :copy="isCopy" :update="isUpdate" @close="closeAddPlan" />
     </a-card>
 
     <operateTrue v-model="operationYes" />

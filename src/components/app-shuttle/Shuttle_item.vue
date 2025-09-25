@@ -36,7 +36,7 @@ watch(checkedList, (val) => {
       全选
     </a-checkbox>
     <a-checkbox-group v-model:value="checkedList">
-      <template v-for="app in apps" :key="app.appName">
+      <template v-for="app in apps" :key="app.package">
         <a-checkbox :value="app">
           <div class="inner-app-details">
             <img :src="app.icon">

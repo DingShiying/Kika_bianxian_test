@@ -121,6 +121,80 @@ export const useUserStore = defineStore('user', () => {
 
   const currentApp = ref<undefined | string>(undefined)
 
+  const sources = ref([
+    {
+      label: 'AdMob广告源',
+      value: 'AdMob',
+    },
+    {
+      label: 'Max广告源',
+      value: 'MAX',
+    },
+    {
+      label: 'TopOn广告',
+      value: 'TopOn',
+    },
+    {
+      label: 'TradPlus广告',
+      value: 'TradPlus',
+    },
+    {
+      label: 'Olaex广告',
+      value: 'Olaex',
+    },
+  ])
+
+  const formats = ref([
+    {
+      label: '插屏广告-INTERSTITIAL',
+      value: 0,
+    },
+    {
+      label: '激励视频广告-REWARDED_VIDEO',
+      value: 1,
+    },
+    {
+      label: '开屏广告-APP_OPEN',
+      value: 2,
+    },
+    {
+      label: '激励插屏广告-REWARDED_INTERSTITIAL',
+      value: 3,
+    },
+    {
+      label: '原生广告-NATIVE',
+      value: 4,
+    },
+    {
+      label: '原生插屏广告-NATIVE_INTER',
+      value: 5,
+    },
+    {
+      label: '横幅广告-BANNER',
+      value: 6,
+    },
+    {
+      label: '中等矩形横幅广告-MEDIUM',
+      value: 7,
+    },
+    {
+      label: '内联横幅广告-INLINE_BANNER',
+      value: 8,
+    },
+    {
+      label: 'APP_OPEN+INTERSTITIAL',
+      value: 9,
+    },
+    {
+      label: 'INTERSTITIAL+NATIVE_INTER',
+      value: 10,
+    },
+    {
+      label: 'NATIVE+BANNER',
+      value: 11,
+    },
+  ])
+
   return {
     userInfo,
     roles,
@@ -136,5 +210,7 @@ export const useUserStore = defineStore('user', () => {
     operator,
     apps,
     currentApp,
+    sources,
+    formats,
   }
 })

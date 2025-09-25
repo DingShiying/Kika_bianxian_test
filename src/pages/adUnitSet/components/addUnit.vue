@@ -1,94 +1,116 @@
 <script setup lang='ts' name='addUnit'>
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
+import { getUnitDataById } from '~@/api/adUnit/getunitbyid'
+import operateFalse from '~@/components/base-loading/operateFalse.vue'
+import { addUnit } from '~@/api/adUnit/addunit'
+import { updateUnit } from '~@/api/adUnit/updateunit'
 
+// 类型声明
 interface FormState {
-  ad_unit_name: string
-  ad_unit: string
-  format: number | undefined
-  source: string | undefined
+  id?: number
+  unitName: string
+  json: {
+    value: string
+    format: number | undefined
+    source: string | undefined
+  }
 }// 表单数据类型
 
-const { current } = defineProps(['current'])
+// 父组件传参
+const { current, update } = defineProps(['current', 'update'])
 const emit = defineEmits(['close'])
 
-const response = ref({
-  source: [{
-    label: 'MAX',
-    value: 'MAX',
-  }, {
-    label: 'AMOB',
-    value: 'AMOB',
-  }],
-  format: [
-    {
-      label: '插屏广告-INTERSTITIAL',
-      value: 0,
-    },
-    {
-      label: '激励视频广告-REWARDED_VIDEO',
-      value: 1,
-    },
-    {
-      label: '开屏广告-APP_OPEN',
-      value: 2,
-    },
-    {
-      label: '激励插屏广告-REWARDED_INTERSTITIAL',
-      value: 3,
-    },
-    {
-      label: '原生广告-NATIVE',
-      value: 4,
-    },
-    {
-      label: '原生插屏广告-NATIVE_INTER',
-      value: 5,
-    },
-    {
-      label: '横幅广告-BANNER',
-      value: 6,
-    },
-    {
-      label: '中等矩形横幅广告-MEDIUM',
-      value: 7,
-    },
-    {
-      label: '内联横幅广告-INLINE_BANNER',
-      value: 8,
-    },
-  ],
-})// 请求接口数据
-
+// 表单相关属性
 const formRef = ref()// 表单引用
-const formState: FormState = reactive(current || {
-  ad_unit_name: '',
-  ad_unit: '',
-  format: undefined,
-  source: undefined,
+const formState = reactive<FormState>({
+  unitName: '',
+  json: {
+    value: '',
+    format: undefined,
+    source: undefined,
+  },
 })// 表单数据
-
 const rules: any = {
-  ad_unit_name: [{ required: true, message: '广告单元name不能为空', trigger: 'blur', type: 'string' }],
-  ad_unit: [{ required: true, message: '广告单元value不能为空', trigger: 'blur', type: 'string' }],
-  source: [{ required: true, message: '请选择一个广告源', trigger: 'blur', type: 'string' }],
-  format: [{ required: true, message: '请选择一个广告样式', trigger: 'blur', type: 'number' }],
+  unitName: [{ required: true, message: '广告单元name不能为空', trigger: 'blur', type: 'string' }],
+  // value: [{ required: true, message: '广告单元value不能为空', trigger: 'blur', type: 'string' }],
+  // format: [{ required: true, message: '请选择广告源', trigger: 'blur', type: 'string' }],
+  // source: [{ required: true, message: '请选择广告样式', trigger: 'blur', type: 'number' }],
 }// 表单验证规则
 
+// 事件反馈相关变量
+const operationNo = ref(false) // 操作失败
+
+// 广告类型和来源数据
+const { formats, sources } = useUserStore()
+const filter_formats = computed(() => {
+  if (formState.json.source === 'AdMob') {
+    return formats.filter(item => item.value !== 7)
+  }
+  else if (formState.json.source === 'MAX') {
+    return formats
+  }
+  else {
+    return formats.filter(item => item.value !== 6 && item.value !== 7 && item.value !== 8 && item.value !== 11)
+  }
+})
+
+// 表单相关函数
 function handleOk() {
-  formRef.value.validate().then(() => {
-    console.log(formState)
-    message.success('新建广告单元成功！')
-    emit('close', false)
+  formRef.value.validate().then(async () => {
+    // @ts-expect-error:...
+    formState.json.id = formState.id
+    if (!update) {
+      await addUnit(formState)
+      emit('close', true)
+    }
+    else {
+      // @ts-expect-error:...
+      await updateUnit(formState)
+      emit('close', true)
+    }
   }).catch((err: any) => {
-    message.warning('请按要求填写表单！')
-    console.error(err)
+    console.log('err', err)
+    if (err.name !== 'AxiosError') {
+      message.warning('请按照要求填写表单！')
+    }
+    else {
+      operationNo.value = true
+    }
   })
 }// 表单提交
 function handleCancel() {
   emit('close', false)
+}// 取消
+
+function getUnitData() {
+  getUnitDataById({ id: current }).then((res: any) => {
+    const data = res.data
+    for (const key in formState) {
+      if (key !== 'json') {
+        // @ts-expect-error:...
+        formState[key] = data[key]
+      }
+      else {
+        for (const key1 in formState.json) {
+          // @ts-expect-error:...
+          formState.json[key1] = data.json[key1]
+        }
+      }
+    }
+    if (update) {
+      formState.id = current
+    }
+  })
 }
+if (current) {
+  getUnitData()
+}
+
+watch(() => formState.json.source, () => {
+  formState.json.format = undefined
+})
 </script>
 
 <template>
@@ -106,22 +128,22 @@ function handleCancel() {
       ref="formRef" :model="formState" :rules="rules"
       class="form-part" :label-col="{ style: { width: '150px' } }"
     >
-      <a-form-item label="广告单元name" name="ad_unit_name">
-        <a-input v-model:value="formState.ad_unit_name" placeholder="请输入广告单元name" style="width:30vw;" />
+      <a-form-item label="广告单元name" name="unitName">
+        <a-input v-model:value="formState.unitName" placeholder="请输入广告单元name" style="width:30vw;" />
       </a-form-item>
-      <a-form-item label="广告单元value" name="ad_unit">
-        <a-input v-model:value="formState.ad_unit" placeholder="请输入广告单元value" style="width:30vw;" />
+      <a-form-item label="广告单元value" name="value">
+        <a-input v-model:value="formState.json.value" placeholder="请输入广告单元value" style="width:30vw;" />
       </a-form-item>
       <a-form-item label="广告源" name="source">
         <a-select
-          v-model:value="formState.source" placeholder="请选择广告源"
-          :options="response.source" show-search style="width:30vw;"
+          v-model:value="formState.json.source" placeholder="请选择广告源"
+          :options="sources" style="width:30vw;"
         />
       </a-form-item>
       <a-form-item label="广告样式" name="format">
         <a-select
-          v-model:value="formState.format" placeholder="请选择广告样式"
-          :options="response.format" style="width:30vw;"
+          v-model:value="formState.json.format" placeholder="请选择广告样式"
+          :options="filter_formats" style="width:30vw;"
         />
       </a-form-item>
     </a-form>
@@ -134,6 +156,7 @@ function handleCancel() {
       取消
     </a-button>
   </div>
+  <operateFalse v-model="operationNo" />
 </template>
 
 <style scoped lang='scss'>

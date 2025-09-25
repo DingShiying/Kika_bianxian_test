@@ -2,261 +2,108 @@
 import { reactive, ref, watch } from 'vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
+import { getPlanDataById } from '~@/api/plan/getplanbyid'
+import { addPlan } from '~@/api/plan/addplan'
+import { updatePlan } from '~@/api/plan/updateplan'
+import { getPlanListData } from '~@/api/load_strategy/planlist'
+import ShuttleBox from '~@/components/app-shuttle/ShuttleBox.vue'
+import operateFalse from '~@/components/base-loading/operateFalse.vue'
 
+// 数据类型声明
 interface FormState {
   id: string
   desc: string
-  count: number
-  refill: number
+  json: {
+    count: number | undefined
+    refill: number | undefined
+    load_strategy: number | undefined
+    timeout: number | undefined
+    capping: number | undefined
+    load_context: number | undefined
+    scatter_loading: number | undefined
+    offset: number | undefined
+    prob: number | undefined
+    load_prob: number | undefined
+    limit: number | undefined
+  }
+  currentApp: string | undefined
+}// 表单数据类型
+interface StrategyData {
+  label: string
   load_strategy: number
-  timeout: number
-  scatter_loading: number
-  capping?: number | undefined
-  load_context: number
-  offset?: number
-  prob?: number
-  load_prob?: number
-  limit?: number
-}
-interface Business_apps_check {
-  checkAll: boolean
-  expanded: boolean
-  checkList: Array<boolean>
-}
+  creator: string
+  createTime: string
+  updater: string
+  updateTime: string
+  status: boolean
+}// 请求接口数据类型
 
-const { current } = defineProps(['current'])
+// 父组件传参
+const { current, copy, update } = defineProps(['current', 'copy', 'update'])
 const emit = defineEmits(['close'])
 
-const openHighSet = ref(false)
-
-const formRef = ref()
-const formState = reactive<FormState>(current || {
+// 表单相关变量
+const currentApp = computed(() => {
+  return useUserStore().currentApp
+})// 当前应用
+const load_strategys = ref<StrategyData[]>([])// 加载策略列表
+const formRef = ref()// 表单实例
+const formState = reactive<FormState>({
   id: '',
   desc: '',
-  count: 1,
-  refill: 0,
-  load_strategy: 0,
-  timeout: 0,
-  scatter_loading: 0,
-  load_context: 0,
-  offset: 0,
-  prob: 100,
-  limit: 0,
-})
-const business_apps_check = ref<Business_apps_check[]>([{
-  checkAll: false,
-  expanded: false,
-  checkList: [],
-}])// 表示业务组下属app是否全选
-const selectAPPs = reactive<any>([])
-const showModal = ref(false)
+  json: {
+    count: undefined,
+    refill: undefined,
+    load_strategy: undefined,
+    timeout: undefined,
+    capping: undefined,
+    load_context: undefined,
+    scatter_loading: undefined,
+    offset: undefined,
+    prob: undefined,
+    load_prob: undefined,
+    limit: undefined,
+  },
+  currentApp: currentApp.value,
+})// 表单数据
+const openHighSet = ref(false)// 是否打开高级设置
 const rules: any = {
   id: [{ required: true, message: '加载计划ID不能为空', trigger: 'blur' }],
-  prob: [{
-    validator: (_: any, value: number) => {
-      if (value !== null && (value < 0 || value > 100)) {
-        return Promise.reject(new Error('数值必须在 0 到 100 之间'))
-      }
-      return Promise.resolve()
-    },
-    trigger: 'blur',
-  }],
-}
-const load_strategyOptions = [
-  {
-    label: '价格优先(priority)',
-    value: 0,
-  },
-  {
-    label: '速度优先(speed)',
-    value: 1,
-  },
-  {
-    label: '混合模式(Hybrid)',
-    value: 2,
-  },
-  {
-    label: '价值分层模式-3',
-    value: 3,
-  },
-  {
-    label: '价值分层模式-4',
-    value: 4,
-  },
-  {
-    label: '价值分层模式-5',
-    value: 5,
-  },
-  {
-    label: '价值分层模式-6',
-    value: 6,
-  },
-  {
-    label: '展示上限模式(Capping)',
-    value: 11,
-  },
-  {
-    label: '广告比价模式-21',
-    value: 21,
-  },
-  {
-    label: '广告比价模式-22',
-    value: 22,
-  },
-]
-const idDisabled = ref(false)
-if (current) {
-  if (current.id) {
-    idDisabled.value = true
-  }
 }
 
-const appList = [
-  {
-    'business': '电商业务组',
-    'apps': [
-      {
-        'appName': '哈哈哈',
-        'system': 'iOS',
-        'package': 'com.jiankangguanli.mall',
-        'icon': '/src/assets/images/icon1.png',
-      },
-      {
-        'appName': '哦哦哦',
-        'system': 'android',
-        'package': 'com.aabjhsba.mall',
-        'icon': '/src/assets/images/icon2.png',
-      },
-      {
-        'appName': '点点滴滴',
-        'system': 'iOS',
-        'package': 'com.sasasas.mall',
-        'icon': '/src/assets/images/icon3.png',
-      },
-      {
-        'appName': '呃呃呃呃',
-        'system': 'android',
-        'package': 'com.sasasasai.mall',
-        'icon': '/src/assets/images/icon4.png',
-      },
-    ],
-  },
-  {
-    'business': '电商健康组',
-    'apps': [
-      {
-        'appName': '哈哈哈1',
-        'system': 'iOS',
-        'package': 'com.jiankangguanli.mall',
-        'icon': '/src/assets/images/icon1.png',
-      },
-      {
-        'appName': '哦哦哦1',
-        'system': 'android',
-        'package': 'com.aabjhsba.mall',
-        'icon': '/src/assets/images/icon2.png',
-      },
-      {
-        'appName': '点点滴滴1',
-        'system': 'iOS',
-        'package': 'com.sasasas.mall',
-        'icon': '/src/assets/images/icon3.png',
-      },
-      {
-        'appName': '呃呃呃呃1',
-        'system': 'android',
-        'package': 'com.sasasasai.mall',
-        'icon': '/src/assets/images/icon4.png',
-      },
-    ],
-  },
-  {
-    'business': '电商哈哈组',
-    'apps': [
-      {
-        'appName': '哈哈哈2',
-        'system': 'iOS',
-        'package': 'com.jiankangguanli.mall',
-        'icon': '/src/assets/images/icon1.png',
-      },
-      {
-        'appName': '哦哦哦2',
-        'system': 'android',
-        'package': 'com.aabjhsba.mall',
-        'icon': '/src/assets/images/icon2.png',
-      },
-      {
-        'appName': '点点滴滴2',
-        'system': 'iOS',
-        'package': 'com.sasasas.mall',
-        'icon': '/src/assets/images/icon3.png',
-      },
-      {
-        'appName': '呃呃呃呃2',
-        'system': 'android',
-        'package': 'com.sasasasai.mall',
-        'icon': '/src/assets/images/icon4.png',
-      },
-    ],
-  },
-  {
-    'business': '电商呼呼组',
-    'apps': [
-      {
-        'appName': '哈哈哈3',
-        'system': 'iOS',
-        'package': 'com.jiankangguanli.mall',
-        'icon': '/src/assets/images/icon1.png',
-      },
-      {
-        'appName': '哦哦哦3',
-        'system': 'android',
-        'package': 'com.aabjhsba.mall',
-        'icon': '/src/assets/images/icon2.png',
-      },
-      {
-        'appName': '点点滴滴3',
-        'system': 'iOS',
-        'package': 'com.sasasas.mall',
-        'icon': '/src/assets/images/icon3.png',
-      },
-      {
-        'appName': '呃呃呃呃3',
-        'system': 'android',
-        'package': 'com.sasasasai.mall',
-        'icon': '/src/assets/images/icon4.png',
-      },
-    ],
-  },
-]
-reset()
+// 事件反馈相关变量
+const operationNo = ref(false) // 操作失败
 
+// 分配更多APP相关变量
+const toApps = ref<string[]>([])
+const showModal = ref(false)
+const loading = ref(false)
+
+// 表单相关函数
 function handleOk() {
-  formRef.value
-    .validate()
-    .then(() => {
-      const style: any = {}
-      for (const key in formState) {
-        // @ts-expect-error:忽略
-        if (/^\d+$/.test(formState[key]) && key !== 'id') {
-        // @ts-expect-error:忽略
-          style[key] = Number(formState[key])
-        }
-        // @ts-expect-error:忽略
-        else if (formState[key]) {
-        // @ts-expect-error:忽略
-          style[key] = formState[key]
-        }
-      }
-      console.log(style)
-      // message.success('加载计划创建成功')
+  formRef.value.validate().then(async () => {
+    // @ts-expect-error:...
+    formState.json.id = formState.id
+    if (!update) {
+      // @ts-expect-error:...
+      await addPlan(formState)
       emit('close', true)
-      // console.log(formState)
-    })
-    .catch((error: any) => {
-      console.error('表单填写错误:', error)
-    })
-}
+    }
+    else {
+      // @ts-expect-error:...
+      await updatePlan(formState)
+      emit('close', true)
+    }
+  }).catch((err: any) => {
+    console.log('err', err)
+    if (err.name !== 'AxiosError') {
+      message.warning('请按照要求填写表单！')
+    }
+    else {
+      operationNo.value = true
+    }
+  })
+}// 提交表单
 function toModal() {
   formRef.value
     .validate()
@@ -266,108 +113,99 @@ function toModal() {
     .catch((error: any) => {
       console.log('error', error)
     })
-}
-function reset() {
-  const checkState: any = []
-  appList.forEach((item: any) => {
-    const currentState = {
-      checkAll: false,
-      extend: false,
-      checkList: [],
-    }
-    item.apps.forEach(() => {
-      // @ts-expect-error:忽略
-      currentState.checkList.push(false)
-    })
-    checkState.push(currentState)
-  })
-  business_apps_check.value = checkState
-}
-function businessAppCheckAll(index: number) {
-  business_apps_check.value[index].checkAll = !business_apps_check.value[index].checkAll
-  if (business_apps_check.value[index].checkAll) {
-    business_apps_check.value[index].checkList = business_apps_check.value[index].checkList.map(() => true)
-    appList[index].apps.forEach((item: any) => {
-      if (!isSelect(item.appName)) {
-        selectAPPs.push({
-          business: appList[index].business,
-          ...item,
-        })
+}// 打开分配更多APP弹窗
+
+// 请求函数
+function getPlanList() {
+  getPlanDataById({ id: current }).then((res: any) => {
+    const data = res.data
+    for (const key in formState) {
+      if (key !== 'json') {
+        // @ts-expect-error:...
+        formState[key] = data[key]
       }
-    })
-  }
-  else {
-    business_apps_check.value[index].checkList = business_apps_check.value[index].checkList.map(() => false)
-    cancelAPP('business', appList[index].business)
-  }
-}// 全选/全不选业务组下属APP
-function cancelAPP(type: string, target: string) {
-  if (type === 'app') {
-    Object.assign(selectAPPs, selectAPPs.filter((app: any) => app.appName !== target))
-  }
-  else {
-    Object.assign(selectAPPs, selectAPPs.filter((app: any) => app.business !== target))
-  }
-}// 取消选择APP(以业务组为单位/以APP为单位)
-
-function isSelect(appName: string): boolean {
-  return selectAPPs.some((app: any) =>
-    app.appName === appName,
-  )
-}// 判断APP是否被选择
-
-function selectThisApp(businessIndex: number, appIndex: number) {
-  if (business_apps_check.value[businessIndex].checkList[appIndex]) {
-    business_apps_check.value[businessIndex].checkList[appIndex] = false
-    business_apps_check.value[businessIndex].checkAll = false
-    cancelAPP('app', appList[businessIndex].apps[appIndex].appName)
-  }
-  else {
-    business_apps_check.value[businessIndex].checkList[appIndex] = true
-    if (!isSelect(appList[businessIndex].apps[appIndex].appName)) {
-      selectAPPs.push({
-        business: appList[businessIndex].business,
-        ...appList[businessIndex].apps[appIndex],
-      })
-      let businessState = true
-      business_apps_check.value[businessIndex].checkList.forEach((item: boolean) => {
-        if (!item) {
-          businessState = false
+      else {
+        for (const key1 in formState.json) {
+          // @ts-expect-error:...
+          formState.json[key1] = data.json[key1]
         }
-      })
-      business_apps_check.value[businessIndex].checkAll = businessState
+      }
     }
-  }
-}
-function handleToApp() {
-  if (selectAPPs.length > 0) {
-    console.log(selectAPPs)
-    message.success('成功创建样式并分发给APP')
-    showModal.value = false
-    while (selectAPPs.length) {
-      selectAPPs.pop()
+    if (copy) {
+      formState.id = ''
     }
-    reset()
-    emit('close', false)
-  }
-  else {
-    message.warning('请至少选择一个APP')
-  }
+  })
 }
-function handleToAppCancel() {
-  while (selectAPPs.length) {
-    selectAPPs.pop()
-  }
-  reset()
+if (current) {
+  getPlanList()
+}
+function getStrategyList() {
+  getPlanListData({}).then((res: any) => {
+    load_strategys.value = res.data.list
+  })
+}
+getStrategyList()
+
+// 分配更多APP相关函数
+function handleCancel() {
   showModal.value = false
 }
-
-watch(() => formState.load_strategy, (newValue) => {
-  if (newValue === 11) {
-    formState.capping = 0
+function handleToApps() {
+  loading.value = true
+  if (!update) {
+    // @ts-expect-error:...
+    addPlan(formState).then(() => {
+      loading.value = true
+      for (let i = 0; i < toApps.value.length; i++) {
+        formState.currentApp = toApps.value[i]
+        // @ts-expect-error:...
+        addPlan(formState).then(() => {
+          if (i === toApps.value.length - 1) {
+            loading.value = false
+            emit('close', true)
+          }
+        }).catch((error: any) => {
+          console.error(`分发给${toApps.value[i]}失败:`, error)
+          message.error(`分发给${toApps.value[i]}失败`)
+        })
+      }
+    }).catch((error: any) => {
+      console.error('操作失败:', error)
+      operationNo.value = true
+    })
   }
   else {
-    delete formState.capping
+    // @ts-expect-error:...
+    updatePlan(formState).then(() => {
+      loading.value = true
+      for (let i = 0; i < toApps.value.length; i++) {
+        formState.currentApp = toApps.value[i]
+        // @ts-expect-error:...
+        updatePlan(formState).then(() => {
+          if (i === toApps.value.length - 1) {
+            loading.value = false
+            emit('close', true)
+          }
+        }).catch((error: any) => {
+          console.error(`分发给${toApps.value[i]}失败:`, error)
+          message.error(`分发给${toApps.value[i]}失败`)
+        })
+      }
+    }).catch((error: any) => {
+      console.error('操作失败:', error)
+      operationNo.value = true
+    })
+  }
+}
+
+// 副作用
+watch(() => formState.json.load_strategy, (newValue) => {
+  if (newValue !== 11) {
+    formState.json.capping = undefined
+    formState.json.offset = undefined
+    formState.json.prob = undefined
+    formState.json.capping = undefined
+    formState.json.capping = undefined
   }
 })
 </script>
@@ -386,7 +224,7 @@ watch(() => formState.load_strategy, (newValue) => {
     <div class="containner">
       <a-form ref="formRef" :model="formState" :rules="rules" layout="vertical">
         <a-form-item label="加载计划ID" name="id">
-          <a-input v-model:value="formState.id" placeholder="请输入加载计划ID" :disabled="idDisabled" />
+          <a-input v-model:value="formState.id" placeholder="请输入加载计划ID" />
         </a-form-item>
 
         <a-form-item label="描述" name="desc">
@@ -394,11 +232,11 @@ watch(() => formState.load_strategy, (newValue) => {
         </a-form-item>
 
         <a-form-item label="count缓存数量" name="count">
-          <a-input v-model:value="formState.count" placeholder="请输入加载计划缓存数量" type="number" />
+          <a-input v-model:value="formState.json.count" placeholder="请输入加载计划缓存数量" type="number" />
         </a-form-item>
 
         <a-form-item label="refill是否补仓" name="refill">
-          <a-select v-model:value="formState.refill" placeholder="请选择">
+          <a-select v-model:value="formState.json.refill" placeholder="请选择">
             <a-select-option :value="1">
               补仓
             </a-select-option>
@@ -409,7 +247,13 @@ watch(() => formState.load_strategy, (newValue) => {
         </a-form-item>
 
         <a-form-item label="load_strategy加载策略" name="load_strategy">
-          <a-select v-model:value="formState.load_strategy" placeholder="请选择" :options="load_strategyOptions" />
+          <a-select v-model:value="formState.json.load_strategy" placeholder="请选择">
+            <template v-for="option in load_strategys" :key="option.load_strategy">
+              <a-select-option :value="option.load_strategy">
+                {{ option.label }}
+              </a-select-option>
+            </template>
+          </a-select>
         </a-form-item>
 
         <div class="high-set" @click="() => openHighSet = !openHighSet">
@@ -418,26 +262,11 @@ watch(() => formState.load_strategy, (newValue) => {
 
         <template v-if="openHighSet">
           <a-form-item label="timeout超时时间(ms)" name="timeout">
-            <a-input v-model:value="formState.timeout" placeholder="请输入加载计划超时时间" type="number" />
-          </a-form-item>
-
-          <a-form-item v-if="formState.load_strategy === 11" label="capping限制次数" name="capping">
-            <a-input v-model:value="formState.capping" placeholder="请输入加载计划限制次数" type="number" />
-          </a-form-item>
-
-          <a-form-item label="load_context加载Context兜底" name="load_context">
-            <a-select v-model:value="formState.load_context" placeholder="请选择">
-              <a-select-option :value="1">
-                开启
-              </a-select-option>
-              <a-select-option :value="0">
-                关闭
-              </a-select-option>
-            </a-select>
+            <a-input v-model:value="formState.json.timeout" placeholder="请输入加载计划超时时间" type="number" />
           </a-form-item>
 
           <a-form-item label="scatter_loading分散加载" name="scatter_loading">
-            <a-select v-model:value="formState.scatter_loading" placeholder="请选择">
+            <a-select v-model:value="formState.json.scatter_loading" placeholder="请选择">
               <a-select-option :value="1">
                 开启
               </a-select-option>
@@ -447,23 +276,45 @@ watch(() => formState.load_strategy, (newValue) => {
             </a-select>
           </a-form-item>
 
-          <div class="chaping">
-            <!-- v-if="formState.scatter_loading" -->
-            <div class="title">
-              插屏广告设置
+          <a-form-item label="load_context加载Context兜底" name="load_context">
+            <a-select v-model:value="formState.json.load_context" placeholder="请选择">
+              <a-select-option :value="1">
+                开启
+              </a-select-option>
+              <a-select-option :value="0">
+                关闭
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+
+          <template v-if="formState.json.load_strategy === 11">
+            <a-form-item label="capping限制次数" name="capping">
+              <a-input v-model:value="formState.json.capping" placeholder="请输入加载计划限制次数" type="number" />
+            </a-form-item>
+          </template>
+
+          <template v-if="formState.json.load_strategy === 11 && Number(formState.json.capping) > 0">
+            <div class="chaping">
+              <div class="title">
+                插屏广告设置
+              </div>
+              <a-form-item label="offset跳过展示次数" name="offset">
+                <a-input v-model:value="formState.json.offset" placeholder="请输入跳过展示次数" type="number" />
+              </a-form-item>
+
+              <a-form-item label="prob当前插屏展示概率(%)" name="prob">
+                <a-input-number v-model:value="formState.json.prob" :min="0" :max="100" placeholder="请输入插屏展示概率" class="w-full" />
+              </a-form-item>
+
+              <a-form-item label="load_prob当前插屏加载概率(%)" name="prob">
+                <a-input-number v-model:value="formState.json.load_prob" :min="0" :max="100" placeholder="请输入插屏加载概率" class="w-full" />
+              </a-form-item>
+
+              <a-form-item label="limit最多展示次数" name="limit">
+                <a-input v-model:value="formState.json.limit" placeholder="请输入最多展示次数" type="number" />
+              </a-form-item>
             </div>
-            <a-form-item label="offset跳过展示次数" name="offset">
-              <a-input v-model:value="formState.offset" placeholder="请输入跳过展示次数" type="number" />
-            </a-form-item>
-
-            <a-form-item label="prob当前插屏展示概率(%)" name="prob">
-              <a-input v-model:value="formState.prob" placeholder="请输入展示概率" type="number" />
-            </a-form-item>
-
-            <a-form-item label="limit最多展示次数" name="limit">
-              <a-input v-model:value="formState.limit" placeholder="请输入最多展示次数" type="number" />
-            </a-form-item>
-          </div>
+          </template>
         </template>
       </a-form>
       <div class="footer">
@@ -483,66 +334,17 @@ watch(() => formState.load_strategy, (newValue) => {
     v-model:open="showModal" title="分配广告样式到APP" style="top:20vh;width:70vw;" :mask-closable="false"
   >
     <template #footer>
-      <a-button key="back" @click="handleToAppCancel">
+      <a-button key="back" @click="handleCancel">
         取消
       </a-button>
-      <a-button key="submit" type="primary" @click="handleToApp">
-        确定
+      <a-button key="submit" type="primary" :loading="loading" @click="handleToApps">
+        确定分发
       </a-button>
     </template>
-    <div class="select_app">
-      <div class="left">
-        <div v-for="(item, index) in appList" :key="index" class="business-apps">
-          <a-checkbox v-model:checked="business_apps_check[index].checkAll" @click="businessAppCheckAll(index)">
-            <div class="checkbox">
-              <img src="/src/assets/images/business2.svg">
-              <div class="text">
-                <div class="name">
-                  {{ item.business }}
-                </div>
-                <span>{{ item.apps.length }}个APP</span>
-              </div>
-            </div>
-          </a-checkbox>
-          <div class="extend" @click="business_apps_check[index].expanded = !business_apps_check[index].expanded">
-            {{ business_apps_check[index].expanded ? '收起' : '展开' }}
-          </div>
-          <div v-if="business_apps_check[index].expanded" class="inner-apps">
-            <a-checkbox
-              v-for="(app, index2) in item.apps" :key="index2"
-              v-model:checked="business_apps_check[index].checkList[index2]" @click="selectThisApp(index, index2)"
-            >
-              <div class="inner-app-details">
-                <img :src="app.icon">
-                <div class="text">
-                  <div class="name">
-                    {{ app.appName }}
-                    <img :src="`/src/assets/images/${app.system}.svg`">
-                  </div>
-                  <span>{{ app.package }}</span>
-                </div>
-              </div>
-            </a-checkbox>
-          </div>
-        </div>
-      </div>
-      <div class="right">
-        <div class="title">
-          已选择
-        </div>
-        <div v-for="(app, index) in selectAPPs" :key="index" class="check-app">
-          <img :src="app.icon">
-          <div class="text">
-            <div class="name">
-              {{ app.appName }}
-              <img :src="`/src/assets/images/${app.system}.svg`">
-            </div>
-            <span>{{ app.package }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ShuttleBox v-model:checked="toApps" />
   </a-modal>
+
+  <operateFalse v-model="operationNo" />
 </template>
 
 <style scoped lang='scss'>

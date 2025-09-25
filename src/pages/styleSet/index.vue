@@ -1,5 +1,5 @@
 <script setup lang="ts" name="styleeSet">
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 import { EyeOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import AddStyle from './components/addStyle.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
@@ -192,7 +192,7 @@ getStyleList()
         <template #icon>
           <PlusOutlined />
         </template>
-        新增样式
+        新增
       </a-button>
     </template>
 
@@ -247,12 +247,12 @@ getStyleList()
             </template>
           </template>
           <template v-if="column.dataIndex === 'operation'">
-            <div class="flex flex-col items-start">
-              <div class="flex items-center " @click="handleCopy(record)">
+            <div class="flex flex-col items-center">
+              <div class="flex items-center cursor-pointer" @click="handleCopy(record)">
                 <EyeOutlined class="mr-1 text-[#4e46e5]" />
                 <span class="text-[#4e46e5]">复用配置新建</span>
               </div>
-              <div class="flex items-center " @click="handleEdit(record)">
+              <div class="flex items-center cursor-pointer" @click="handleEdit(record)">
                 <FormOutlined class="mr-1 text-[#4e46e5]" />
                 <span class="text-[#4e46e5]">编辑</span>
               </div>
@@ -263,7 +263,7 @@ getStyleList()
                 placement="left"
                 @confirm="deleteStyle(record)"
               >
-                <span class="text-[#e35150]">删除</span>
+                <span class="text-[#e35150] cursor-pointer">删除</span>
               </a-popconfirm>
             </div>
           </template>

@@ -2,7 +2,7 @@
 import { reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
-import ShuttleBox from './ShuttleBox.vue'
+import ShuttleBox from '~@/components/app-shuttle/ShuttleBox.vue'
 import Select from '~@/components/form/Select.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
 import { addUser } from '~@/api/user/useradd'

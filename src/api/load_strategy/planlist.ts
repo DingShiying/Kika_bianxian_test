@@ -17,10 +17,10 @@ interface PlanList {
   }
 }// 用户列表数据类型
 interface Params {
-  load_strategy: string
-  page: number
-  pageSize: number
-  operator: string | undefined
+  load_strategy?: string
+  page?: number
+  pageSize?: number
+  operator?: string | undefined
 }// 请求参数类型
 
 export function getPlanListData(params: Params) {

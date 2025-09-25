@@ -166,3 +166,9 @@ export function useDelete<R = any, T = any>(url: string, data?: T, config?: Axio
   }
   return instancePromise<R, T>(options)
 }
+
+export function objectToQueryString(obj: any) {
+  return Object.keys(obj)
+    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(obj[key])}`)
+    .join('&')
+}

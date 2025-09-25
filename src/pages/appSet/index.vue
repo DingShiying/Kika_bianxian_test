@@ -192,7 +192,6 @@ function editAPP(record: any) {
   addAppOpen.value = true
 }// 编辑应用
 function deleteAPP(record: any) {
-  deleteAppData
   currentApp.value = record
   deleteAppData({
     id: record.id,
