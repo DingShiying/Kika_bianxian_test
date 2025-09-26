@@ -16,7 +16,7 @@ export function addUnit(params: Params) {
   const currentApp = computed(() => {
     return useUserStore().currentApp
   })
-  return usePost<Response, any>('/proxy/ad/unit/add', { ...params, currentApp }, {
+  return usePost<Response, any>('/proxy/ad/unit/add', { ...params, currentApp: currentApp.value }, {
     // 设置为false的时候不会携带token
     token: true,
     // 开发模式下使用自定义的接口

@@ -59,16 +59,14 @@ const filter_formats = computed(() => {
 // 表单相关函数
 function handleOk() {
   formRef.value.validate().then(async () => {
-    // @ts-expect-error:...
-    formState.json.id = formState.id
     if (!update) {
       await addUnit(formState)
-      emit('close', true)
+      emit('close', { state: true, id: formState.json.value })
     }
     else {
       // @ts-expect-error:...
       await updateUnit(formState)
-      emit('close', true)
+      emit('close', { state: true, id: formState.json.value })
     }
   }).catch((err: any) => {
     console.log('err', err)
@@ -81,7 +79,7 @@ function handleOk() {
   })
 }// 表单提交
 function handleCancel() {
-  emit('close', false)
+  emit('close', { state: false })
 }// 取消
 
 function getUnitData() {
