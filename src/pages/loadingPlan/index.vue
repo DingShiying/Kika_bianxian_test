@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons-vue'
 import AddPlan from './components/addPlan.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
-import { getPlanListData } from '~@/api/plan/planlist'
+import { getPlanListData } from '~@/api/plan/planbypage'
 import { getPlanListData as getLoadStrategyList } from '~@/api/load_strategy/planlist'
 import { deletePlanData } from '~@/api/plan/deleteplan'
 
@@ -230,7 +230,7 @@ function getPlanList() {
 }// 获取计划列表
 function getStrategyList() {
   getLoadStrategyList({ operator }).then((res: any) => {
-    loadStrategyList.value = res.data.list
+    loadStrategyList.value = res.data
   }).finally(() => {
     setTimeout(() => {
       loading.value = false

@@ -21,14 +21,6 @@ interface UserData {
   updater: string
   updateTime: string
 }// 用户数据类型
-interface UserList {
-  code: number
-  msg: string
-  data: {
-    total: number
-    list: UserData[]
-  }
-}
 interface Params {
   userName: string
   page: number
@@ -47,7 +39,20 @@ const searchParams = ref<Params>({
   operator,
 })// 查询参数
 
-const list = ref<UserData[]>([])// 请求接口数据
+const list = ref<UserData[]>([
+  {
+        "id":"user_1",
+        "userName": '张三',
+        "userEmail": 'qqq.com',
+        "business": ['财务部', '人事部'],
+        "role": '系统管理员',
+        "apps": ['app-1','app-4'],
+        "creator": '李四',
+        "createTime": '2022-01-01',
+        "updater": '王五',  
+        "updateTime": '2022-01-02'
+      }
+])// 请求接口数据
 
 // 事件反馈相关变量
 const operationYes = ref(false) // 操作成功
@@ -115,16 +120,16 @@ const addUserOpen = ref(false)// 新增用户弹窗状态
 
 // 请求接口获取数据
 function getData() {
-  tableLoading.value = true
-  // @ts-expect-error:忽略
-  getUserListData(searchParams.value).then((res: UserList) => {
-    list.value = res.data.list
-    pagination.value.total = res.data.total
-  }).finally(() => {
-    setTimeout(() => {
-      tableLoading.value = false
-    }, 500)
-  })
+  // tableLoading.value = true
+  //// @ts-expect-error:忽略
+  // getUserListData(searchParams.value).then((res: any) => {
+  //   list.value = res.data.list
+  //   pagination.value.total = res.data.total
+  // }).finally(() => {
+  //   setTimeout(() => {
+  //     tableLoading.value = false
+  //   }, 500)
+  // })
 }
 
 // 表格操作
@@ -155,14 +160,15 @@ function closeCard(target: boolean) {
 }// 关闭管理用户APP弹窗
 function deleteUserBut(record: any) {
   currentUser.value = record
-  deleteUser({ id: currentUser.value.id, operator }).then(() => {
-    operationYes.value = true
-  }).catch(() => {
-    operationNo.value = true
-  }).finally(() => {
-    getData()
-    currentUser.value = null
-  })
+  currentUser.value = null
+  // deleteUser({ id: currentUser.value.id, operator }).then(() => {
+  //   operationYes.value = true
+  // }).catch(() => {
+  //   operationNo.value = true
+  // }).finally(() => {
+  //   // getData()
+  //   currentUser.value = null
+  // })
 }// 删除用户
 
 // 初始请求数据
@@ -202,7 +208,7 @@ getData()
               </a-tag>
             </template>
             <template v-if="column.dataIndex === 'operation'">
-              <div class="flex flex-col items-start cursor-pointer">
+              <div class="flex flex-col items-center cursor-pointer">
                 <div class="flex items-center" @click="openCard(record)">
                   <KeyOutlined class="mr-1 text-[#4e46e5]" />
                   <span class="text-[#4e46e5]">管理APP</span>

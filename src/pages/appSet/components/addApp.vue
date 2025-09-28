@@ -103,8 +103,27 @@ const appList = ref<APPData[]>([
     createTime: '2022-01-01',
   },
 ])
-const businessList = ref<BusinessData[]>([])// 请求接口数据
-const platformList = ref<PlatformData[]>([])// 请求接口数据
+const businessList = ref<BusinessData[]>([
+  {
+        "id": '1',
+        "business": '电商业务组',
+        "creator": '张三',
+        "createTime": '2023-01-01',
+        "updater":'张三',
+        "updateTime": '2023-01-02',
+      }    
+])// 请求接口数据
+const platformList = ref<PlatformData[]>([
+  {
+        'id': '1',
+        'platformName': 'Google',
+        'creator': '张三',
+        'createTime': '2023-01-01',
+        'updater': '张三',
+        'updateTime': '2022-01-02',
+        'status': true,
+      },
+])// 请求接口数据
 
 // 表单相关变量
 const isAdd = computed(() => {
@@ -152,11 +171,11 @@ const rules: any = {
 function handleOk() {
   console.log(formState)
   formRef.value.validate().then(async () => {
-    await addApp({
-      ...formState,
-      isAdd: isAdd.value,
-      operator,
-    })
+    // await addApp({
+    //   ...formState,
+    //   isAdd: isAdd.value,
+    //   operator,
+    // })
     emit('close', true)
   }).catch((err: any) => {
     if (err.name !== 'AxiosError') {
@@ -173,15 +192,15 @@ function handleOkUser() {
 }
 
 function getBusinessList() {
-  getBusinessListData({ operator }).then((res: any) => {
-    businessList.value = res.data.list
-  })
+  // getBusinessListData({ operator }).then((res: any) => {
+  //   businessList.value = res.data.list
+  // })
 }
 getBusinessList()
 function getPlatformList() {
-  getPlatformListData({ operator }).then((res: any) => {
-    platformList.value = res.data.list
-  })
+  // getPlatformListData({ operator }).then((res: any) => {
+  //   platformList.value = res.data.list
+  // })
 }
 getPlatformList()// 初始化请求
 // 复用APP是否禁用

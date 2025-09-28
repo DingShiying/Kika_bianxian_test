@@ -42,11 +42,11 @@ const isAdd = computed(() => {
 function handleOk() {
   formRef.value.validate().then(async () => {
     formState.load_strategy = Number(formState.load_strategy)
-    await addLoadStrategy({
-      ...formState,
-      isAdd: isAdd.value,
-      operator,
-    })
+    // await addLoadStrategy({
+    //   ...formState,
+    //   isAdd: isAdd.value,
+    //   operator,
+    // })
     emit('close', true)
   }).catch((err: any) => {
     if (err.name !== 'AxiosError') {

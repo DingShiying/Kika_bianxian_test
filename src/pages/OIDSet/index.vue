@@ -1,277 +1,169 @@
 <script setup lang="ts" name="OIDSet">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import addOID from './components/addOID.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
+import { getOIDListData } from '~@/api/oid/oidbypage'
+import { deleteOidData } from '~@/api/oid/deleteads'
 
-interface FormState {
+// 类型声明
+interface SearchParams {
   oid: string
   creator: string
+  page: number
+  pageSize: number
 }// 表单数据类型
-
-interface OIDListData {
-  data: Array<{
-    id: number
+interface OIDData {
+  id: string
+  json: {
     oid: string
-    desc: string
     format: number
-    creator: string
-    createTime: string
-  }>
-  format: Array<{
-    label: string
-    value: number
-  }>
+  }
+  creator: string
+  createTime: string
+  updater: string
+  updateTime: string
 }// 请求接口数据类型
 
 // 事件反馈相关变量
 const operationYes = ref(false) // 操作成功
 const operationNo = ref(false) // 操作失败
 
-const response = ref<OIDListData>({
-  data: [
-    {
-      id: 0,
-      oid: 'fajdhasbdhuk_djabjhab',
-      desc: '一个简单的描述',
-      format: 1,
-      creator: '张三',
-      createTime: '2023-01-01',
-    },
-    {
-      id: 1,
-      oid: 'fhkankjcs_ankjsn',
-      desc: '一个中等的描述',
-      format: 4,
-      creator: '张三',
-      createTime: '2023-01-01',
-    },
-    {
-      id: 2,
-      oid: 'hkufbsjhcbx',
-      desc: '一个假的的描述',
-      format: 8,
-      creator: '张三',
-      createTime: '2023-01-01',
-    },
-    {
-      id: 3,
-      oid: 'nasncjksncjksb',
-      desc: '一个复杂的描述',
-      format: 0,
-      creator: '张三',
-      createTime: '2023-01-01',
-    },
-  ],
-  format: [
-    {
-      label: '插屏广告-INTERSTITIAL',
-      value: 0,
-    },
-    {
-      label: '激励视频广告-REWARDED_VIDEO',
-      value: 1,
-    },
-    {
-      label: '开屏广告-APP_OPEN',
-      value: 2,
-    },
-    {
-      label: '激励插屏广告-REWARDED_INTERSTITIAL',
-      value: 3,
-    },
-    {
-      label: '原生广告-NATIVE',
-      value: 4,
-    },
-    {
-      label: '原生插屏广告-NATIVE_INTER',
-      value: 5,
-    },
-    {
-      label: '横幅广告-BANNER',
-      value: 6,
-    },
-    {
-      label: '中等矩形横幅广告-MEDIUM',
-      value: 7,
-    },
-    {
-      label: '内联横幅广告-INLINE_BANNER',
-      value: 8,
-    },
-  ],
-})// 请求接口数据
+const { formats } = useUserStore()
 
+// 表格相关变量
+const list = ref<OIDData[]>([])
 const columns: any = [
-  {
-    title: 'id',
-    dataIndex: 'id',
-    key: 'id',
-  },
   {
     title: 'OID',
     dataIndex: 'oid',
     key: 'oid',
     align: 'center',
+    fixed: 'left',
+    width: 150,
   },
   {
-    title: '  描述',
+    title: '描述',
     dataIndex: 'desc',
     key: 'desc',
     align: 'center',
+    width: 200
   },
   {
-    title: '广告格式',
+    title: '广告类型',
     dataIndex: 'format',
     key: 'format',
     align: 'center',
+    width: 200,
   },
   {
     title: '创建人',
     dataIndex: 'creator',
     key: 'creator',
     align: 'center',
+    width: 150
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
     key: 'createTime',
     align: 'center',
+    width: 150
+  },
+  {
+    title: '更新人',
+    dataIndex: 'updater',
+    key: 'updater',
+    align: 'center',
+    width: 150
+  },
+  {
+    title: '更新时间',
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    align: 'center',
+    width: 150
   },
   {
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
     align: 'center',
+    fixed: "right",
+    width: 150
   },
 ]// 表格列头
-
 const loading = ref(false) // 表格加载状态
-
 const pagination = ref({
   current: 1,
-  pageSize: 10,
-  total: response.value.data.length,
+  pageSize: 15,
+  total: 0,
 })// 表格分页
-
-// const open = ref(false)// 表单弹窗状态
 const addOIDOpen = ref(false)// 新增业务组弹窗状态
 const currentOID = ref()
 
+// 检索相关变量
 const formRef = ref()// 表单引用
-const formState: FormState = reactive({
+const searchParams = ref<SearchParams>({
   oid: '',
   creator: '',
+  page: 1,
+  pageSize: 15
 })// 表单数据
 
-// async function getData(searchParams: Params) {
-//   try {
-//     const res = await getUserListData(searchParams)
-//     if (res.code === 200) {
-//       // @ts-expect-error:忽略
-//       response.value = res.data
-//       pagination.value.total = response.value.data.length
-//       // @ts-expect-error:忽略
-//       const checkState = []
-//       response.value.appList.forEach((item: any) => {
-//         const currentState = {
-//           checkAll: false,
-//           extend: false,
-//           checkList: [],
-//         }
-//         item.apps.forEach(() => {
-//           // @ts-expect-error:忽略
-//           currentState.checkList.push(false)
-//         })
-//         checkState.push(currentState)
-//       })
-//       // @ts-expect-error:忽略
-//       business_apps_check.value = checkState
-//     }
-//     else {
-//       message.error(res.msg)
-//     }
-//   }
-//   catch (error: any) {
-//     message.error(error.msg)
-//   }
-//   finally {
-//     loading.value = false
-//   }
-// }
-
+// 表格相关函数
 function handleTableChange(event: any) {
   pagination.value = event
+  searchParams.value.page = event.current
 }// 表格分页改变
-
-// function handleOk() {
-//   formRef.value.validate().then(() => {
-//     console.log(formState)
-//     open.value = false
-//     Modal.destroyAll()
-//     formRef.value.resetFields()
-//     message.success('新建用户成功！')
-//   })
-// }// 表单提交
-// function handleCancel() {
-//   open.value = false
-//   Modal.destroyAll()
-//   Object.assign(formState, {
-//     businessName: '',
-//     linkUser: [],
-//     linkAPP: [],
-//   })
-//   Object.assign(formDisabled, {
-//     businessName: false,
-//     linkUser: false,
-//     linkAPP: false,
-//   })
-// }// 表单取消
-
 function editOID(record: any) {
-  currentOID.value = {
-    oid: record.oid,
-    desc: record.desc,
-    format: record.format,
-  }
+  currentOID.value = record.id
   addOIDOpen.value = true
-}
+}// 编辑业务组
 function closeAddOID(value: boolean) {
   if (value) {
     operationYes.value = true
   }
+  getOIDList()
   addOIDOpen.value = false
   currentOID.value = null
-}
+}// 关闭新增业务组弹窗
+function deleteOID(record: any) {
+  currentOID.value = record.id
+  deleteOidData({ id: currentOID.value }).then(() => {
+    operationYes.value = true
+  }).catch(() => {
+    operationNo.value = true
+  }).finally(() => {
+    currentOID.value = null
+    getOIDList()
+  })
+}// 删除oid
 
-function searchConfig() {
-  console.log(formState)
-}
-
+// 检索相关函数
 function resetSearch() {
-  Object.assign(formState, {
-    oid: '',
-    creator: '',
+  searchParams.value.oid = ''
+  searchParams.value.creator = ''
+}// 重置检索条件
+function getOIDList() {
+  loading.value = true
+  getOIDListData(searchParams.value).then((res: any) => {
+    list.value = res.data.list
+    pagination.value.total = res.data.total
+  }).finally(() => {
+    setTimeout(() => {
+      loading.value = false
+    }, 500)
   })
 }
-
-function deleteOID(record: any) {
-  currentOID.value = record
-  console.log(currentOID.value)
-  // deleteCard.value = false
-  setTimeout(() => {
-    operationYes.value = true
-  }, 1000)
-  currentOID.value = null
-}// 删除用户
+getOIDList()
 </script>
 
 <template>
   <page-container>
     <template #extra>
-      <a-button type="primary" @click="() => addOIDOpen = true">
+      <a-button type="primary" @click="() => addOIDOpen = true" :disabled="addOIDOpen">
         <template #icon>
           <PlusOutlined />
         </template>
@@ -281,17 +173,17 @@ function deleteOID(record: any) {
 
     <a-card v-if="!addOIDOpen">
       <div class="search-part">
-        <a-form ref="formRef" :model="formState" layout="inline">
+        <a-form ref="formRef" :model="searchParams" layout="inline">
           <a-form-item label="OID名称" name="oid">
-            <a-input v-model:value="formState.oid" placeholder="请输入OID名称" />
+            <a-input v-model:value="searchParams.oid" placeholder="请输入OID名称" />
           </a-form-item>
           <a-form-item label="创建人" name="creator">
-            <a-input v-model:value="formState.creator" placeholder="请输入创建人" />
+            <a-input v-model:value="searchParams.creator" placeholder="请输入创建人" />
           </a-form-item>
         </a-form>
 
         <div class="but-part">
-          <a-button type="primary" @click="searchConfig">
+          <a-button type="primary" @click="getOIDList">
             查询
           </a-button>
           <a-button style="margin-left: 10px" @click="resetSearch">
@@ -299,41 +191,40 @@ function deleteOID(record: any) {
           </a-button>
         </div>
       </div>
-      <a-table
-        :columns="columns" :data-source="response.data" :loading="loading" :pagination="pagination"
-        class="table-part" @change="handleTableChange($event)"
-      >
+      <a-table :columns="columns" :data-source="list" :loading="loading" :pagination="pagination" class="table-part"
+        @change="handleTableChange($event)" :scroll="{ x: '50vw',y:'50vh' }">
         <template #bodyCell="{ column, record }">
-          <template v-if="column.dataIndex === 'format'">
+          <template v-if="column.dataIndex === 'oid'">
             <span>
-              {{ response.format.find((i) => i.value === record.format)?.label }}
+              {{ record.id }}
             </span>
           </template>
 
+          <template v-if="column.dataIndex === 'format'">
+            <a-tag color="skyblue">
+              {{formats.find((i) => i.value === record.json.format)?.label}}
+            </a-tag>
+          </template>
+
           <template v-if="column.dataIndex === 'operation'">
-            <div class="option">
-              <a-button type="link" @click="editOID(record)">
+            <div class="flex items-center justify-center gap-2">
+              <span class="cursor-pointer text-[#4e46e5]" @click="editOID(record)">
                 编辑
-              </a-button>
-              <a-popconfirm
-                title="你确定要删除此OID?"
-                ok-text="确定"
-                cancel-text="取消"
-                placement="left"
-                @confirm="deleteOID(record)"
-              >
-                <a-button type="link">
+              </span>
+              <a-popconfirm title="你确定要删除此OID?" ok-text="确定" cancel-text="取消" placement="left"
+                @confirm="deleteOID(record)">
+                <span class="cursor-pointer text-[#e35150]">
                   删除
-                </a-button>
+                </span>
               </a-popconfirm>
             </div>
           </template>
         </template>
-        <!-- <template #footer>
+        <template #footer v-if="pagination.total > 0">
           显示&nbsp;{{ pagination.current * pagination.pageSize - pagination.pageSize + 1 }}&nbsp;到&nbsp;
           {{ pagination.current * pagination.pageSize > pagination.total ? pagination.total : pagination.current
             * pagination.pageSize }}&nbsp;条数据，共&nbsp;{{ pagination.total }}&nbsp;条数据
-        </template> -->
+        </template>
       </a-table>
     </a-card>
 
@@ -442,17 +333,19 @@ function deleteOID(record: any) {
 .table-part {
   min-height: 50vh;
 
-  .ad-unit{
+  .ad-unit {
     display: flex;
     flex-direction: column;
-    .name{
-      font-size:16px;
-      font-weight:600;
-      color:#4689d4;
+
+    .name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #4689d4;
     }
-    .unit-value{
-      font-size:14px;
-      color:grey;
+
+    .unit-value {
+      font-size: 14px;
+      color: grey;
     }
   }
 

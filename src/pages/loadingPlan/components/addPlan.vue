@@ -141,7 +141,7 @@ if (current) {
 }
 function getStrategyList() {
   getPlanListData({}).then((res: any) => {
-    load_strategys.value = res.data.list
+    load_strategys.value = res.data
   })
 }
 getStrategyList()
@@ -213,7 +213,7 @@ watch(() => formState.json.load_strategy, (newValue) => {
 <template>
   <div class="add-plan">
     <div class="header">
-      <span>新建加载计划</span>
+      <span>{{ !update?'新建加载计划':'编辑加载计划' }}</span>
       <a-button type="primary" @click="() => emit('close', false)">
         <template #icon>
           <RollbackOutlined />
@@ -247,7 +247,7 @@ watch(() => formState.json.load_strategy, (newValue) => {
         </a-form-item>
 
         <a-form-item label="load_strategy加载策略" name="load_strategy">
-          <a-select v-model:value="formState.json.load_strategy" placeholder="请选择">
+          <a-select v-model:value="formState.json.load_strategy" placeholder="请选择" allow-clear>
             <template v-for="option in load_strategys" :key="option.load_strategy">
               <a-select-option :value="option.load_strategy">
                 {{ option.label }}

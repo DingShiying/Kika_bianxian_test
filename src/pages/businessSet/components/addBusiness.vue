@@ -38,10 +38,10 @@ const isAdd = computed(() => {
 // 表单相关函数
 function handleOk() {
   formRef.value.validate().then(async () => {
-    await addBusiness({
-      ...formState,
-      isAdd: isAdd.value,
-    })
+    // await addBusiness({
+    //   ...formState,
+    //   isAdd: isAdd.value,
+    // })
     emit('close', true)
   }).catch((err: any) => {
     if (err.name !== 'AxiosError') {

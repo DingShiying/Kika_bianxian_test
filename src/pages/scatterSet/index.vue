@@ -28,7 +28,26 @@ interface Params {
 const { operator } = useUserStore()
 
 // 请求响应数据
-const list = ref<StrategyData[]>()// 请求接口数据
+const list = ref<StrategyData[]>([
+  {
+    "label": '关闭',
+    "scatter_loading": 0,
+    "creator": '张三',
+    "createTime": '2023-01-01',
+    "updater": '张三',
+    "updateTime": '2023-01-02',
+    "status": true,
+  },
+  {
+    "label": '开启',
+    "scatter_loading": 1,
+    "creator": '张三',
+    "createTime": '2023-01-01',
+    "updater": '张三',
+    "updateTime": '2023-01-02',
+    "status": true,
+  }
+])// 请求接口数据
 
 // 表格相关变量
 const columns: any = [
@@ -119,47 +138,31 @@ function closeAddStrategy(value: boolean) {
   currentStrategy.value = null
 }// 关闭新增弹窗
 function deleteStrategy(record: any) {
-  currentStrategy.value = record
-  deletePlanData({
-    scatter_loading: record.scatter_loading,
-    operator,
-  }).then(() => {
-    operationYes.value = true
-  }).catch(() => {
-    operationNo.value = true
-  }).finally(() => {
-    currentStrategy.value = null
-    getStrategyList()
-  })
+  // currentStrategy.value = record
+  // deletePlanData({
+  //   scatter_loading: record.scatter_loading,
+  //   operator,
+  // }).then(() => {
+  //   operationYes.value = true
+  // }).catch(() => {
+  //   operationNo.value = true
+  // }).finally(() => {
+  //   currentStrategy.value = null
+  //   getStrategyList()
+  // })
 }// 删除
 
 // 请求函数
 function getStrategyList() {
-  loading.value = true
-  getPlanListData(searchParams.value).then((res: any) => {
-    list.value = res.data.list
-    pagination.value.total = res.data.total
-  }).finally(() => {
-    setTimeout(() => {
-      loading.value = false
-    }, 500)
-  })
-
-  // try {
-  //   loading.value = true
-  //   await setTimeout(() => {
+  // loading.value = true
+  // getPlanListData(searchParams.value).then((res: any) => {
+  //   list.value = res.data.list
+  //   pagination.value.total = res.data.total
+  // }).finally(() => {
+  //   setTimeout(() => {
   //     loading.value = false
-  //     console.log(response.value)
-  //   }, 1000)
-  // }
-  // catch (error: any) {
-  //   loading.value = false
-  //   console.error(error)
-  //   notification.open({
-  //     message: '获取数据失败',
-  //     description: error,
-  //   })
-  // }
+  //   }, 500)
+  // })
 }
 getStrategyList()
 </script>
@@ -176,14 +179,10 @@ getStrategyList()
     </template>
 
     <a-card v-if="!addLoadingOpen">
-      <a-input-search
-        v-model:value="searchParams.scatter_loading" placeholder="请输入加载策略值" enter-button="搜索"
-        style="width: 350px;margin-bottom: 15px;" type="number" @search="getStrategyList"
-      />
-      <a-table
-        :columns="columns" :data-source="list" :loading="loading" :pagination="pagination"
-        class="table-part" @change="handleTableChange($event)"
-      >
+      <a-input-search v-model:value="searchParams.scatter_loading" placeholder="请输入加载策略值" enter-button="搜索"
+        style="width: 350px;margin-bottom: 15px;" type="number" @search="getStrategyList" />
+      <a-table :columns="columns" :data-source="list" :loading="loading" :pagination="pagination" class="table-part"
+        @change="handleTableChange($event)">
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'status'">
             <a-switch v-model:checked="record.status" :disabled="true" />
@@ -195,13 +194,8 @@ getStrategyList()
                 <span @click="editStratgy(record)">编辑</span>
               </div>
 
-              <a-popconfirm
-                title="你确定要删除此加载计划?"
-                ok-text="确定"
-                cancel-text="取消"
-                placement="left"
-                @confirm="deleteStrategy(record)"
-              >
+              <a-popconfirm title="你确定要删除此加载计划?" ok-text="确定" cancel-text="取消" placement="left"
+                @confirm="deleteStrategy(record)">
                 <span>删除</span>
               </a-popconfirm>
             </div>

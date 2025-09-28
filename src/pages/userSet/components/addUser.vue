@@ -44,8 +44,28 @@ interface RoleData {
 }// 平台数据类型
 
 // 请求接口数据
-const roleList = ref<RoleData[]>([])
-const businessList = ref<BusinessData[] >([])
+const roleList = ref<RoleData[]>([
+  {
+    'id': '1',
+    'roleName': 'admin',
+    'roleScore': 1,
+    'creator': 'admin',
+    'createTime': '2022-01-01',
+    'updater': '张三',
+    'updateTime': '2022-01-02',
+    'roleAuth': ['userSet', 'userSearch', 'userDelete'],
+  }
+])
+const businessList = ref<BusinessData[]>([
+  {
+    "id": '1',
+    "business": '电商业务组',
+    "creator": '张三',
+    "createTime": '2023-01-01',
+    "updater": '张三',
+    "updateTime": '2023-01-02',
+  }
+])
 
 // 表单相关属性
 const formRef = ref()// 表单引用
@@ -82,9 +102,10 @@ function submitForm() {
     .validate()
     .then(() => {
       const form = { ...formState, isAdd: isAdd.value, operator }
-      addUser(form).then(() => {
+      // addUser(form).then(() => {
+      //   emit('close', true)
+      // })
         emit('close', true)
-      })
     }).catch((err: any) => {
       if (err.name !== 'AxiosError') {
         message.warning('请按照要求填写表单！')
@@ -102,15 +123,15 @@ function validateEmail(_: any, value: any) {
 }// 邮箱验证
 
 function getBusinessList() {
-  getBusinessListData({ operator }).then((res: any) => {
-    businessList.value = res.data.list
-  })
+  // getBusinessListData({ operator }).then((res: any) => {
+  //   businessList.value = res.data.list
+  // })
 }
 getBusinessList()
 function getRoleData() {
-  getRoleListData({ operator }).then((res: any) => {
-    roleList.value = res.data.list
-  })
+  // getRoleListData({ operator }).then((res: any) => {
+  //   roleList.value = res.data.list
+  // })
 }
 getRoleData()// 初始化请求
 </script>

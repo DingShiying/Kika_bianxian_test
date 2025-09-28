@@ -30,23 +30,48 @@ interface UserGroup {
 const userList = ref<UserData[]>([])// 请求接口数据
 const businessGroup = ref<UserGroup>({})
 function getUserList() {
-  getUserListData({ operator }).then((res: any) => {
-    userList.value = res.data.list
-    userList.value.forEach((user: UserData) => {
-      const firstBusiness: string = user.business[0]
-      if (!businessGroup.value[firstBusiness]) {
-        businessGroup.value[firstBusiness] = {
-          checkAll: false,
-          indeterminate: false,
-          users: [],
-          checked: [],
-        }
+  // getUserListData({ operator }).then((res: any) => {
+  //   userList.value = res.data.list
+  //   userList.value.forEach((user: UserData) => {
+  //     const firstBusiness: string = user.business[0]
+  //     if (!businessGroup.value[firstBusiness]) {
+  //       businessGroup.value[firstBusiness] = {
+  //         checkAll: false,
+  //         indeterminate: false,
+  //         users: [],
+  //         checked: [],
+  //       }
+  //     }
+  //     if (checked.value.includes(user.id)) {
+  //       businessGroup.value[firstBusiness].checked.push(user)
+  //     }
+  //     businessGroup.value[firstBusiness].users.push(user)
+  //   })
+  // })
+  userList.value = [
+    {
+      "id": "user_1",
+      "userName": '张三',
+      "userEmail": 'qqq.com',
+      "business": ['财务部', '人事部'],
+      "role": '系统管理员',
+      "apps": ['app-1', 'app-4']
+    },
+  ]
+  userList.value.forEach((user: UserData) => {
+    const firstBusiness: string = user.business[0]
+    if (!businessGroup.value[firstBusiness]) {
+      businessGroup.value[firstBusiness] = {
+        checkAll: false,
+        indeterminate: false,
+        users: [],
+        checked: [],
       }
-      if (checked.value.includes(user.id)) {
-        businessGroup.value[firstBusiness].checked.push(user)
-      }
-      businessGroup.value[firstBusiness].users.push(user)
-    })
+    }
+    if (checked.value.includes(user.id)) {
+      businessGroup.value[firstBusiness].checked.push(user)
+    }
+    businessGroup.value[firstBusiness].users.push(user)
   })
 }
 getUserList()
@@ -85,11 +110,9 @@ watch(businessGroup, () => {
     <div class="left">
       <a-collapse expand-icon-position="end">
         <template v-for="item in Object.keys(businessGroup)" :key="item">
-          <Shuttle_item
-            v-model:check-all="businessGroup[item].checkAll"
+          <Shuttle_item v-model:check-all="businessGroup[item].checkAll"
             v-model:indeterminate="businessGroup[item].indeterminate" v-model:checked="businessGroup[item].checked"
-            :users="businessGroup[item].users" :title="item"
-          />
+            :users="businessGroup[item].users" :title="item" />
         </template>
       </a-collapse>
     </div>
@@ -220,11 +243,11 @@ watch(businessGroup, () => {
       margin-bottom: 10px;
       position: relative;
 
-       .people {
-          font-size: 30px;
-          margin-inline-start: 10px;
-          margin-inline-end: 10px;
-        }
+      .people {
+        font-size: 30px;
+        margin-inline-start: 10px;
+        margin-inline-end: 10px;
+      }
 
       .text {
         display: flex;

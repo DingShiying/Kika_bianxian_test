@@ -24,7 +24,7 @@ interface Params {
 }// 请求参数类型
 
 export function getPlanListData(params: Params) {
-  return usePost<PlanList, Params>('/proxy/loadStrategy/list', params, {
+  return useGet<PlanList, Params>('/proxy/loadStrategy/list', params, {
     // 设置为false的时候不会携带token
     token: true,
     // 开发模式下使用自定义的接口

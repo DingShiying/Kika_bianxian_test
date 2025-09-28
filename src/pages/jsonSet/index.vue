@@ -1,9 +1,9 @@
 <script setup lang="ts" name="jsonSet">
-import { onMounted, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { CaretDownOutlined, CloseCircleOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import compareConfig from './components/compareConfig.vue'
-import AddOID from './components/addOID.vue'
+import AddOID from './components/AddOID.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
 import { getJsonData } from '~@/api/json/getJson'

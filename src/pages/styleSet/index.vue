@@ -22,23 +22,35 @@ interface SearchParams {
 interface StyleData {
   id: string | number
   type: string
-  differences?: {
-    [key: string]: {
-      [key: string]: string | number
-    }
-  }
-  preview?: string
+  preview: string
   creator: string
   createTime: string
   updator: string
   updateTime: string
   json?: {
+    id: string | number
     [key: string]: string | number
   }
 }// 请求接口数据类型
 
 // 请求响应数据
-const list = ref<StyleData[]>([])// 请求接口数据
+const list = ref<StyleData[]>([
+  {
+    "id": 'jbshjbjb',
+    "type": 'diy',
+    "preview": '/src/assets/images/preview.png',
+    "creator": '张三',
+    "createTime": "2025-11-11",
+    "updator": "张三",
+    "updateTime": "2025-11-11",
+    "json": {
+      "id": 'jbshjbjb',
+      "base_id": 200,
+      "bg_color": '#fffff',
+      "bg_angle": 10
+    }
+  }
+])// 请求接口数据
 
 // 事件反馈相关变量
 const operationYes = ref(false) // 操作成功
@@ -152,11 +164,12 @@ function handleCopy(record: any) {
 }// 复制样式新建
 function showDifferences(record: Array<string>) {
   differences.value = record
+  delete differences.value.id
+  delete differences.value.base_id
   differencesOpen.value = true
 }// 查看差异
 function deleteStyle(user: any) {
   currentStyle.value = user
-  console.log(currentStyle.value)
   // deleteCard.value = false
   setTimeout(() => {
     operationYes.value = true
@@ -171,16 +184,16 @@ function resetSearch() {
   searchParams.value.creator = ''
 }// 重置检索条件
 function getStyleList() {
-  loading.value = true
-  getStyleListData(searchParams.value).then((res: any) => {
-    list.value = res.data.list
-    console.log(list.value)
-    pagination.value.total = res.data.total
-  }).finally(() => {
-    setTimeout(() => {
-      loading.value = false
-    }, 500)
-  })
+  // loading.value = true
+  // getStyleListData(searchParams.value).then((res: any) => {
+  //   list.value = res.data.list
+  //   console.log(list.value)
+  //   pagination.value.total = res.data.total
+  // }).finally(() => {
+  //   setTimeout(() => {
+  //     loading.value = false
+  //   }, 500)
+  // })
 }
 getStyleList()
 </script>
@@ -229,22 +242,15 @@ getStyleList()
         </div>
       </div>
 
-      <a-table
-        :columns="columns" :data-source="list" :loading="loading" :pagination="pagination"
-        class="table-part" @change="handleTableChange($event)"
-      >
+      <a-table :columns="columns" :data-source="list" :loading="loading" :pagination="pagination" class="table-part"
+        @change="handleTableChange($event)">
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'differences'">
             <span v-if="record.type === 'base'">无差异</span>
-            <span v-else style="cursor:pointer" @click="showDifferences(record.differences)">{{ Object.keys(record.differences).length }} 个差异</span>
+            <span v-else style="cursor:pointer" @click="showDifferences(record.json)">有差异</span>
           </template>
           <template v-if="column.dataIndex === 'preview'">
-            <template v-if="record.type === 'base'">
-              <a-image :src="record.preview" :height="20" />
-            </template>
-            <template v-else>
-              无
-            </template>
+            <a-image :src="record.preview" :height="20" />
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <div class="flex flex-col items-center">
@@ -256,13 +262,8 @@ getStyleList()
                 <FormOutlined class="mr-1 text-[#4e46e5]" />
                 <span class="text-[#4e46e5]">编辑</span>
               </div>
-              <a-popconfirm
-                title="你确定要删除此样式?"
-                ok-text="确定"
-                cancel-text="取消"
-                placement="left"
-                @confirm="deleteStyle(record)"
-              >
+              <a-popconfirm title="你确定要删除此样式?" ok-text="确定" cancel-text="取消" placement="left"
+                @confirm="deleteStyle(record)">
                 <span class="text-[#e35150] cursor-pointer">删除</span>
               </a-popconfirm>
             </div>
@@ -285,11 +286,7 @@ getStyleList()
           {{ item }}&nbsp;:
         </div>
         <a-tag>
-          {{ differences[item].base }}
-        </a-tag>
-        <span>&nbsp;——>&nbsp;</span>
-        <a-tag>
-          {{ differences[item].diy }}
+          {{ differences[item] }}
         </a-tag>
       </div>
     </a-modal>
@@ -442,7 +439,7 @@ getStyleList()
       margin-right: 10px;
 
       span {
-        margin-inline-start: 3px  ;
+        margin-inline-start: 3px;
         font-size: 14px;
         color: #4e46e5;
       }
@@ -859,23 +856,27 @@ getStyleList()
   }
 }
 
-.diff{
+.diff {
   margin-bottom: 10px;
   display: flex;
   align-items: center;
-  &:last-of-type{
+  justify-content: center;
+
+  &:last-of-type {
     margin-bottom: 0;
   }
-   .diff-title{
-    font-size:16px;
-    margin-right:10px;
-    min-width:120px;
+
+  .diff-title {
+    font-size: 16px;
+    margin-right: 10px;
+    min-width: 120px;
   }
-  .ant-tag{
-    min-width:100px;
-    text-align:center;
+
+  .ant-tag {
+    min-width: 100px;
+    text-align: center;
     font-size: 15px;
-    margin:0 10px;
+    margin: 0 10px;
   }
 }
 </style>

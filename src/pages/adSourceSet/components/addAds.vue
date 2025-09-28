@@ -5,6 +5,7 @@ import { CloseSquareOutlined, RollbackOutlined } from '@ant-design/icons-vue'
 import { getAdsDataById } from '~@/api/ads/getadsbyid'
 import { getAllUnitData } from '~@/api/adUnit/unitlist'
 import { addAds as toAddAds } from '~@/api/ads/addads'
+import { updateAds } from '~@/api/ads/updateads'
 import addUnit from '~@/pages/adUnitSet/components/addUnit.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
@@ -47,7 +48,7 @@ interface FormState {
 }
 
 // 父组件传参
-const { current } = defineProps(['current'])
+const { current, copy, update } = defineProps(['current', 'copy', 'update'])
 const emit = defineEmits(['close'])
 
 // 表单相关变量
@@ -267,8 +268,12 @@ function handleOk() {
       data.json.ads = validateAndCleanData(formState.json.ads)
       data.groupCount = data.json.ads.length
       data.unitCount = count.value
-
-      await toAddAds(data)
+      if (!update) {
+        await toAddAds(data)
+      }
+      else {
+        await updateAds(data)
+      }
       emit('close', true)
     })
     .catch((err: any) => {
@@ -309,12 +314,82 @@ function getUnitList() {
   })
 }// 获取广告单元列表
 getUnitList()
+function getAdsData() {
+  getAdsDataById({ id: current }).then((res: any) => {
+    const data = res.data
+    data.json.ads.forEach((item: any) => {
+      item.forEach((adItem: any) => {
+        Object.keys(formState.json.ads[0][0]).forEach((key: any) => {
+          if (key === 'banner_extra') {
+            if (adItem[key]) {
+              adItem[key].banner_type = adItem[key].banner_type ? adItem[key].banner_type : undefined
+              adItem[key].max_height = adItem[key].max_height ? adItem[key].max_height : undefined
+            }
+            else {
+              adItem[key] = {
+                banner_type: undefined,
+                max_height: undefined
+              }
+            }
+          }
+          else if (key === 'range') {
+            if (adItem[key]) {
+              adItem[key].first = adItem[key].first ? adItem[key].first : undefined
+              adItem[key].last = adItem[key].last ? adItem[key].last : undefined
+              adItem[key].retry = adItem[key].retry ? adItem[key].retry : undefined
+              adItem[key].type = adItem[key].type ? adItem[key].type : undefined
+              if (adItem[key].params) {
+                const keys = Object.keys(adItem[key].params)
+                const values = Object.values(adItem[key].params)
+                adItem[key].params = {
+                  keys: keys ? keys : [],
+                  values: values ? values : []
+                }
+              }
+              else {
+                adItem[key].params = {
+                  keys: [],
+                  values: []
+                }
+              }
+            }
+            else {
+              adItem[key] = {
+                first: undefined,
+                last: undefined,
+                retry: undefined,
+                type: undefined,
+                params: {
+                  keys: [],
+                  values: []
+                }
+              }
+            }
+          }
+          else {
+            adItem[key] = adItem[key] ? adItem[key] : undefined
+          }
+        })
+      })
+    })
+    Object.keys(formState).forEach((key: any) => {
+      //@ts-expect-error:...
+      formState[key] = data[key]
+    })
+    if(copy){
+      formState.id = ''
+    }
+  })
+}
+if (current) {
+  getAdsData()
+}
 </script>
 
 <template>
   <div v-show="!visible" class="add-style">
     <div class="header">
-      <span>新建广告ads</span>
+      <span>{{ !update?'新建广告ads':'编辑广告ads' }}</span>
       <a-button type="primary" @click="() => emit('close', false)">
         <template #icon>
           <RollbackOutlined />
@@ -359,9 +434,7 @@ getUnitList()
                     </template>
                     <div class="inner-form">
                       <a-form-item label="广告单元(unit)" name="unit">
-                        <a-select
-                          v-model:value="adItem.unit" placeholder="请输入广告单元unit" style="width:30vw;" allow-clear
-                        >
+                        <a-select v-model:value="adItem.unit" placeholder="请输入广告单元unit" style="width:30vw;" allow-clear>
                           <template v-for="option in unitList" :key="option.id">
                             <a-select-option :value="option.json.value">
                               {{ option.unitName }}
@@ -374,10 +447,8 @@ getUnitList()
                       </a-form-item>
 
                       <a-form-item label="优先级(priority)" name="priority">
-                        <a-input-number
-                          v-model:value="adItem.priority" placeholder="请输入广告优先级（值越大优先级越高）默认为0"
-                          style="width:30vw;" :min="0"
-                        />
+                        <a-input-number v-model:value="adItem.priority" placeholder="请输入广告优先级（值越大优先级越高）默认为0"
+                          style="width:30vw;" :min="0" />
                       </a-form-item>
                     </div>
                     <div class="inner-form">
@@ -386,27 +457,25 @@ getUnitList()
                       </a-form-item>
 
                       <a-form-item label="展示次数(capping)" name="capping">
-                        <a-input-number
-                          v-model:value="adItem.capping" placeholder="请输入展示上限" style="width:30vw;"
-                          :min="0"
-                        />
+                        <a-input-number v-model:value="adItem.capping" placeholder="请输入展示上限" style="width:30vw;"
+                          :min="0" />
                       </a-form-item>
                     </div>
                     <div class="inner-form">
                       <a-form-item label="广告加载超时时间(timeout)" name="timeout">
-                        <a-input-number v-model:value="adItem.timeout" placeholder="请输入广告加载超时时间" style="width:30vw;" :min="0" />
+                        <a-input-number v-model:value="adItem.timeout" placeholder="请输入广告加载超时时间" style="width:30vw;"
+                          :min="0" />
                       </a-form-item>
 
                       <a-form-item label="广告加载动态缓冲时间(timeout_buffer)" name="timeout_buffer">
-                        <a-input-number v-model:value="adItem.timeout_buffer" placeholder="请输入广告加载动态缓冲时间" style="width:30vw;" :min="0" />
+                        <a-input-number v-model:value="adItem.timeout_buffer" placeholder="请输入广告加载动态缓冲时间"
+                          style="width:30vw;" :min="0" />
                       </a-form-item>
                     </div>
                     <div class="inner-form">
                       <a-form-item label="默认价格(default_revenue)" name="default_revenue">
-                        <a-input-number
-                          v-model:value="adItem.default_revenue" placeholder="请输入默认价格" style="width:30vw;"
-                          :min="0"
-                        />
+                        <a-input-number v-model:value="adItem.default_revenue" placeholder="请输入默认价格" style="width:30vw;"
+                          :min="0" />
                       </a-form-item>
                     </div>
                     <!-- <div class="high-set" @click="adItem.highSet = !adItem.highSet">
@@ -418,11 +487,8 @@ getUnitList()
                       </div>
                       <div class="inner-form">
                         <a-form-item label="banner类型(banner_type)" name="banner_type">
-                          <a-select
-                            v-model:value="adItem.banner_extra.banner_type"
-                            allow-clear placeholder="请选择banner类型"
-                            style="width:30vw;"
-                          >
+                          <a-select v-model:value="adItem.banner_extra.banner_type" allow-clear
+                            placeholder="请选择banner类型" style="width:30vw;">
                             <a-select-option :value="1">
                               折叠banner
                             </a-select-option>
@@ -432,10 +498,8 @@ getUnitList()
                           </a-select>
                         </a-form-item>
                         <a-form-item label="banner限制最大高度dp(max_height)" name="max_height">
-                          <a-input-number
-                            v-model:value="adItem.banner_extra.max_height" placeholder="请输入广告banner限制最大高度"
-                            style="width:30vw;" :min="0"
-                          />
+                          <a-input-number v-model:value="adItem.banner_extra.max_height" placeholder="请输入广告banner限制最大高度"
+                            style="width:30vw;" :min="0" />
                         </a-form-item>
                       </div>
                     </div>
@@ -448,29 +512,24 @@ getUnitList()
                       </div>
                       <div class="inner-form">
                         <a-form-item label="价值范围开始值" name="first">
-                          <a-input-number
-                            v-model:value="adItem.range.first" placeholder="请输入价值范围开始值" style="width:30vw;"
-                            :min="0"
-                          />
+                          <a-input-number v-model:value="adItem.range.first" placeholder="请输入价值范围开始值"
+                            style="width:30vw;" :min="0" />
                         </a-form-item>
 
                         <a-form-item label="价值范围结束值" name="last">
-                          <a-input-number
-                            v-model:value="adItem.range.last" placeholder="请输入价值范围结束值" style="width:30vw;"
-                            :min="0"
-                          />
+                          <a-input-number v-model:value="adItem.range.last" placeholder="请输入价值范围结束值" style="width:30vw;"
+                            :min="0" />
                         </a-form-item>
                       </div>
                       <div class="inner-form">
                         <a-form-item label="加载失败重试总数" name="retry">
-                          <a-input-number
-                            v-model:value="adItem.range.retry" placeholder="请输入加载失败重试总数" style="width:30vw;"
-                            :min="0"
-                          />
+                          <a-input-number v-model:value="adItem.range.retry" placeholder="请输入加载失败重试总数"
+                            style="width:30vw;" :min="0" />
                         </a-form-item>
 
                         <a-form-item label="分层类型" name="type">
-                          <a-select v-model:value="adItem.range.type" allow-clear placeholder="请选择分层类型" style="width:30vw;">
+                          <a-select v-model:value="adItem.range.type" allow-clear placeholder="请选择分层类型"
+                            style="width:30vw;">
                             <a-select-option :value="1">
                               默认分层
                             </a-select-option>
@@ -483,18 +542,17 @@ getUnitList()
 
                       <template v-for="param in adItem.range.params.keys.length" :key="param">
                         <div class="flex justify-between items-center relative">
-                          <CloseSquareOutlined class="text-[20px] absolute right-[-15px] top-[28px] cursor-pointer" @click="deleteParams(index, adItemIndex, param)" />
+                          <CloseSquareOutlined class="text-[20px] absolute right-[-15px] top-[28px] cursor-pointer"
+                            @click="deleteParams(index, adItemIndex, param)" />
 
                           <a-form-item label="字段名(key)" name="key">
-                            <a-input
-                              v-model:value="adItem.range.params.keys[param - 1]" placeholder="请输入字段名" style="width:30vw;"
-                            />
+                            <a-input v-model:value="adItem.range.params.keys[param - 1]" placeholder="请输入字段名"
+                              style="width:30vw;" />
                           </a-form-item>
 
                           <a-form-item label="值(value)" name="value">
-                            <a-input
-                              v-model:value="adItem.range.params.values[param - 1]" placeholder="请输入值" style="width:30vw;"
-                            />
+                            <a-input v-model:value="adItem.range.params.values[param - 1]" placeholder="请输入值"
+                              style="width:30vw;" />
                           </a-form-item>
                         </div>
                       </template>

@@ -41,8 +41,43 @@ const appList = ref<APPData[]>([])// 请求接口数据
 const businessGroup = ref<BusinessGroup>({})
 
 function getAPPList() {
-  getAppListData({ operator }).then((res: any) => {
-    appList.value = res.data.list
+  // getAppListData({ operator }).then((res: any) => {
+  //   appList.value = res.data.list
+  //   appList.value.forEach((app: APPData) => {
+  //     const firstBusiness: string = app.business[0]
+  //     if (!businessGroup.value[firstBusiness]) {
+  //       businessGroup.value[firstBusiness] = {
+  //         checkAll: false,
+  //         indeterminate: false,
+  //         apps: [],
+  //         checked: [],
+  //       }
+  //     }
+  //     if (checked.value.includes(app.package)) {
+  //       businessGroup.value[firstBusiness].checked.push(app)
+  //     }
+  //     businessGroup.value[firstBusiness].apps.push(app)
+  //   })
+  // })
+  appList.value = [
+     {
+        "id": 'app-1',
+        "appName": 'APP1',
+        "package": 'com.oaojsa.app1',
+        "firebaseID": 'ajbbhj_jhkbjhb',
+        "business": ['电商业务组', '电商健康组'],
+        "users": ['张三', '李四'],
+        "system": 'iOS',
+        "platform": ['Google', 'Apple Store', 'xiaomi'],
+        "icon": '/src/assets/images/icon1.png',
+        "creator": '王五',
+        "createTime": '2022-01-01',
+        "updater": '张三',
+        "updateTime": '2023-01-01',
+        "copyAppID": 'app-1',
+        "copyConfig": ['OID管理', '样式管理', 'APP所属人员'],
+      }  
+  ]
     appList.value.forEach((app: APPData) => {
       const firstBusiness: string = app.business[0]
       if (!businessGroup.value[firstBusiness]) {
@@ -58,7 +93,6 @@ function getAPPList() {
       }
       businessGroup.value[firstBusiness].apps.push(app)
     })
-  })
 }
 getAPPList()
 

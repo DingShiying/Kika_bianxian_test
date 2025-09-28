@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
 import { notification } from 'ant-design-vue'
-import Shuttle from './ShuttleBox.vue'
+import ShuttleBox from '~@/components/app-shuttle/ShuttleBox.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
 
@@ -98,8 +98,8 @@ const OIDresponse = ref<OIDList[]>([
 const columns: any = [
   {
     title: '应用ID',
-    dataIndex: 'appID',
-    key: 'appID',
+    dataIndex: 'id',
+    key: 'id',
   },
   {
     title: '应用名称',
@@ -244,44 +244,7 @@ function resetForm() {
     creator: '',
   })
 }// 重置oid查询表单
-const formatOptions = [
-  {
-    label: '插屏广告-INTERSTITIAL',
-    value: 0,
-  },
-  {
-    label: '激励视频广告-REWARDED_VIDEO',
-    value: 1,
-  },
-  {
-    label: '开屏广告-APP_OPEN',
-    value: 2,
-  },
-  {
-    label: '激励插屏广告-REWARDED_INTERSTITIAL',
-    value: 3,
-  },
-  {
-    label: '原生广告-NATIVE',
-    value: 4,
-  },
-  {
-    label: '原生插屏广告-NATIVE_INTER',
-    value: 5,
-  },
-  {
-    label: '横幅广告-BANNER',
-    value: 6,
-  },
-  {
-    label: '中等矩形横幅广告-MEDIUM',
-    value: 7,
-  },
-  {
-    label: '内联横幅广告-INLINE_BANNER',
-    value: 8,
-  },
-]// oid格式选项
+const {formats}=useUserStore()
 
 // 重新分配APP相关函数
 function resetAppOK() {
@@ -436,7 +399,7 @@ function onChecked(_: any, e: any, checkedKeys: string[], onItemSelect: (n: any,
     v-model:open="resetAppOpen" title="重新分配APP" style="top:20vh;width:80vw;" :mask-closable="false" class="OID-modal"
     ok-text="确认" cancel-text="取消" @ok="resetAppOK" @cancel="resetAppCancel"
   >
-    <Shuttle :checked="resetApp" />
+    <ShuttleBox :checked="resetApp" />
   </a-modal>
 
   <a-modal
@@ -494,7 +457,7 @@ function onChecked(_: any, e: any, checkedKeys: string[], onItemSelect: (n: any,
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'format'">
-          {{ formatOptions.find((i) => i.value === record.format)?.label }}
+          {{ formats.find((i) => i.value === record.format)?.label }}
         </template>
         <template v-if="column.dataIndex === 'OIDauth'">
           <a-switch v-model:checked="record.auth" />

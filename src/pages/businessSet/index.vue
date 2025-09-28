@@ -27,7 +27,16 @@ interface Params {
 const { operator } = useUserStore()
 
 // 请求响应数据
-const list = ref<BusinessData[]>()// 请求接口数据
+const list = ref<BusinessData[]>([
+  {
+    "id": '1',
+    "business": '电商业务组',
+    "creator": '张三',
+    "createTime": '2023-01-01',
+    "updater": '张三',
+    "updateTime": '2023-01-02',
+  }
+])// 请求接口数据
 
 // 表格相关变量
 const columns: any = [
@@ -123,30 +132,15 @@ function deleteBusiness(record: any) {
 
 // 请求函数
 function getBusinessList() {
-  loading.value = true
-  getBusinessListData(searchParams.value).then((res: any) => {
-    list.value = res.data.list
-    pagination.value.total = res.data.total
-  }).finally(() => {
-    setTimeout(() => {
-      loading.value = false
-    }, 500)
-  })
-  // try {
-  //   loading.value = true
-  //   await setTimeout(() => {
+  // loading.value = true
+  // getBusinessListData(searchParams.value).then((res: any) => {
+  //   list.value = res.data.list
+  //   pagination.value.total = res.data.total
+  // }).finally(() => {
+  //   setTimeout(() => {
   //     loading.value = false
-  //     console.log(response.value)
-  //   }, 1000)
-  // }
-  // catch (error: any) {
-  //   loading.value = false
-  //   console.error(error)
-  //   notification.open({
-  //     message: '获取数据失败',
-  //     description: error,
-  //   })
-  // }
+  //   }, 500)
+  // })
 }
 getBusinessList()
 </script>
@@ -163,14 +157,10 @@ getBusinessList()
     </template>
 
     <a-card v-if="!addBusinessOpen">
-      <a-input-search
-        v-model:value="searchParams.business" placeholder="请输入业务组名称" enter-button="搜索"
-        style="width: 350px;margin-bottom: 15px;" @search="getBusinessList"
-      />
-      <a-table
-        :columns="columns" :data-source="list" :loading="loading" :pagination="pagination"
-        class="table-part" @change="handleTableChange($event)"
-      >
+      <a-input-search v-model:value="searchParams.business" placeholder="请输入业务组名称" enter-button="搜索"
+        style="width: 350px;margin-bottom: 15px;" @search="getBusinessList" />
+      <a-table :columns="columns" :data-source="list" :loading="loading" :pagination="pagination" class="table-part"
+        @change="handleTableChange($event)">
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'operation'">
             <div class="option">
@@ -180,13 +170,8 @@ getBusinessList()
                 <span @click="editBusiness(record)">编辑</span>
               </div>
 
-              <a-popconfirm
-                title="你确定要删除此业务组?"
-                ok-text="确定"
-                cancel-text="取消"
-                placement="left"
-                @confirm="deleteBusiness(record)"
-              >
+              <a-popconfirm title="你确定要删除此业务组?" ok-text="确定" cancel-text="取消" placement="left"
+                @confirm="deleteBusiness(record)">
                 <span>删除</span>
               </a-popconfirm>
             </div>
@@ -221,12 +206,13 @@ getBusinessList()
 
     span {
       cursor: pointer;
-        color: #e35150;
+      color: #e35150;
     }
-    .link-app{
-      span{
+
+    .link-app {
+      span {
         color: #4e46e5;
-        margin-inline-start:5px;
+        margin-inline-start: 5px;
       }
     }
   }

@@ -51,7 +51,7 @@ export function getAdsDataById(params: Params) {
   const currentApp = computed(() => {
     return useUserStore().currentApp
   })
-  return useGet<AdsList, any>('/proxy/ad/unit/getById', { ...params, currentApp: currentApp.value }, {
+  return useGet<AdsList, any>('/proxy/ad/ads/getById', { ...params, currentApp: currentApp.value }, {
     // 设置为false的时候不会携带token
     token: true,
     // 开发模式下使用自定义的接口

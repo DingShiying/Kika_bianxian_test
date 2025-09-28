@@ -2,73 +2,54 @@
 import { reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { RollbackOutlined } from '@ant-design/icons-vue'
+import { addOid } from '~@/api/oid/addoid'
+import { updateOid } from '~@/api/oid/updateoid'
+import { getOidDataById } from '~@/api/oid/getoidbyid'
 
+// 数据类型声明
 interface FormState {
   oid: string
-  desc: string
+  desc?: string
   format: number | undefined
 }// 表单数据类型
 
-const { current } = defineProps(['current'])
+// 父组件传参
+const { current} = defineProps(['current','update'])
 const emit = defineEmits(['close'])
 
-const response = ref({
-  format: [
-    {
-      label: '插屏广告-INTERSTITIAL',
-      value: 0,
-    },
-    {
-      label: '激励视频广告-REWARDED_VIDEO',
-      value: 1,
-    },
-    {
-      label: '开屏广告-APP_OPEN',
-      value: 2,
-    },
-    {
-      label: '激励插屏广告-REWARDED_INTERSTITIAL',
-      value: 3,
-    },
-    {
-      label: '原生广告-NATIVE',
-      value: 4,
-    },
-    {
-      label: '原生插屏广告-NATIVE_INTER',
-      value: 5,
-    },
-    {
-      label: '横幅广告-BANNER',
-      value: 6,
-    },
-    {
-      label: '中等矩形横幅广告-MEDIUM',
-      value: 7,
-    },
-    {
-      label: '内联横幅广告-INLINE_BANNER',
-      value: 8,
-    },
-  ],
-})// 请求接口数据
+// 获取广告类型
+const {formats} =useUserStore()
 
+// 表单相关变量
 const formRef = ref()// 表单引用
-const formState: FormState = reactive(current || {
+const formState= reactive<FormState>({
   oid: '',
-  desc: '',
+  desc:'',
   format: undefined,
 })// 表单数据
-
 const rules: any = {
   oid: [{ required: true, message: 'OID不能为空', trigger: 'blur', type: 'string' }],
   format: [{ required: true, message: '请选择一个广告样式', trigger: 'blur', type: 'number' }],
 }// 表单验证规则
 
+// 表单相关函数
 function handleOk() {
-  formRef.value.validate().then(() => {
-    console.log(formState)
-    // message.success('新建广告单元成功！')
+  formRef.value.validate().then(async() => {
+    const data={
+      desc: formState.desc,
+      json:{
+        oid: formState.oid,
+        format: formState.format,
+      }
+    }
+    if(!current){
+      await addOid(data)
+    }
+    else{
+      //@ts-expect-error:...
+      data.id=formState.oid
+      await updateOid(data)
+    }
     emit('close', true)
   }).catch((err: any) => {
     message.warning('请按要求填写表单！')
@@ -77,6 +58,16 @@ function handleOk() {
 }// 表单提交
 function handleCancel() {
   emit('close', false)
+}// 取消
+function getOidData(){
+  getOidDataById({id:current}).then((res)=>{
+    formState.oid=res.data.json.oid
+    formState.desc=res.data.desc
+    formState.format=res.data.json.format
+  })
+}
+if(current){
+  getOidData()
 }
 </script>
 
@@ -101,17 +92,17 @@ function handleCancel() {
       <a-form-item label="描述" name="desc">
         <a-input v-model:value="formState.desc" placeholder="请输入描述" style="width:30vw;" />
       </a-form-item>
-      <a-form-item label="广告样式" name="format">
+      <a-form-item label="广告类型" name="format">
         <a-select
-          v-model:value="formState.format" placeholder="请选择广告样式"
-          :options="response.format" style="width:30vw;"
+          v-model:value="formState.format" placeholder="请选择广告类型"
+          :options="formats" style="width:30vw;"
         />
       </a-form-item>
     </a-form>
   </div>
   <div class="footer">
     <a-button type="primary" @click="handleOk">
-      确认创建
+      确认
     </a-button>
     <a-button @click="handleCancel">
       取消

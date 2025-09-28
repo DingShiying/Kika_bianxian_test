@@ -4,7 +4,8 @@ import { EyeOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import addAds from './components/addAds.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
-import { getAdsListData } from '~@/api/ads/adslist'
+import { getAdsListData } from '~@/api/ads/adsbypage'
+import { deleteAdsData } from '~@/api/ads/deleteads'
 
 // 类型声明
 interface SearchParams {
@@ -153,6 +154,8 @@ const pagination = ref({
   total: 0,
 })// 表格分页
 const currentAds = ref()// 当前广告源
+const isCopy=ref(false)// 是否为复制
+const isUpdate=ref(false)// 是否为编辑
 
 // 检索表单相关属性
 const searchFormRef = ref()// 检索表单引用
@@ -175,19 +178,35 @@ function closeAddStyle(value: boolean) {
   if (value) {
     operationYes.value = true
   }
+  isCopy.value=false
+  isUpdate.value=false
   addAdsOpen.value = false
   currentAds.value = null
   getAdsList()
 }// 关闭新增样式弹窗
 function handleEdit(record: any) {
+    isCopy.value=false
+  isUpdate.value=true
   currentAds.value = record.id
   addAdsOpen.value = true
 }// 编辑广告源
-
 function handleCopy(record: any) {
+  isCopy.value=true
+  isUpdate.value=false
   currentAds.value = record.id
   addAdsOpen.value = true
 }// 复制广告源新建
+function deleteUnit(record: any) {
+  currentAds.value = record
+  deleteAdsData({ id: record.id }).then(() => {
+    operationYes.value = true
+  }).catch(() => {
+    operationNo.value = true
+  }).finally(() => {
+    currentAds.value = null
+    getAdsList()
+  })
+}
 
 // 检索相关函数
 function getAdsList() {
@@ -275,15 +294,20 @@ getAdsList()
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <div class="flex flex-col items-center">
-              <div class="flex items-center" @click="handleCopy(record)">
+              <div class="flex items-center cursor-pointer" @click="handleCopy(record)">
                 <EyeOutlined class="mr-1 text-[#4e46e5]" />
                 <span class="text-[#4e46e5]">复用配置新建</span>
               </div>
-              <div class="flex items-center" @click="handleEdit(record)">
+              <div class="flex items-center cursor-pointer" @click="handleEdit(record)">
                 <FormOutlined class="mr-1 text-[#4e46e5]" />
                 <span class="text-[#4e46e5]">编辑</span>
               </div>
-              <span class="text-[#e35150]">删除</span>
+              <a-popconfirm
+                title="你确定要删除此APP?" ok-text="确定" cancel-text="取消" placement="left"
+                @confirm="deleteUnit(record)"
+              >
+                <span class="text-[#e35150] cursor-pointer">删除</span>
+              </a-popconfirm>
             </div>
           </template>
         </template>
@@ -295,7 +319,7 @@ getAdsList()
       </a-table>
     </a-card>
     <a-card v-else style="margin-bottom: 30px;">
-      <addAds :current="currentAds" @close="closeAddStyle" />
+      <addAds :current="currentAds" @close="closeAddStyle" :copy="isCopy" :update="isUpdate"/>
     </a-card>
 
     <operateTrue v-model="operationYes" />

@@ -138,9 +138,9 @@ watch(() => formState.json.source, () => {
           :options="sources" style="width:30vw;"
         />
       </a-form-item>
-      <a-form-item label="广告样式" name="format">
+      <a-form-item label="广告类型" name="format">
         <a-select
-          v-model:value="formState.json.format" placeholder="请选择广告样式"
+          v-model:value="formState.json.format" placeholder="请选择广告类型"
           :options="filter_formats" style="width:30vw;"
         />
       </a-form-item>

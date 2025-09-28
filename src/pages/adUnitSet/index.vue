@@ -57,7 +57,7 @@ const columns: any = [
     align: 'center',
   },
   {
-    title: '广告格式',
+    title: '广告类型',
     dataIndex: 'format',
     key: 'format',
     align: 'center',
@@ -122,22 +122,22 @@ function handleTableChange(event: any) {
   searchParams.value.page = event.current
   getUnitList()
 }// 表格分页改变
-function closeAddUnit(value: boolean) {
-  if (value) {
+function closeAddUnit(value: any) {
+  if (value.state) {
     operationYes.value = true
   }
-  getUnitList()
   addUnitOpen.value = false
   isUpdate.value = false
   currentUnit.value = null
+  getUnitList()
 }// 关闭新增弹窗
 function editUnit(record: any) {
   currentUnit.value = record.id
   isUpdate.value = true
   addUnitOpen.value = true
 }// 编辑广告单元
-function copyToClipborad(text: string) {
-  navigator.clipboard.writeText(text)
+async function copyToClipborad(text: string) {
+  await navigator.clipboard.writeText(text)
   message.success('已复制到剪贴板')
 }// 复制到剪贴板
 function deleteUnit(record: any) {
@@ -200,9 +200,9 @@ getUnitList()// 初始化请求
               :options="sources"
             />
           </a-form-item>
-          <a-form-item label="广告样式" name="format">
+          <a-form-item label="广告类型" name="format">
             <a-select
-              v-model="searchParams.format" placeholder="请选择广告样式"
+              v-model="searchParams.format" placeholder="请选择广告类型"
               :options="formats"
             />
           </a-form-item>

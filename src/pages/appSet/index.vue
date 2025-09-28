@@ -49,8 +49,35 @@ interface FormState {
 const { operator } = useUserStore()
 
 // 请求响应数据
-const list = ref<APPData[]>()// 请求接口数据
-const businessList = ref<BusinessData[]>()
+const list = ref<APPData[]>([
+  {
+    "id": 'app-1',
+    "appName": 'APP1',
+    "package": 'com.oaojsa.app1',
+    "firebaseID": 'ajbbhj_jhkbjhb',
+    "business": ['电商业务组', '电商健康组'],
+    "users": ['张三', '李四'],
+    "system": 'iOS',
+    "platform": ['Google', 'Apple Store', 'xiaomi'],
+    "icon": '/src/assets/images/icon1.png',
+    "creator": '王五',
+    "createTime": '2022-01-01',
+    "updater": '张三',
+    "updateTime": '2023-01-01',
+    "copyAppID": 'app-1',
+    "copyConfig": ['OID管理', '样式管理', 'APP所属人员'],
+  }
+])// 请求接口数据
+const businessList = ref<BusinessData[]>([
+  {
+    "id": '1',
+    "business": '电商业务组',
+    "creator": '张三',
+    "createTime": '2023-01-01',
+    "updater": '张三',
+    "updateTime": '2023-01-02',
+  }
+])
 
 // 表格相关变量
 const columns: any = [
@@ -192,18 +219,18 @@ function editAPP(record: any) {
   addAppOpen.value = true
 }// 编辑应用
 function deleteAPP(record: any) {
-  currentApp.value = record
-  deleteAppData({
-    id: record.id,
-    operator,
-  }).then(() => {
-    operationYes.value = true
-  }).catch(() => {
-    operationNo.value = true
-  }).finally(() => {
-    currentApp.value = null
-    getAPPList()
-  })
+  // currentApp.value = record
+  // deleteAppData({
+  //   id: record.id,
+  //   operator,
+  // }).then(() => {
+  //   operationYes.value = true
+  // }).catch(() => {
+  //   operationNo.value = true
+  // }).finally(() => {
+  //   currentApp.value = null
+  //   getAPPList()
+  // })
 }// 删除策略
 function userSetOK() {
   toEditApp({
@@ -224,33 +251,30 @@ function userSetCancel() {
 
 // 请求函数
 function getBusinessList() {
-  getBusinessListData({
-    business: '',
-    operator,
-  }).then((res: any) => {
-    businessList.value = res.data.list
-  })
+  // getBusinessListData({
+  //   business: '',
+  //   operator,
+  // }).then((res: any) => {
+  //   businessList.value = res.data.list
+  // })
 }
 getBusinessList()
 function getAPPList() {
-  loading.value = true
-  getAppListData(formState).then((res: any) => {
-    list.value = res.data.list
-    pagination.value.total = res.data.total
-  }).finally(() => {
-    setTimeout(() => {
-      loading.value = false
-    }, 500)
-  })
+  // loading.value = true
+  // getAppListData(formState).then((res: any) => {
+  //   list.value = res.data.list
+  //   pagination.value.total = res.data.total
+  // }).finally(() => {
+  //   setTimeout(() => {
+  //     loading.value = false
+  //   }, 500)
+  // })
 }
 getAPPList()
 function resetForm() {
-  Object.assign(formState, {
-    appName: '',
-    system: undefined,
-    business: undefined,
-  })
-  console.log(formState)
+  formState.appName = ''
+  formState.system = undefined
+  formState.business = undefined
 }// 重置查询表单
 </script>
 
@@ -296,10 +320,8 @@ function resetForm() {
           </a-button>
         </div>
       </a-form>
-      <a-table
-        :columns="columns" :data-source="list" :loading="loading" :pagination="pagination"
-        :scroll="{ x: '50vw', y: '45vh' }" @change="handleTableChange($event)"
-      >
+      <a-table :columns="columns" :data-source="list" :loading="loading" :pagination="pagination"
+        :scroll="{ x: '50vw', y: '45vh' }" @change="handleTableChange($event)">
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'appName'">
             <div class="app-name">
@@ -326,14 +348,12 @@ function resetForm() {
           </template>
 
           <template v-if="column.dataIndex === 'operation'">
-            <div class="flex flex-col items-start">
+            <div class="flex flex-col items-center">
               <span class="text-[#4e46e5] cursor-pointer " @click="editAPP(record)">编辑</span>
               <span class="text-[#4e46e5] cursor-pointer" @click="copyCreateAPP(record)">复用配置创建</span>
               <span class="text-[#4e46e5] cursor-pointer" @click="editManager(record)">人员管理</span>
-              <a-popconfirm
-                title="你确定要删除此APP?" ok-text="确定" cancel-text="取消" placement="left"
-                @confirm="deleteAPP(record)"
-              >
+              <a-popconfirm title="你确定要删除此APP?" ok-text="确定" cancel-text="取消" placement="left"
+                @confirm="deleteAPP(record)">
                 <span class="text-[#e35150] cursor-pointer">删除</span>
               </a-popconfirm>
             </div>
@@ -355,10 +375,8 @@ function resetForm() {
     <operateFalse v-model="operationNo" />
 
     <template v-if="usersOpen">
-      <a-modal
-        v-model:open="usersOpen" title="人员管理" style="top:20vh;width:70vw;" :mask-closable="false" class="OID-modal"
-        ok-text="确认" cancel-text="取消" :closable="false" @ok="userSetOK" @cancel="userSetCancel"
-      >
+      <a-modal v-model:open="usersOpen" title="人员管理" style="top:20vh;width:70vw;" :mask-closable="false"
+        class="OID-modal" ok-text="确认" cancel-text="取消" :closable="false" @ok="userSetOK" @cancel="userSetCancel">
         <ShuttleBox v-model:checked="currentApp.users" />
       </a-modal>
     </template>

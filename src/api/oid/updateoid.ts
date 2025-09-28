@@ -1,18 +1,15 @@
 // 数据类型声明
-interface UnitList {
+interface Response {
   code: number
   msg: string
-  data: null
-}// 用户列表数据类型
-interface Params {
-  id: string
 }// 请求参数类型
 
-export function deleteAdsData(params: Params) {
+export function updateOid(params: any) {
+  // 当前用户
   const currentApp = computed(() => {
     return useUserStore().currentApp
   })
-  return usePost<UnitList, any>('/proxy/ad/ads/delete', { ...params, currentApp: currentApp.value }, {
+  return usePost<Response, any>('/proxy/ad/oid/update', { ...params, currentApp: currentApp.value }, {
     // 设置为false的时候不会携带token
     token: true,
     // 开发模式下使用自定义的接口

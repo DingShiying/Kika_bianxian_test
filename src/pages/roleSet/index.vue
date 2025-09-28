@@ -29,7 +29,18 @@ interface Params {
 const { operator } = useUserStore()
 
 // 请求响应数据
-const list = ref<RoleData[]>([])// 请求接口数据
+const list = ref<RoleData[]>([
+  {
+    'id': '1',
+    'roleName': 'admin',
+    'roleScore': 1,
+    'creator': 'admin',
+    'createTime': '2022-01-01',
+    'updater': '张三',
+    'updateTime': '2022-01-02',
+    'roleAuth': ['userSet', 'userSearch', 'userDelete'],
+  }
+])// 请求接口数据
 
 // 事件反馈相关变量
 const operationYes = ref(false) // 操作成功
@@ -113,31 +124,31 @@ function editRole(record: any) {
   addRoleOpen.value = true
 }// 编辑角色
 function deleteRole(record: any) {
-  currentRole.value = record
-  deleteRoleData({
-    id: currentRole.value.id,
-    operator,
-  }).then(() => {
-    operationYes.value = true
-  }).catch(() => {
-    operationNo.value = true
-  }).finally(() => {
-    currentRole.value = null
-    getRoleData(searchParams.value)
-  })
+  // currentRole.value = record
+  // deleteRoleData({
+  //   id: currentRole.value.id,
+  //   operator,
+  // }).then(() => {
+  //   operationYes.value = true
+  // }).catch(() => {
+  //   operationNo.value = true
+  // }).finally(() => {
+  //   currentRole.value = null
+  //   getRoleData(searchParams.value)
+  // })
 }// 删除角色
 
 // 请求函数
 function getRoleData(searchParams: Params) {
-  loading.value = true
-  getRoleListData(searchParams).then((res: any) => {
-    list.value = res.data.list
-    pagination.value.total = res.data.total
-  }).finally(() => {
-    setTimeout(() => {
-      loading.value = false
-    }, 500)
-  })
+  // loading.value = true
+  // getRoleListData(searchParams).then((res: any) => {
+  //   list.value = res.data.list
+  //   pagination.value.total = res.data.total
+  // }).finally(() => {
+  //   setTimeout(() => {
+  //     loading.value = false
+  //   }, 500)
+  // })
 }
 getRoleData(searchParams.value)// 初始化请求
 </script>
@@ -149,19 +160,15 @@ getRoleData(searchParams.value)// 初始化请求
         <template #icon>
           <PlusOutlined />
         </template>
-        新增角色
+        新增
       </a-button>
     </template>
 
     <a-card v-if="!addRoleOpen">
-      <a-input-search
-        v-model:value="searchParams.roleName" placeholder="请输入角色名称" enter-button="搜索"
-        style="width: 350px;margin-bottom: 15px;" @search="getRoleData(searchParams)"
-      />
-      <a-table
-        :columns="columns" :data-source="list" :loading="loading" :pagination="pagination"
-        class="table-part" @change="handleTableChange($event)"
-      >
+      <a-input-search v-model:value="searchParams.roleName" placeholder="请输入角色名称" enter-button="搜索"
+        style="width: 350px;margin-bottom: 15px;" @search="getRoleData(searchParams)" />
+      <a-table :columns="columns" :data-source="list" :loading="loading" :pagination="pagination" class="table-part"
+        @change="handleTableChange($event)">
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'operation'">
             <div class="option">
@@ -170,13 +177,8 @@ getRoleData(searchParams.value)// 初始化请求
                 <span @click="editRole(record)">编辑</span>
               </div>
 
-              <a-popconfirm
-                title="你确定要删除此角色?"
-                ok-text="确定"
-                cancel-text="取消"
-                placement="left"
-                @confirm="deleteRole(record)"
-              >
+              <a-popconfirm title="你确定要删除此角色?" ok-text="确定" cancel-text="取消" placement="left"
+                @confirm="deleteRole(record)">
                 <span>删除</span>
               </a-popconfirm>
             </div>
@@ -230,7 +232,7 @@ getRoleData(searchParams.value)// 初始化请求
       span {
         font-size: 14px;
         color: #4e46e5;
-         margin-inline-start: 5px;
+        margin-inline-start: 5px;
       }
 
       img {

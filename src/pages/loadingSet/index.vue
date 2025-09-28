@@ -28,7 +28,115 @@ interface Params {
 const { operator } = useUserStore()
 
 // 请求响应数据
-const list = ref<StrategyData[]>()// 请求接口数据
+const list = ref<StrategyData[]>([
+  {
+    "label": '价格优先 (Priority)',
+    "load_strategy": 0,
+    "creator": 'dasfs',
+    "createTime": '2025-11-11',
+    "updater": 'dadhj',
+    "updateTime": '2025-11-11',
+    "status": true
+  },
+  {
+    "label": '速度优先 (Speed)',
+    "load_strategy": 1,
+    "creator": 'dasfs',
+    "createTime": '2025-11-11',
+    "updater": 'dadhj',
+    "updateTime": '2025-11-11',
+    "status": true
+  },
+  {
+    "label": '混合模式 (Hybrid)',
+    "load_strategy": 2,
+    "creator": 'dasfs',
+    "createTime": '2025-11-11',
+    "updater": 'dadhj',
+    "updateTime": '2025-11-11',
+    "status": true
+  },
+  {
+    "label": '价值分层模式 (Revenue)-3',
+    "load_strategy": 3,
+    "creator": 'dasfs',
+    "createTime": '2025-11-11',
+    "updater": 'dadhj',
+    "updateTime": '2025-11-11',
+    "status": true
+  },
+  {
+    "label": '价值分层模式 (Revenue)-4',
+    "load_strategy": 4,
+    "creator": 'dasfs',
+    "createTime": '2025-11-11',
+    "updater": 'dadhj',
+    "updateTime": '2025-11-11',
+    "status": true
+  },
+  {
+    "label": '价值分层模式 (Revenue)-5',
+    "load_strategy": 5,
+    "creator": 'dasfs',
+    "createTime": '2025-11-11',
+    "updater": 'dadhj',
+    "updateTime": '2025-11-11',
+    "status": true
+  },
+  {
+    "label": '价值分层模式 (Revenue)-6',
+    "load_strategy": 6,
+    "creator": 'dasfs',
+    "createTime": '2025-11-11',
+    "updater": 'dadhj',
+    "updateTime": '2025-11-11',
+    "status": true
+  }, {
+    "label": '展示上限模式 (Capping)',
+    "load_strategy": 11,
+    "creator": 'dasfs',
+    "createTime": '2025-11-11',
+    "updater": 'dadhj',
+    "updateTime": '2025-11-11',
+    "status": true
+  },
+  {
+    "label": '广告比价模式 (Compare)-21',
+    "load_strategy": 21,
+    "creator": 'dasfs',
+    "createTime": '2025-11-11',
+    "updater": 'dadhj',
+    "updateTime": '2025-11-11',
+    "status": true
+  }, {
+    "label": '广告比价模式 (Compare)-22',
+    "load_strategy": 22,
+    "creator": 'dasfs',
+    "createTime": '2025-11-11',
+    "updater": 'dadhj',
+    "updateTime": '2025-11-11',
+    "status": true
+  },
+  {
+    "label": '广告比价模式 (Compare)-23',
+    "load_strategy": 23,
+    "creator": 'dasfs',
+    "createTime": '2025-11-11',
+    "updater": 'dadhj',
+    "updateTime": '2025-11-11',
+    "status": true
+  },
+  {
+    "label": '默认非全部加加载模式',
+    "load_strategy": 30,
+    "creator": 'dasfs',
+    "createTime": '2025-11-11',
+    "updater": 'dadhj',
+    "updateTime": '2025-11-11',
+    "status": true
+  },
+
+])// 请求接口数据
 
 // 事件反馈相关变量
 const operationYes = ref(false) // 操作成功
@@ -136,31 +244,15 @@ function deleteStrategy(record: any) {
 
 // 请求函数
 function getStrategyList() {
-  getPlanListData(searchParams.value).then((res: any) => {
-    loading.value = true
-    list.value = res.data.list
-    pagination.value.total = res.data.total
-  }).finally(() => {
-    setTimeout(() => {
-      loading.value = false
-    }, 500)
-  })
-
-  // try {
+  // getPlanListData(searchParams.value).then((res: any) => {
   //   loading.value = true
-  //   await setTimeout(() => {
+  //   list.value = res.data.list
+  //   pagination.value.total = res.data.total
+  // }).finally(() => {
+  //   setTimeout(() => {
   //     loading.value = false
-  //     console.log(response.value)
-  //   }, 1000)
-  // }
-  // catch (error: any) {
-  //   loading.value = false
-  //   console.error(error)
-  //   notification.open({
-  //     message: '获取数据失败',
-  //     description: error,
-  //   })
-  // }
+  //   }, 500)
+  // })
 }
 getStrategyList()
 </script>
@@ -177,14 +269,10 @@ getStrategyList()
     </template>
 
     <a-card v-if="!addLoadingOpen">
-      <a-input-search
-        v-model:value="searchParams.load_strategy" placeholder="请输入加载策略值" enter-button="搜索" type="number"
-        style="width: 350px;margin-bottom: 15px;" @search="getStrategyList"
-      />
-      <a-table
-        :columns="columns" :data-source="list" :loading="loading" :pagination="pagination" class="table-part"
-        @change="handleTableChange($event)"
-      >
+      <a-input-search v-model:value="searchParams.load_strategy" placeholder="请输入加载策略值" enter-button="搜索" type="number"
+        style="width: 350px;margin-bottom: 15px;" @search="getStrategyList" />
+      <a-table :columns="columns" :data-source="list" :loading="loading" :pagination="pagination" class="table-part"
+        @change="handleTableChange($event)">
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'status'">
             <a-switch v-model:checked="record.status" :disabled="true" />
@@ -196,10 +284,8 @@ getStrategyList()
                 <span @click="editStratgy(record)">编辑</span>
               </div>
 
-              <a-popconfirm
-                title="你确定要删除此加载计划?" ok-text="确定" cancel-text="取消" placement="left"
-                @confirm="deleteStrategy(record)"
-              >
+              <a-popconfirm title="你确定要删除此加载计划?" ok-text="确定" cancel-text="取消" placement="left"
+                @confirm="deleteStrategy(record)">
                 <span>删除</span>
               </a-popconfirm>
             </div>

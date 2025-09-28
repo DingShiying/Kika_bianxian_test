@@ -25,7 +25,17 @@ interface Params {
 }// 查询参数类型
 
 // 请求响应数据
-const list = ref<PlatformData[]>([])// 请求接口数据
+const list = ref<PlatformData[]>([
+  {
+    'id': '1',
+        'platformName': 'Google',
+        'creator': '张三',
+        'createTime': '2023-01-01',
+        'updater': '张三',
+        'updateTime': '2022-01-02',
+        'status': true,
+  }
+])// 请求接口数据
 
 // 当前用户
 const { operator } = useUserStore()
@@ -112,31 +122,31 @@ function closeAddPlatform(value: boolean) {
   currentPlatform.value = null
 }// 关闭新增弹窗
 function deletePlatform(record: any) {
-  currentPlatform.value = record
-  deletePlatformData({
-    id: currentPlatform.value.id,
-    operator,
-  }).then(() => {
-    operationYes.value = true
-  }).catch(() => {
-    operationNo.value = true
-  }).finally(() => {
-    currentPlatform.value = null
-    getPlatformList()
-  })
+  // currentPlatform.value = record
+  // deletePlatformData({
+  //   id: currentPlatform.value.id,
+  //   operator,
+  // }).then(() => {
+  //   operationYes.value = true
+  // }).catch(() => {
+  //   operationNo.value = true
+  // }).finally(() => {
+  //   currentPlatform.value = null
+  //   getPlatformList()
+  // })
 }// 删除平台
 
 // 请求函数
 function getPlatformList() {
-  loading.value = true
-  getPlatformListData(searchParams.value).then((res: any) => {
-    list.value = res.data.list
-    pagination.value.total = res.data.total
-  }).finally(() => {
-    setTimeout(() => {
-      loading.value = false
-    }, 500)
-  })
+  // loading.value = true
+  // getPlatformListData(searchParams.value).then((res: any) => {
+  //   list.value = res.data.list
+  //   pagination.value.total = res.data.total
+  // }).finally(() => {
+  //   setTimeout(() => {
+  //     loading.value = false
+  //   }, 500)
+  // })
 }
 getPlatformList()// 初始化请求
 </script>

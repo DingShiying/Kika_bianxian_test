@@ -36,11 +36,11 @@ const rules: any = {
 
 function handleOk() {
   formRef.value.validate().then(async () => {
-    await addPlatform({
-      ...formState,
-      isAdd: isAdd.value,
-      operator,
-    })
+    // await addPlatform({
+    //   ...formState,
+    //   isAdd: isAdd.value,
+    //   operator,
+    // })
     emit('close', true)
   }).catch((err: any) => {
     if (err.name !== 'AxiosError') {
@@ -70,7 +70,7 @@ function handleCancel() {
     >
       <a-form-item label="上架平台" name="platformName" style="width: 35vw;">
         <a-input
-          v-model:value="formState.platformName" placeholder="请输入业务组名称"
+          v-model:value="formState.platformName" placeholder="请输入上架平台名称"
           auto-complete="off"
         />
       </a-form-item>
