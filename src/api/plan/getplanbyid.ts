@@ -3,7 +3,7 @@ interface PlanData {
   id: string
   creator: string
   createTime: string
-  updator: string
+  updater: string
   updateTime: string
   json: {
     id: string

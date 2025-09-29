@@ -94,7 +94,16 @@ export const useUserStore = defineStore('user', () => {
   // 获取用户信息
   const getUserInfo = async () => {
     // 获取用户信息
-    const { data } = await getUserInfoApi()
+    // const { data } = await getUserInfoApi()
+    const data = {
+      "id": 1,
+      "username": 'admin',
+      'nickname': 'admin',
+      'avatar': '',
+      'roles': [],
+      'userEmail': 'hfbsaj@qq/com',
+      'apps': ['app1', 'app2', 'app3']
+    }
     userInfo.value = data
   }
 

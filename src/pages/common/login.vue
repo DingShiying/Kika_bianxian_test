@@ -74,7 +74,10 @@ async function submit() {
         type: 'mobile',
       } as unknown as LoginMobileParams
     }
-    const { data } = await loginApi(params)
+    // const { data } = await loginApi(params)
+    const data={
+      token:'123456'
+    }
     token.value = data?.token
     notification.success({
       message: '登录成功',

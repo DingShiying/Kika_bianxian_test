@@ -4,10 +4,7 @@ import { EyeOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import AddStyle from './components/addStyle.vue'
 import operateTrue from '~@/components/base-loading/operateTrue.vue'
 import operateFalse from '~@/components/base-loading/operateFalse.vue'
-import { getStyleListData } from '~@/api/style/stylelist'
-
-// 当前用户、app
-const { operator, currentApp } = useUserStore()
+import { getStyleListData } from '~@/api/style/styleByPage'
 
 // 类型声明
 interface SearchParams {
@@ -16,32 +13,43 @@ interface SearchParams {
   creator: string
   page: number
   pageSize: number
-  operator: string | undefined
-  currentApp: string | undefined
 }// 检索表单数据类型
 interface StyleData {
   id: string | number
-  type: string
+  type: number
   preview: string
   creator: string
   createTime: string
-  updator: string
+  updater: string
   updateTime: string
-  json?: {
+  json: {
     id: string | number
-    [key: string]: string | number
+    base_id?: number
+    [key: string]: string | number | undefined
   }
 }// 请求接口数据类型
 
 // 请求响应数据
 const list = ref<StyleData[]>([
   {
-    "id": 'jbshjbjb',
-    "type": 'diy',
+    "id": 200,
+    "type": 0,
     "preview": '/src/assets/images/preview.png',
     "creator": '张三',
     "createTime": "2025-11-11",
-    "updator": "张三",
+    "updater": "张三",
+    "updateTime": "2025-11-11",
+    "json": {
+      "id": 200,
+    }
+  },
+  {
+    "id": 'jbshjbjb',
+    "type": 1,
+    "preview": '/src/assets/images/preview.png',
+    "creator": '张三',
+    "createTime": "2025-11-11",
+    "updater": "张三",
     "updateTime": "2025-11-11",
     "json": {
       "id": 'jbshjbjb',
@@ -49,7 +57,7 @@ const list = ref<StyleData[]>([
       "bg_color": '#fffff',
       "bg_angle": 10
     }
-  }
+  },
 ])// 请求接口数据
 
 // 事件反馈相关变量
@@ -96,8 +104,8 @@ const columns: any = [
   },
   {
     title: '最近修改人',
-    dataIndex: 'updator',
-    key: 'updator',
+    dataIndex: 'updater',
+    key: 'updater',
     align: 'center',
   },
   {
@@ -123,6 +131,9 @@ const pagination = ref({
   total: 0,
 })// 表格分页
 const currentStyle = ref()// 当前选中样式
+const isCopy = ref(false)// 是否为复制样式
+const isUpdate = ref(false)// 是否为编辑样式
+const type = ref(null)
 
 // 检索相关变量
 const searchFormRef = ref()// 检索表单引用
@@ -132,8 +143,6 @@ const searchParams = ref<SearchParams>({
   creator: '',
   page: 1,
   pageSize: 15,
-  operator,
-  currentApp,
 })// 查询数据
 
 // 表格相关函数
@@ -146,21 +155,23 @@ function closeAddStyle(value: boolean) {
   if (value) {
     operationYes.value = true
   }
+  getStyleList()
   addStyleOpen.value = false
   currentStyle.value = null
 }// 关闭新增样式弹窗
 function handleEdit(record: any) {
-  if (record.type === '自定义') {
-    currentStyle.value = record
-    addStyleOpen.value = true
-  }
+  type.value = record.type
+  currentStyle.value = record.id
+  isCopy.value = false
+  isUpdate.value = true
+  addStyleOpen.value = true
 }// 编辑样式
 function handleCopy(record: any) {
-  if (record.type === '自定义') {
-    currentStyle.value = JSON.parse(JSON.stringify(record))
-    currentStyle.value.style_id = ''
-    addStyleOpen.value = true
-  }
+  type.value = record.type
+  currentStyle.value = record.id
+  isCopy.value = true
+  isUpdate.value = false
+  addStyleOpen.value = true
 }// 复制样式新建
 function showDifferences(record: Array<string>) {
   differences.value = record
@@ -246,7 +257,7 @@ getStyleList()
         @change="handleTableChange($event)">
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'differences'">
-            <span v-if="record.type === 'base'">无差异</span>
+            <span v-if="record.type === 0">无差异</span>
             <span v-else style="cursor:pointer" @click="showDifferences(record.json)">有差异</span>
           </template>
           <template v-if="column.dataIndex === 'preview'">
@@ -277,7 +288,7 @@ getStyleList()
       </a-table>
     </a-card>
     <a-card v-else style="margin-bottom: 30px;">
-      <AddStyle :current="currentStyle" @close="closeAddStyle" />
+      <AddStyle :current="currentStyle" @close="closeAddStyle" :copy="isCopy" :update="isUpdate" :type="type"/>
     </a-card>
 
     <a-modal v-model:open="differencesOpen" title="与基准样式的差异" :footer="null">

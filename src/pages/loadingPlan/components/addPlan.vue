@@ -151,7 +151,6 @@ function handleCancel() {
   showModal.value = false
 }
 function handleToApps() {
-  loading.value = true
   if (!update) {
     // @ts-expect-error:...
     addPlan(formState).then(() => {

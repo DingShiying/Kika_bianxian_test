@@ -331,7 +331,8 @@ function handleSuperManage() {
 </a-menu>
 </template>
 </a-dropdown> -->
-    <!-- <div class="app">
+    
+<!-- <div class="app">
       <div class="app-option" @click="() => visible = !visible">
         <img :src="currentApp.icon" class="app-option-icon">
         <div class="app-name">

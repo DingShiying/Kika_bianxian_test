@@ -9,25 +9,24 @@ interface StyleData {
   updateTime: string
   json: {
     id: string | number
-    base_id?: number
+    base_id?: number 
     [key: string]: string | number | undefined
   }
 }// 请求接口数据类型
 interface StyleList {
   code: number
   msg: string
-  data: StyleData[]
+  data: StyleData
 }// 用户列表数据类型
 interface Params {
-  id: string | number
-  type: string | undefined
-  creator: string
-  page: number
-  pageSize: number
+  id: string|number|undefined
 }// 请求参数类型
 
-export function getAllStyleData(params: Params) {
-  return usePost<StyleList, any>('/proxy/ad/style/list', params, {
+export function getStyleDataById(params: Params) {
+  const currentApp = computed(() => {
+    return useUserStore().currentApp
+  })
+  return useGet<StyleList, any>('/proxy/ad/style/getById', { ...params, currentApp: currentApp.value }, {
     // 设置为false的时候不会携带token
     token: true,
     // 开发模式下使用自定义的接口

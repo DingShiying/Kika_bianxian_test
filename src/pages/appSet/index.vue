@@ -331,7 +331,7 @@ function resetForm() {
           </template>
 
           <template v-if="column.dataIndex === 'icon'">
-            <a-image :src="record.icon" :height="30" :width="30" />
+            <a-image :src="record.icon" :height="30" />
           </template>
 
           <template v-if="column.dataIndex === 'business'">

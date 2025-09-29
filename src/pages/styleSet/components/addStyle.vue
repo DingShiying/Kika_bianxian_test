@@ -1,219 +1,118 @@
 <script setup lang='ts' name='addStyle'>
 import { computed, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
-import { RollbackOutlined } from '@ant-design/icons-vue'
+import { CloseCircleOutlined, RollbackOutlined } from '@ant-design/icons-vue'
+import ShuttleBox from '~@/components/app-shuttle/ShuttleBox.vue'
+import operateFalse from '~@/components/base-loading/operateFalse.vue'
+import { addStyle } from '~@/api/style/addStyle'
+import { updateStyle } from '~@/api/style/updateStyle'
+import { getStyleDataById } from '~@/api/style/getStyleById'
+import { uploadImage } from '~@/utils/uploadImg'
 
+// 数据类型声明
 interface FormState1 {
-  style_id: string
+  id: number | undefined
+  type: number
   preview: string
-}
-interface Business_apps_check {
-  checkAll: boolean
-  expanded: boolean
-  checkList: Array<boolean>
-}
+  currentApp: string | undefined
+  json: {
+    id: number | undefined
+  }
+}//基准样式表单
 interface FormState2 {
-  style_id: string
-  base_id: string | undefined
-  [key: string]: string | number | undefined
-}
+  id: string | number
+  type: number
+  preview: string
+  currentApp: string | undefined
+  json: {
+    id: string | number
+    base_id?: number
+    [key: string]: string | number | undefined
+  }
+}//自定义样式表单
 
-const { current } = defineProps(['current'])
+// 父组件传参
+const { current, copy, update, type } = defineProps(['current', 'copy', 'update', 'type'])
 const emit = defineEmits(['close'])
-const formRef1 = ref()
-const formRef2 = ref()
-const choiceType = ref(false)
-const currentType = ref('')
-const copyJSON = ref('')
-const idDisabled = ref(false)
-const selectAPPs = reactive<any>([])
-const showModal = ref(false)
 
-const business_apps_check = ref<Business_apps_check[]>([{
-  checkAll: false,
-  expanded: false,
-  checkList: [],
-}])// 表示业务组下属app是否全选
+// 当前应用
+const currentApp = computed(() => {
+  return useUserStore().currentApp
+})
 
-if (current) {
-  if (current.styleType === '自定义') {
-    currentType.value = 'diy'
-    choiceType.value = true
-  }
-  if (current.style_id) {
-    idDisabled.value = true
-  }
-}
+// 事件反馈相关变量
+const operationNo = ref(false) // 操作失败
 
-const appList = [
-  {
-    'business': '电商业务组',
-    'apps': [
-      {
-        'appName': '哈哈哈',
-        'system': 'iOS',
-        'package': 'com.jiankangguanli.mall',
-        'icon': '/src/assets/images/icon1.png',
-      },
-      {
-        'appName': '哦哦哦',
-        'system': 'android',
-        'package': 'com.aabjhsba.mall',
-        'icon': '/src/assets/images/icon2.png',
-      },
-      {
-        'appName': '点点滴滴',
-        'system': 'iOS',
-        'package': 'com.sasasas.mall',
-        'icon': '/src/assets/images/icon3.png',
-      },
-      {
-        'appName': '呃呃呃呃',
-        'system': 'android',
-        'package': 'com.sasasasai.mall',
-        'icon': '/src/assets/images/icon4.png',
-      },
-    ],
-  },
-  {
-    'business': '电商健康组',
-    'apps': [
-      {
-        'appName': '哈哈哈1',
-        'system': 'iOS',
-        'package': 'com.jiankangguanli.mall',
-        'icon': '/src/assets/images/icon1.png',
-      },
-      {
-        'appName': '哦哦哦1',
-        'system': 'android',
-        'package': 'com.aabjhsba.mall',
-        'icon': '/src/assets/images/icon2.png',
-      },
-      {
-        'appName': '点点滴滴1',
-        'system': 'iOS',
-        'package': 'com.sasasas.mall',
-        'icon': '/src/assets/images/icon3.png',
-      },
-      {
-        'appName': '呃呃呃呃1',
-        'system': 'android',
-        'package': 'com.sasasasai.mall',
-        'icon': '/src/assets/images/icon4.png',
-      },
-    ],
-  },
-  {
-    'business': '电商哈哈组',
-    'apps': [
-      {
-        'appName': '哈哈哈2',
-        'system': 'iOS',
-        'package': 'com.jiankangguanli.mall',
-        'icon': '/src/assets/images/icon1.png',
-      },
-      {
-        'appName': '哦哦哦2',
-        'system': 'android',
-        'package': 'com.aabjhsba.mall',
-        'icon': '/src/assets/images/icon2.png',
-      },
-      {
-        'appName': '点点滴滴2',
-        'system': 'iOS',
-        'package': 'com.sasasas.mall',
-        'icon': '/src/assets/images/icon3.png',
-      },
-      {
-        'appName': '呃呃呃呃2',
-        'system': 'android',
-        'package': 'com.sasasasai.mall',
-        'icon': '/src/assets/images/icon4.png',
-      },
-    ],
-  },
-  {
-    'business': '电商呼呼组',
-    'apps': [
-      {
-        'appName': '哈哈哈3',
-        'system': 'iOS',
-        'package': 'com.jiankangguanli.mall',
-        'icon': '/src/assets/images/icon1.png',
-      },
-      {
-        'appName': '哦哦哦3',
-        'system': 'android',
-        'package': 'com.aabjhsba.mall',
-        'icon': '/src/assets/images/icon2.png',
-      },
-      {
-        'appName': '点点滴滴3',
-        'system': 'iOS',
-        'package': 'com.sasasas.mall',
-        'icon': '/src/assets/images/icon3.png',
-      },
-      {
-        'appName': '呃呃呃呃3',
-        'system': 'android',
-        'package': 'com.sasasasai.mall',
-        'icon': '/src/assets/images/icon4.png',
-      },
-    ],
-  },
-]
-reset()
+// 样式类型相关变量
+const choiceType = ref(false)//是否选择样式类型
+const currentType = ref<number>()// 样式类型
+const apps = ref<string[]>([])//应用列表
 
-const formState1 = ref<FormState1>({
-  style_id: '',
+// 基准样式表单
+const formRef1 = ref()//基准样式表单实例
+const formState1 = reactive<FormState1>({
+  id: undefined,
+  type: 0,
   preview: '',
-})
-const formState2 = reactive<FormState2>(current || {
-  style_id: '',
-  base_id: undefined,
-  bg_color: '',
-  bg_radius: '',
-  bg_stroke_width: '',
-  bg_stroke_color: '',
-  bg_angle: undefined,
-  bg_start_color: '',
-  bg_end_color: '',
-  info_bg_color: '',
-  info_bg_radius: '',
-  info_bg_angle: undefined,
-  info_bg_start_color: '',
-  info_bg_end_color: '',
-  media_bg_color: '',
-  title_color: '',
-  title_size: '',
-  desc_color: '',
-  desc_size: '',
-  tag_text_color: '',
-  tag_size: '',
-  tag_bg_color: '',
-  tag_radius: '',
-  cta_text: '',
-  cta_text_color: '',
-  cta_size: '',
-  cta_bg_color: '',
-  cta_radius: '',
-  cta_angle: undefined,
-  cta_start_color: '',
-  cta_end_color: '',
-  cta_stroke_width: '',
-  cta_stroke_color: '',
-  cta_anim_type: undefined,
-  choice_localton: undefined,
-})
-
+  currentApp: undefined,
+  json: {
+    id: undefined,
+  }
+})//基准样式表单数据
 const rules1: any = {
-  style_id: [{ required: true, message: '样式名不能为空', trigger: 'blur' }],
+  id: [{ required: true, message: '样式名不能为空', trigger: 'blur' }],
   preview: [{ required: true, message: '预览图不能为空', trigger: 'blur' }],
-}
+}// 基准样式表单验证规则
+const loading = ref(false)//分发按钮加载状态
+
+// 自定义样式表单
+const formRef2 = ref()//自定义样式表单实例
+const formState2 = reactive<FormState2>({
+  id: '',
+  type: 1,
+  preview: '',
+  currentApp: undefined,
+  json: {
+    id: '',
+    base_id: undefined,
+    bg_color: undefined,
+    bg_radius: undefined,
+    bg_stroke_width: undefined,
+    bg_stroke_color: undefined,
+    bg_angle: undefined,
+    bg_start_color: undefined,
+    bg_end_color: undefined,
+    info_bg_color: undefined,
+    info_bg_radius: undefined,
+    info_bg_angle: undefined,
+    info_bg_start_color: undefined,
+    info_bg_end_color: undefined,
+    media_bg_color: undefined,
+    title_color: undefined,
+    title_size: undefined,
+    desc_color: undefined,
+    desc_size: undefined,
+    tag_text_color: undefined,
+    tag_size: undefined,
+    tag_bg_color: undefined,
+    tag_radius: undefined,
+    cta_text: undefined,
+    cta_text_color: undefined,
+    cta_size: undefined,
+    cta_bg_color: undefined,
+    cta_radius: undefined,
+    cta_angle: undefined,
+    cta_start_color: undefined,
+    cta_end_color: undefined,
+    cta_stroke_width: undefined,
+    cta_stroke_color: undefined,
+    cta_anim_type: undefined,
+    choice_localton: undefined,
+  }
+})//自定义样式表单数据
 const rules2: any = {
   style_id: [{ required: true, message: '样式名不能为空', trigger: 'blur' }],
-  base_id: [{ required: true, message: '请选择一个基准样式', trigger: 'blur' }],
+  // base_id: [{ required: true, message: '请选择一个基准样式', trigger: 'blur' }],
   color: [
     {
       validator: (_: any, value: string) => {
@@ -230,24 +129,38 @@ const rules2: any = {
       trigger: 'blur',
     },
   ],
-}
-
-const basicStyleOptions = [
+}//自定义样式表单验证规则
+const copyJSON = ref('')//JSON解析数据
+const styleList = [
   {
-    label: '简约',
-    value: 304,
+    "id": 200,
+    "type": 0,
+    "preview": '/src/assets/images/preview.png',
+    "creator": '张三',
+    "createTime": "2025-11-11",
+    "updater": "张三",
+    "updateTime": "2025-11-11",
+    "json": {
+      "id": 200,
+    }
   },
   {
-    label: '商务',
-    value: 402,
+    "id": 'jbshjbjb',
+    "type": 1,
+    "preview": '/src/assets/images/preview.png',
+    "creator": '张三',
+    "createTime": "2025-11-11",
+    "updater": "张三",
+    "updateTime": "2025-11-11",
+    "json": {
+      "id": 'jbshjbjb',
+      "base_id": 200,
+      "bg_color": '#fffff',
+      "bg_angle": 10
+    }
   },
-  {
-    label: '科技',
-    value: 200,
-  },
-]
-
-const styleList = ref({
+]//样式列表
+const styleOptions = ref({
   'backgoundConfig': [
     {
       label: '广告整体背景色',
@@ -487,8 +400,7 @@ const styleList = ref({
       key: 'choice_localton',
     },
   ],
-})
-
+})// 样式编辑列表
 const withSet = computed(() => {
   const set = {
     backgoundConfig: false,
@@ -501,27 +413,31 @@ const withSet = computed(() => {
 
   for (const item in set) {
     // @ts-expect-error:kkk
-    set[item] = styleList.value[item].some(key => formState2[key.key])
+    set[item] = styleOptions.value[item].some(key => formState2.json[key.key])
   }
-
   return set
-})
+})// 样式编辑列表设置表示
 
+const showModal = ref(false)
+
+// 样式类型选择
 function normalStyle() {
-  currentType.value = 'normal'
+  currentType.value = 0
   choiceType.value = true
 }
 function diyStyle() {
-  currentType.value = 'diy'
+  currentType.value = 1
   choiceType.value = true
 }
+
+// 解析JSON
 function parseJSON() {
   try {
     if (copyJSON.value) {
       const jsonData = JSON.parse(copyJSON.value)
       for (const key in jsonData) {
         if (key in formState2) {
-          formState2[key] = jsonData[key]
+          formState2.json[key] = jsonData[key]
         }
       }
       message.success('JSON解析成功')
@@ -534,28 +450,112 @@ function parseJSON() {
     message.warning(err.message)
   }
 }
-function handleOk() {
-  formRef2.value
+
+// 基准样式相关函数
+async function uploadPreview() {
+  // await uploadImage().then((res:any)=>{
+  //   formState1.preview=res
+  // })
+  formState1.preview = '/src/assets/images/preview.png'
+}// 上传预览图
+function handleBaseOk() {
+  formRef1.value
     .validate()
-    .then(() => {
-      const style: any = {}
-      for (const key in formState2) {
-        // @ts-expect-error:忽略
-        if (/^\d+$/.test(formState2[key]) && key !== 'id') {
-          style[key] = Number(formState2[key])
-        }
-        else if (formState2[key]) {
-          style[key] = formState2[key]
-        }
+    .then(async () => {
+      formState1.id = Number(formState1.id)
+      formState1.json.id = formState1.id
+      formState1.currentApp = currentApp.value
+      if (!update) {
+        // await addStyle(formState1)
       }
-      console.log(style)
-      message.success('样式创建成功')
-      emit('close', false)
+      else {
+        // await updateStyle(formState1)
+      }
+      emit('close', true)
     })
     .catch((error: any) => {
       console.log('error', error)
     })
-}
+}// 基准样式确认
+function baseToModal() {
+  formRef1.value
+    .validate()
+    .then(() => {
+      showModal.value = true
+      if (!update) {
+        // addStyle(formState1).then(() => {
+        //   loading.value = true
+        //   for (let i = 0; i < apps.value.length; i++) {
+        //     formState1.currentApp = apps.value[i]
+        //     addStyle(formState1).then(() => {
+        //       if (i === apps.value.length - 1) {
+        //         loading.value = false
+        //         emit('close', true)
+        //       }
+        //     }).catch((error: any) => {
+        //       console.error(`分发给${apps.value[i]}失败:`, error)
+        //       message.error(`分发给${apps.value[i]}失败`)
+        //     })
+        //   }
+        // }).catch((error: any) => {
+        //   console.error('操作失败:', error)
+        //   operationNo.value = true
+        // })
+        emit('close', true)
+      }
+      else {
+        // updateStyle(formState1).then(() => {
+        //   loading.value = true
+        //   for (let i = 0; i < apps.value.length; i++) {
+        //     formState1.currentApp = apps.value[i]
+        //     updateStyle(formState1).then(() => {
+        //       if (i === apps.value.length - 1) {
+        //         loading.value = false
+        //         emit('close', true)
+        //       }
+        //     }).catch((error: any) => {
+        //       console.error(`分发给${apps.value[i]}失败:`, error)
+        //       message.error(`分发给${apps.value[i]}失败`)
+        //     })
+        //   }
+        // }).catch((error: any) => {
+        //   console.error('操作失败:', error)
+        //   operationNo.value = true
+        // })
+        emit('close', true)
+      }
+    })
+    .catch((error: any) => {
+      console.log('error', error)
+    })
+}//分配到其他App
+
+// 自定义样式相关函数
+function handleOk() {
+  formRef2.value
+    .validate()
+    .then(() => {
+      formState2.json.id = formState2.id
+      formState2.currentApp = currentApp.value
+      // getStyleDataById({ id: formState2.json.base_id }).then((res: any) => {
+      //   formState2.preview = res.data.preview
+      //   if (!update) {
+      //     addStyle(formState2).then(() => {
+      //       emit('close', true)
+      //     })
+      //   }
+      //   else {
+      //     updateStyle(formState2).then(() => {
+      //       emit('close', true)
+      //     })
+      //   }
+      // })
+      emit('close', true)
+    })
+    .catch((error: any) => {
+      console.log('error', error)
+    })
+}//自定义样式确认
 function toModal() {
   formRef2.value
     .validate()
@@ -564,126 +564,90 @@ function toModal() {
     })
     .catch((error: any) => {
       console.log('error', error)
+      message.warning('请先完善样式信息')
     })
-}
-function handleBaseOk() {
-  formRef1.value
-    .validate()
-    .then(() => {
-      console.log(formState1)
-      // message.success('样式创建成功')
-      emit('close', true)
-    })
-    .catch((error: any) => {
-      console.log('error', error)
-    })
-}
-function baseToModal() {
-  formRef1.value
-    .validate()
-    .then(() => {
-      showModal.value = true
-    })
-    .catch((error: any) => {
-      console.log('error', error)
-    })
-}
-function reset() {
-  const checkState: any = []
-  appList.forEach((item: any) => {
-    const currentState = {
-      checkAll: false,
-      extend: false,
-      checkList: [],
-    }
-    item.apps.forEach(() => {
-      // @ts-expect-error:忽略
-      currentState.checkList.push(false)
-    })
-    checkState.push(currentState)
-  })
-  business_apps_check.value = checkState
-}
-function businessAppCheckAll(index: number) {
-  business_apps_check.value[index].checkAll = !business_apps_check.value[index].checkAll
-  if (business_apps_check.value[index].checkAll) {
-    business_apps_check.value[index].checkList = business_apps_check.value[index].checkList.map(() => true)
-    appList[index].apps.forEach((item: any) => {
-      if (!isSelect(item.appName)) {
-        selectAPPs.push({
-          business: appList[index].business,
-          ...item,
-        })
-      }
-    })
-  }
-  else {
-    business_apps_check.value[index].checkList = business_apps_check.value[index].checkList.map(() => false)
-    cancelAPP('business', appList[index].business)
-  }
-}// 全选/全不选业务组下属APP
-
-function cancelAPP(type: string, target: string) {
-  if (type === 'app') {
-    Object.assign(selectAPPs, selectAPPs.filter((app: any) => app.appName !== target))
-  }
-  else {
-    Object.assign(selectAPPs, selectAPPs.filter((app: any) => app.business !== target))
-  }
-}// 取消选择APP(以业务组为单位/以APP为单位)
-
-function isSelect(appName: string): boolean {
-  return selectAPPs.some((app: any) =>
-    app.appName === appName,
-  )
-}// 判断APP是否被选择
-
-function selectThisApp(businessIndex: number, appIndex: number) {
-  if (business_apps_check.value[businessIndex].checkList[appIndex]) {
-    business_apps_check.value[businessIndex].checkList[appIndex] = false
-    business_apps_check.value[businessIndex].checkAll = false
-    cancelAPP('app', appList[businessIndex].apps[appIndex].appName)
-  }
-  else {
-    business_apps_check.value[businessIndex].checkList[appIndex] = true
-    if (!isSelect(appList[businessIndex].apps[appIndex].appName)) {
-      selectAPPs.push({
-        business: appList[businessIndex].business,
-        ...appList[businessIndex].apps[appIndex],
-      })
-      let businessState = true
-      business_apps_check.value[businessIndex].checkList.forEach((item: boolean) => {
-        if (!item) {
-          businessState = false
-        }
-      })
-      business_apps_check.value[businessIndex].checkAll = businessState
-    }
-  }
-}
-
+}//分配到其他App
 function handleToApp() {
-  if (selectAPPs.length > 0) {
-    console.log(selectAPPs)
-    message.success('成功创建样式并分发给APP')
-    showModal.value = false
-    while (selectAPPs.length) {
-      selectAPPs.pop()
-    }
-    reset()
-    emit('close', false)
-  }
-  else {
-    message.warning('请至少选择一个APP')
-  }
-}
+  // if (!update) {
+  //   addStyle(formState2).then(() => {
+  //     loading.value = true
+  //     for (let i = 0; i < apps.value.length; i++) {
+  //       formState2.currentApp = apps.value[i]
+  //       addStyle(formState2).then(() => {
+  //         if (i === apps.value.length - 1) {
+  //           loading.value = false
+  //           emit('close', true)
+  //         }
+  //       }).catch((error: any) => {
+  //         console.error(`分发给${apps.value[i]}失败:`, error)
+  //         message.error(`分发给${apps.value[i]}失败`)
+  //       })
+  //     }
+  //   }).catch((error: any) => {
+  //     console.error('操作失败:', error)
+  //     operationNo.value = true
+  //   })
+  // }
+  // else {
+  //   updateStyle(formState2).then(() => {
+  //     loading.value = true
+  //     for (let i = 0; i < apps.value.length; i++) {
+  //       formState2.currentApp = apps.value[i]
+  //       updateStyle(formState2).then(() => {
+  //         if (i === apps.value.length - 1) {
+  //           loading.value = false
+  //           emit('close', true)
+  //         }
+  //       }).catch((error: any) => {
+  //         console.error(`分发给${apps.value[i]}失败:`, error)
+  //         message.error(`分发给${apps.value[i]}失败`)
+  //       })
+  //     }
+  //   }).catch((error: any) => {
+  //     console.error('操作失败:', error)
+  //     operationNo.value = true
+  //   })
+  // }
+  emit('close', true)
+}// 分配到其他App
 
 function handleToAppCancel() {
-  while (selectAPPs.length) {
-    selectAPPs.pop()
-  }
-  reset()
   showModal.value = false
+}// 分配到其他App取消
+
+// 查询样式内容函数
+function getStyleData() {
+  getStyleDataById({ id: current }).then((res: any) => {
+    const data = res.data
+    if (type === 0) {
+      Object.keys(formState1).forEach((item: string) => {
+        //@ts-expect-error:...
+        formState1[item] = data[item]
+      })
+      if (copy) {
+        formState1.id = undefined
+      }
+      normalStyle()
+    }
+    else {
+      Object.keys(formState2).forEach((item: string) => {
+        if (item !== 'json') {
+          //@ts-expect-error:...
+          formState2[item] = data[item]
+        }
+      })
+      Object.keys(formState2.json).forEach((item: string) => {
+        formState2.json[item] = data.json[item] || undefined
+      })
+      if (copy) {
+        formState2.id = ''
+      }
+      diyStyle()
+    }
+  })
+}
+if (current) {
+  getStyleData()
 }
 </script>
 
@@ -707,33 +671,35 @@ function handleToAppCancel() {
       </a-button>
     </div>
     <div v-else class="content">
-      <template v-if="currentType === 'normal'">
+      <template v-if="currentType === 0">
         <a-form ref="formRef1" :model="formState1" :rules="rules1" layout="vertical" class="form1">
-          <a-form-item label="配置名称" name="style_id">
-            <a-input v-model:value="formState1.style_id" placeholder="请输入样式名称" />
+          <a-form-item label="样式id" name="id">
+            <a-input-number v-model:value="formState1.id" placeholder="请输入样式id" class="w-[30vw]" />
           </a-form-item>
 
           <a-form-item label="应用图标" name="preview">
             <div class="upload-img">
-              <div v-if="!formState1.preview" class="upload">
+              <div v-if="!formState1.preview" class="upload" @click="uploadPreview">
                 <img src="@/assets/images/upload.svg">
                 <span>上传icon</span>
               </div>
-              <a-image v-else :src="formState1.preview" :width="100" :height="100" />
+              <a-image v-else :src="formState1.preview" :height="100" />
               <div v-if="!formState1.preview" class="alert-text">
                 <span>支持jpg、png格式</span>
                 <span>建议尺寸&nbsp;512&nbsp;&times;&nbsp;512&nbsp;</span>
                 <span>大小不超过2M</span>
               </div>
+              <CloseCircleOutlined class="absolute right-[-20px] top-[-10px] text-[20px]" v-if="formState1.preview"
+                @click="formState1.preview = ''" />
             </div>
           </a-form-item>
         </a-form>
         <div class="footer1">
           <a-button type="primary" @click="handleBaseOk">
-            确认创建
+            确认
           </a-button>
-          <a-button type="primary" @click="baseToModal">
-            创建并分发更多APP
+          <a-button type="primary" @click="baseToModal" :loading="loading">
+            确定分发
           </a-button>
           <a-button @click="() => emit('close', false)">
             取消
@@ -743,18 +709,16 @@ function handleToAppCancel() {
       <template v-else>
         <a-form ref="formRef2" :model="formState2" layout="inline" class="form2" :rules="rules2">
           <div class="basic-part">
-            <a-form-item label="配置名称" :rules="rules2.style_id" name="style_id">
-              <a-input
-                v-model:value="formState2.style_id" placeholder="请输入样式名称" :disabled="idDisabled"
-                style="width:200px"
-              />
+            <a-form-item label="样式id" :rules="rules2.style_id" name="id">
+              <a-input v-model:value="formState2.id" placeholder="请输入样式id" style="width:200px" />
             </a-form-item>
 
             <a-form-item label="基准样式" :rules="rules2.base_id" name="base_id">
-              <a-select
-                v-model:value="formState2.base_id" :options="basicStyleOptions" placeholder="请输入基准样式"
-                style="width:200px"
-              />
+              <a-select v-model:value="formState2.json.base_id" placeholder="请输入基准样式" style="width:200px">
+                <template v-for="option in styleList.filter(item => item.type === 0)" :key="option.id">
+                  <a-select-option :value="option.id">{{ option.id }}</a-select-option>
+                </template>
+              </a-select>
             </a-form-item>
           </div>
           <div class="json-input">
@@ -776,16 +740,12 @@ function handleToAppCancel() {
                   <span>有配置</span>
                 </template>
                 <div class="collapse-content">
-                  <div v-for="item in styleList.backgoundConfig" :key="item.label" class="style-item">
+                  <div v-for="item in styleOptions.backgoundConfig" :key="item.label" class="style-item">
                     <span>{{ item.label }}</span>
-                    <a-input
-                      v-if="item.type === 'input'" v-model:value="formState2[item.key]"
-                      :placeholder="item.placeholder"
-                    />
-                    <a-select
-                      v-else v-model:value="formState2[item.key]" :placeholder="item.placeholder"
-                      :options="item.options"
-                    />
+                    <a-input v-if="item.type === 'input'" v-model:value="formState2.json[item.key]"
+                      :placeholder="item.placeholder" />
+                    <a-select v-else v-model:value="formState2.json[item.key]" :placeholder="item.placeholder"
+                      :options="item.options" />
                   </div>
                 </div>
               </a-collapse-panel>
@@ -797,16 +757,12 @@ function handleToAppCancel() {
                   <span>有配置</span>
                 </template>
                 <div class="collapse-content">
-                  <div v-for="item in styleList.infoConfig" :key="item.label" class="style-item">
+                  <div v-for="item in styleOptions.infoConfig" :key="item.label" class="style-item">
                     <span>{{ item.label }}</span>
-                    <a-input
-                      v-if="item.type === 'input'" v-model:value="formState2[item.key]"
-                      :placeholder="item.placeholder"
-                    />
-                    <a-select
-                      v-else v-model:value="formState2[item.key]" :placeholder="item.placeholder"
-                      :options="item.options"
-                    />
+                    <a-input v-if="item.type === 'input'" v-model:value="formState2.json[item.key]"
+                      :placeholder="item.placeholder" />
+                    <a-select v-else v-model:value="formState2.json[item.key]" :placeholder="item.placeholder"
+                      :options="item.options" />
                   </div>
                 </div>
               </a-collapse-panel>
@@ -818,12 +774,10 @@ function handleToAppCancel() {
                   <span>有配置</span>
                 </template>
                 <div class="collapse-content">
-                  <div v-for="item in styleList.mediaConfig" :key="item.label" class="style-item">
+                  <div v-for="item in styleOptions.mediaConfig" :key="item.label" class="style-item">
                     <span>{{ item.label }}</span>
-                    <a-input
-                      v-if="item.type === 'input'" v-model:value="formState2[item.key]"
-                      :placeholder="item.placeholder"
-                    />
+                    <a-input v-if="item.type === 'input'" v-model:value="formState2.json[item.key]"
+                      :placeholder="item.placeholder" />
                   </div>
                 </div>
               </a-collapse-panel>
@@ -835,12 +789,10 @@ function handleToAppCancel() {
                   <span>有配置</span>
                 </template>
                 <div class="collapse-content">
-                  <div v-for="item in styleList.adConfig" :key="item.label" class="style-item">
+                  <div v-for="item in styleOptions.adConfig" :key="item.label" class="style-item">
                     <span>{{ item.label }}</span>
-                    <a-input
-                      v-if="item.type === 'input'" v-model:value="formState2[item.key]"
-                      :placeholder="item.placeholder"
-                    />
+                    <a-input v-if="item.type === 'input'" v-model:value="formState2.json[item.key]"
+                      :placeholder="item.placeholder" />
                   </div>
                 </div>
               </a-collapse-panel>
@@ -852,12 +804,10 @@ function handleToAppCancel() {
                   <span>有配置</span>
                 </template>
                 <div class="collapse-content">
-                  <div v-for="item in styleList.adButtonConfig" :key="item.label" class="style-item">
+                  <div v-for="item in styleOptions.adButtonConfig" :key="item.label" class="style-item">
                     <span>{{ item.label }}</span>
-                    <a-input
-                      v-if="item.type === 'input'" v-model:value="formState2[item.key]"
-                      :placeholder="item.placeholder"
-                    />
+                    <a-input v-if="item.type === 'input'" v-model:value="formState2.json[item.key]"
+                      :placeholder="item.placeholder" />
                   </div>
                 </div>
               </a-collapse-panel>
@@ -869,16 +819,12 @@ function handleToAppCancel() {
                   <span>有配置</span>
                 </template>
                 <div class="collapse-content">
-                  <div v-for="item in styleList.adLinkStyleConfig" :key="item.label" class="style-item">
+                  <div v-for="item in styleOptions.adLinkStyleConfig" :key="item.label" class="style-item">
                     <span>{{ item.label }}</span>
-                    <a-input
-                      v-if="item.type === 'input'" v-model:value="formState2[item.key]"
-                      :placeholder="item.placeholder"
-                    />
-                    <a-select
-                      v-else v-model:value="formState2[item.key]" :placeholder="item.placeholder"
-                      :options="item.options"
-                    />
+                    <a-input v-if="item.type === 'input'" v-model:value="formState2.json[item.key]"
+                      :placeholder="item.placeholder" />
+                    <a-select v-else v-model:value="formState2.json[item.key]" :placeholder="item.placeholder"
+                      :options="item.options" />
                   </div>
                 </div>
               </a-collapse-panel>
@@ -887,7 +833,7 @@ function handleToAppCancel() {
         </a-form>
       </template>
     </div>
-    <div v-if="currentType === 'diy'" class="footer2">
+    <div v-if="currentType === 1" class="footer2">
       <a-button type="primary" @click="handleOk">
         确认创建
       </a-button>
@@ -900,9 +846,7 @@ function handleToAppCancel() {
     </div>
   </div>
 
-  <a-modal
-    v-model:open="showModal" title="分配广告样式到APP" style="top:20vh;width:70vw;" :mask-closable="false"
-  >
+  <a-modal v-model:open="showModal" title="分配广告样式到APP" style="top:20vh;width:70vw;" :mask-closable="false">
     <template #footer>
       <a-button key="back" @click="handleToAppCancel">
         取消
@@ -910,60 +854,12 @@ function handleToAppCancel() {
       <a-button key="submit" type="primary" @click="handleToApp">
         确定
       </a-button>
+      <ShuttleBox v-model:checked="apps" />
     </template>
-    <div class="select_app">
-      <div class="left">
-        <div v-for="(item, index) in appList" :key="index" class="business-apps">
-          <a-checkbox v-model:checked="business_apps_check[index].checkAll" @click="businessAppCheckAll(index)">
-            <div class="checkbox">
-              <img src="/src/assets/images/business2.svg">
-              <div class="text">
-                <div class="name">
-                  {{ item.business }}
-                </div>
-                <span>{{ item.apps.length }}个APP</span>
-              </div>
-            </div>
-          </a-checkbox>
-          <div class="extend" @click="business_apps_check[index].expanded = !business_apps_check[index].expanded">
-            {{ business_apps_check[index].expanded ? '收起' : '展开' }}
-          </div>
-          <div v-if="business_apps_check[index].expanded" class="inner-apps">
-            <a-checkbox
-              v-for="(app, index2) in item.apps" :key="index2"
-              v-model:checked="business_apps_check[index].checkList[index2]" @click="selectThisApp(index, index2)"
-            >
-              <div class="inner-app-details">
-                <img :src="app.icon">
-                <div class="text">
-                  <div class="name">
-                    {{ app.appName }}
-                    <img :src="`/src/assets/images/${app.system}.svg`">
-                  </div>
-                  <span>{{ app.package }}</span>
-                </div>
-              </div>
-            </a-checkbox>
-          </div>
-        </div>
-      </div>
-      <div class="right">
-        <div class="title">
-          已选择
-        </div>
-        <div v-for="(app, index) in selectAPPs" :key="index" class="check-app">
-          <img :src="app.icon">
-          <div class="text">
-            <div class="name">
-              {{ app.appName }}
-              <img :src="`/src/assets/images/${app.system}.svg`">
-            </div>
-            <span>{{ app.package }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
+
   </a-modal>
+
+  <operateFalse v-model="operationNo" />
 </template>
 
 <style scoped lang='scss'>
@@ -1043,6 +939,7 @@ function handleToAppCancel() {
       display: flex;
       align-items: center;
       cursor: pointer;
+      position: relative;
 
       .upload {
         width: 100px;
@@ -1175,7 +1072,7 @@ function handleToAppCancel() {
 
 .select_app {
   width: 100%;
-  margin-top :20px;
+  margin-top: 20px;
   padding: 0 10px;
   display: flex;
 
